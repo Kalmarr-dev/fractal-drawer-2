@@ -1,0 +1,14 @@
+Object for global settings (amount of lines, other preferences) - taken from command line arguments or config
+
+Recursive renderer is a SEPARATE MODULE, taking in ____ and zoom value, maybe calling something on zoom?
+It is not tied to fractals
+Based on __quad or kd trees, probably__
+
+Coordinates are a Struct with vectors of doubles and Exponent specifying the drop in Exponent per array index
+
+Draw space is a 1,1 square
+
+Inputs implement subscriber-observer pattern, with subscribtions happening in main
+
+Multi-threading? At least with this simple for loop parallelization
+
