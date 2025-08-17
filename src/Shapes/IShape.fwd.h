@@ -1,5 +1,5 @@
 #pragma once
 
-template<typename T = double>
+template<typename T>
 class IShape;
 

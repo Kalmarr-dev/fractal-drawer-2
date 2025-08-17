@@ -4,7 +4,7 @@
 #include "../Shapes/Shapes.h"
 #include "../helpers/Position.h"
 
-template<typename T = double>
+template<typename T>
 class IDataStructure2D
 {
 public:

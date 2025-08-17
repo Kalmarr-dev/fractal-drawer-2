@@ -3,7 +3,7 @@
 #include "../LongDouble/ILongDouble.h"
 #include "IShape.h"
 
-template<typename T = double>
+template<typename T>
 class Rectangle : public IShape<T>
 {
 public:

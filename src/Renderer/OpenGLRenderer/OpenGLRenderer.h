@@ -4,7 +4,7 @@
 #include "../../Configuration/Configuration.h";
 #include "../../RecursiveRenderer/IRecursiveRenderer.h";
 
-template<typename T = double>
+template<typename T>
 class OpenGLRenderer : public IRenderer
 {
 private:

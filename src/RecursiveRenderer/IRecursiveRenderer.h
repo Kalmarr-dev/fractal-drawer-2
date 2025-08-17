@@ -2,7 +2,7 @@
 
 #include "../helpers/Position.h"
 
-template<typename T = double>
+template<typename T>
 class IRecursiveRenderer
 {
 public:

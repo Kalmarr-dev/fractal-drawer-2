@@ -3,7 +3,7 @@
 #include "../IDataStructure2D.h"
 #include "../../Shapes/Shapes.h"
 
-template<typename T = double>
+template<typename T>
 class QuadTree2D : IDataStructure2D<T>
 {
 public:

@@ -1,4 +1,4 @@
-template<typename T = double>
+template<typename T>
 struct Position
 {
   T x;

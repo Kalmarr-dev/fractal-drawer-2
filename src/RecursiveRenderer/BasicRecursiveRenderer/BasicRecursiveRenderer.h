@@ -5,7 +5,7 @@
 #include "../IRecursiveRenderer.h";
 #include "../IRecursiveRendererObserver.h";
 
-template<typename T = double>
+template<typename T>
 class BasicRecursiveRenderer : public IRecursiveRenderer, public IRecursiveRendererObserver
 {
 private:
