@@ -1,0 +1,1 @@
+g++ -g $(find src -name "*.cpp") main.cpp -o a.out
