@@ -9,16 +9,16 @@ private:
   std::vector<double> values;
   int exponent;
 public:
-  LongDoubleVector();
-  ~LongDoubleVector();
+  LongDoubleVector(double value);
+  ~LongDoubleVector() = default;
 
   // casts ILongDouble to LongDoubleVector
   double get_double(const ILongDouble& offset, int scale_exponent);
   
   bool operator<(const LongDoubleVector& rhs);
 
-  LongDoubleVector operator+(const LongDoubleVector& rhs);
-  LongDoubleVector operator-(const LongDoubleVector& rhs);
+  // LongDoubleVector operator+(const LongDoubleVector& rhs);
+  // LongDoubleVector operator-(const LongDoubleVector& rhs);
   
   // These can not be optimized like that
   // LongDoubleVector operator*(const LongDoubleVector& rhs);

@@ -1,24 +1,27 @@
 #pragma once
 
-#include "../../Configuration/Configuration.h";
-#include "../../DataStructure2D/IDataStructure2D.h";
-#include "../IRecursiveRenderer.h";
-#include "../IRecursiveRendererObserver.h";
+#include "../../Configuration/Configuration.h"
+#include "../../DataStructure2D/IDataStructure2D.h"
+#include "../../Camera/ICamera.h"
+#include "../IRecursiveRenderer.h"
+#include "../IRecursiveRendererObserver.h"
 
 template<typename T>
-class BasicRecursiveRenderer : public IRecursiveRenderer, public IRecursiveRendererObserver
+class BasicRecursiveRenderer : public IRecursiveRenderer<T>, public IRecursiveRendererObserver<T>
 {
 private:
-  IDataStructure2D<T>* data_structure;
+  IDataStructure2D<T>* p_data_structure;
+  ICamera<T>* p_camera;
   const Configuration configuration;
 
 public:
-  BasicRecursiveRenderer(IDataStructure2D<T>* data_structure, const Configuration& configuration);
+  BasicRecursiveRenderer(IDataStructure2D<T>* data_structure, ICamera<T>* p_camera, const Configuration& configuration);
+  ~BasicRecursiveRenderer() = default;
 
-  Shapes get_shapes_on_camera(Position<T> lower, Position<T> higher) override;
+  Shapes<T> get_shapes_on_camera() const override;
 
-  virtual void zoom_in() = 0;
-  virtual void zoom_out() = 0;
-  virtual void zoom_reset() = 0;
-  virtual void clear_shapes() = 0;
+  void zoom_in(Position<T> pointer, T scale_value) override;
+  void zoom_out(Position<T> pointer, T scale_value) override;
+  void zoom_reset() override;
+  void clear_shapes() override;
 };

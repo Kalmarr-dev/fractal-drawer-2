@@ -7,6 +7,6 @@ template<typename T>
 class Line : public IShape<T>
 {
 public:
-  ~Line();
+  ~Line() = default;
 };
 

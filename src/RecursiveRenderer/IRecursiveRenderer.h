@@ -6,6 +6,6 @@ template<typename T>
 class IRecursiveRenderer
 {
 public:
-  virtual ~IRecursiveRenderer();
-  virtual Shapes get_shapes_on_camera(Position<T> lower, Position<T> higher) = 0;
+  virtual ~IRecursiveRenderer() = default;
+  virtual Shapes<T> get_shapes_on_camera() const = 0;
 };

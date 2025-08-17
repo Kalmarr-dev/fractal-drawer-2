@@ -4,7 +4,7 @@
 #include "../../Shapes/Shapes.h"
 
 template<typename T>
-class QuadTree2D : IDataStructure2D<T>
+class QuadTree2D : public IDataStructure2D<T>
 {
 public:
   ~QuadTree2D() = default;

@@ -8,7 +8,7 @@ template<typename T>
 class IShape
 {
 public:
-  virtual ~IShape();
+  virtual ~IShape() = default;
   virtual bool collides_with(const Rectangle<T>& rectangle) = 0;
 };
 

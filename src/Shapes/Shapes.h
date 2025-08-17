@@ -8,19 +8,21 @@ template<typename T>
 class Shapes
 {
 private:
-  std::vector<IShape<T>> shapes;
+  std::vector<IShape<T>*> shapes;
 
 public:
-  void add_shape(IShape<T> shape) {
+  void add_shape(IShape<T>* shape) {
     shapes.push_back(shape);
   }
 
-  std::vector<IShape<T>> get_shapes() {
+  std::vector<IShape<T>*> get_shapes() {
     return shapes;
   }
 
-  
+  void clear() {
+    shapes.clear();
+  }
 
-  ~Shapes();
+  ~Shapes() = default;
 };
 
