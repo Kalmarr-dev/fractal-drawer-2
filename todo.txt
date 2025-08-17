@@ -2,7 +2,13 @@ Object for global settings (amount of lines, other preferences) - taken from com
 
 Recursive renderer is a SEPARATE MODULE, taking in ____ and zoom value, maybe calling something on zoom?
 It is not tied to fractals
+It accepts data structure as a parameter
 Based on __quad or kd trees, probably__
+
+Data structure can accept Shapes and return locally visible Shapes
+
+Renderer is a separate module from recurcive renderer, it is for drawing scenes in screen coordinates
+It gets Shapes from recursive renderer
 
 Coordinates are a Struct with vectors of doubles and Exponent specifying the drop in Exponent per array index
 
@@ -11,4 +17,6 @@ Draw space is a 1,1 square
 Inputs implement subscriber-observer pattern, with subscribtions happening in main
 
 Multi-threading? At least with this simple for loop parallelization
+
+Implement color schemes, somehow
 
