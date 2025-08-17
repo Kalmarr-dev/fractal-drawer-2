@@ -4,10 +4,12 @@
 #include "../../Shapes/Shapes.h"
 
 template<typename T>
-class QuadTree2D : IDataStructure2D<T>
+class BasicDataStructure2D : IDataStructure2D<T>
 {
+private:
+  Shapes<T> shapes;
 public:
-  ~QuadTree2D() = default;
+  ~BasicDataStructure2D();
 
   void add_shapes(Shapes<T> shapes) override;
   Shapes<T> get_visible_shapes_in_area(Position<T> lower, Position<T> higher) override;

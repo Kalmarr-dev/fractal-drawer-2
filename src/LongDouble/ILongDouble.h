@@ -3,7 +3,7 @@
 class ILongDouble
 {
 public:
-  virtual ~ILongDouble();
+  virtual ~ILongDouble() = default;
 
-  virtual double get_double(const ILongDouble& offset, int scale_exponent) = 0;
+  virtual double get_double(ILongDouble* offset, int scale_exponent) = 0;
 };

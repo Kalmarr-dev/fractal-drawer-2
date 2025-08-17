@@ -12,7 +12,7 @@ public:
   ~BasicLongDouble() = default;
 
   // casts ILongDouble to BasicLongDouble
-  double get_double(const ILongDouble& offset, int scale_exponent);
+  double get_double(ILongDouble* offset, int scale_exponent);
   
   bool operator<(const BasicLongDouble& rhs);
 
