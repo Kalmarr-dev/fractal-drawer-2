@@ -9,11 +9,11 @@ template<typename T = double>
 class BasicRecursiveRenderer : public IRecursiveRenderer, public IRecursiveRendererObserver
 {
 private:
-  IDataStructure2D<T>* date_structure;
+  IDataStructure2D<T>* data_structure;
   const Configuration configuration;
 
 public:
-  BasicRecursiveRenderer(IDataStructure2D<T>* date_structure, const Configuration& configuration);
+  BasicRecursiveRenderer(IDataStructure2D<T>* data_structure, const Configuration& configuration);
 
   Shapes get_shapes_on_camera(Position<T> lower, Position<T> higher) override;
 

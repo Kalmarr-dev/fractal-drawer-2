@@ -1,14 +1,13 @@
 #pragma once
 
-#include "../LongDouble/ILongDouble.h"
-#include "../Shapes/Shapes.h"
-#include "../helpers/Position.h"
+#include "../IDataStructure2D.h"
+#include "../../Shapes/Shapes.h"
 
 template<typename T = double>
-class IDataStructure2D
+class QuadTree2D : IDataStructure2D<T>
 {
 public:
-  virtual ~IDataStructure2D();
+  virtual ~QuadTree2D();
 
   virtual void add_shapes(Shapes<T> shapes) = 0;
   virtual Shapes<T> get_visible_shapes_in_area(Position<T> lower, Position<T> higher) = 0;

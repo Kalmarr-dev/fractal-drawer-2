@@ -15,7 +15,7 @@ public:
   // casts ILongDouble to LongDoubleVector
   double get_double(const ILongDouble& offset, int scale_exponent);
   
-  LongDoubleVector operator<(const LongDoubleVector& rhs);
+  bool operator<(const LongDoubleVector& rhs);
 
   LongDoubleVector operator+(const LongDoubleVector& rhs);
   LongDoubleVector operator-(const LongDoubleVector& rhs);
