@@ -12,7 +12,7 @@ class BasicRecursiveRenderer : public IRecursiveRenderer<T>, public IRecursiveRe
 private:
   IDataStructure2D<T>* p_data_structure;
   ICamera<T>* p_camera;
-  const Configuration configuration;
+  Configuration configuration;
 
 public:
   BasicRecursiveRenderer(IDataStructure2D<T>* data_structure, ICamera<T>* p_camera, const Configuration& configuration);

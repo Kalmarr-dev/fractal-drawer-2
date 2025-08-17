@@ -8,7 +8,7 @@ class BasicLongDouble : public ILongDouble
 private:
   double value;
 public:
-  BasicLongDouble(double value);
+  BasicLongDouble(double value = 0.0);
   ~BasicLongDouble() = default;
 
   // casts ILongDouble to BasicLongDouble

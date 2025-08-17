@@ -9,7 +9,7 @@ private:
   std::vector<double> values;
   int exponent;
 public:
-  LongDoubleVector(double value);
+  LongDoubleVector(double value = 0.0);
   ~LongDoubleVector() = default;
 
   // casts ILongDouble to LongDoubleVector

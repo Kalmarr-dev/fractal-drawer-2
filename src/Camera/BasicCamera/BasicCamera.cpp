@@ -12,11 +12,11 @@ std::pair<Position<T>, Position<T>> BasicCamera<T>::get_camera_corners() {
 
 template<typename T>
 void BasicCamera<T>::set_camera_corners(Position<T> a, Position<T> b) {
-  if (a.x > b.x)
+  if (b.x < a.x)
   {
     std::swap(a.x, b.x);
   }
-  if (a.y > b.y)
+  if (b.y < a.y)
   {
     std::swap(a.y, b.y);
   }
@@ -35,8 +35,8 @@ void BasicCamera<T>::zoom(Position<T> pointer, T scale_value) {
   y = y + height / 2;
   x = x + dX - dX / scale_value;
   y = y + dY - dY / scale_value;
-  width /= scale_value;
-  height /= scale_value;
+  width = width / scale_value;
+  height = height / scale_value;
   x = x - width / 2;
   y = y - height / 2;
   this->camera_corners.first.x = x;
