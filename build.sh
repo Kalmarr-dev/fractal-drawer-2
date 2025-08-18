@@ -1,1 +1,1 @@
-g++ -g $(find src -name "*.cpp") main.cpp -lglfw -lGL -lX11 -lpthread -lXrandr -ldl -lOpenGL -o a.out
+g++ -g $(find src -name "*.cpp") $(find dependencies -name "*.c") $(find dependencies -name "*.cpp") main.cpp -lglfw -lGL -lX11 -lpthread -lXrandr -ldl -lOpenGL -o a.out

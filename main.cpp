@@ -14,6 +14,7 @@
 #include "src/helpers/Position.h"
 #include "src/Renderer/OpenGLRenderer/OpenGLRenderer.h"
 #include "src/Viewport/GLFWViewport/GLFWViewport.h"
+#include "src/Input/GLFWInput/GLFWInput.h"
 
 #define LongDouble BasicLongDouble
 
@@ -36,7 +37,11 @@ int main(int argc, char const *argv[])
   p_recursiveRenderer->get_shapes_on_camera();
   p_recursiveRenderer->resize_camera(1, 1);
 
-  GLFWVieport* viewport = new GLFWVieport();
+  GLFWViewport* p_viewport = new GLFWViewport();
+
+  GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK);
+  p_input->subscribe_viewport_to_callbacks(p_viewport);
+  p_viewport->subscribe_to_window_reconstruction(p_input);
 
   OpenGLRenderer<LongDouble>* renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, configuration);
 

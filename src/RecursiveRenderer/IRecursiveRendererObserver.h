@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../helpers/Position.h"
+
 template<typename T>
 class IRecursiveRendererObserver
 {

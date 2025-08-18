@@ -1,23 +1,29 @@
 #pragma once
 
-#include "GLFWKey.h";
-#include "../InputSubject.h";
-#include "../../helpers/Position.h";
+#include <GLFW/glfw3.h>
+#include "GLFWKey.h"
+#include "../InputSubject.h"
+#include "../../helpers/Position.h"
+#include "../../Viewport/IViewport.h"
 
-class GLFWInput : public InputSubject 
+template<typename T>
+class GLFWInput : public InputSubject<T>, public IInputObserver
 {
 private:
-  Position<double> pointer_position;
+  IViewport* p_viewport;
   GLFWKey fullscreen_key;
   GLFWKey zoom_reset_key;
   GLFWKey zoom_in_key;
   GLFWKey zoom_out_key;
   GLFWKey clear_key;
   GLFWKey lock_zoom_key;
+
+  void on_click_callback(GLFWwindow* window, int button, int action, int mods);
+  void on_pointer_move_callback(Position<double> position) = delete;
+  void on_key_press_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+  void on_window_resize_callback(GLFWwindow* window, int width, int height);
 public:
   GLFWInput(GLFWKey fullscreen_key, GLFWKey zoom_reset_key, GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key);
-  ~GLFWInput();
-  
-  void on_pointer_move(Position<double> position);
-  void on_key_press(int key);
+  ~GLFWInput() = default;
+  void subscribe_viewport_to_callbacks(IViewport* p_viewport) override;
 };
