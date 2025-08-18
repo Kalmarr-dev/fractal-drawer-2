@@ -11,11 +11,11 @@
 // void InputSubject<T>::notify_secondary_button_down(Position<double> pointer)
 
 template<typename T>
-void InputSubject<T>::subscribe_to_zoom_in(IRecursiveRendererObserver<T>* p_observer) {
+void InputSubject<T>::subscribe_to_zoom_in(ICamera<T>* p_observer) {
   zoom_in_observers.push_back(p_observer);
 }
 template<typename T>
-void InputSubject<T>::unsubscribe_from_zoom_in(IRecursiveRendererObserver<T>* p_observer) {
+void InputSubject<T>::unsubscribe_from_zoom_in(ICamera<T>* p_observer) {
   zoom_in_observers.remove(p_observer);
 }
 template<typename T>
@@ -23,16 +23,16 @@ void InputSubject<T>::notify_zoom_in(Position<double> pointer, double scale) {
   Position<T> t_pointer{T(pointer.x), T(pointer.y)};
   for (auto &&observer : zoom_in_observers)
   {
-    observer->zoom_in(t_pointer, scale);
+    observer->zoom(t_pointer, scale);
   }
 }
 
 template<typename T>
-void InputSubject<T>::subscribe_to_zoom_out(IRecursiveRendererObserver<T>* p_observer) {
+void InputSubject<T>::subscribe_to_zoom_out(ICamera<T>* p_observer) {
   zoom_out_observers.push_back(p_observer);
 }
 template<typename T>
-void InputSubject<T>::unsubscribe_from_zoom_out(IRecursiveRendererObserver<T>* p_observer) {
+void InputSubject<T>::unsubscribe_from_zoom_out(ICamera<T>* p_observer) {
   zoom_out_observers.remove(p_observer);
 }
 template<typename T>
@@ -40,7 +40,7 @@ void InputSubject<T>::notify_zoom_out(Position<double> pointer, double scale) {
   Position<T> t_pointer{T(pointer.x), T(pointer.y)};
   for (auto &&observer : zoom_out_observers)
   {
-    observer->zoom_out(t_pointer, scale);
+    observer->zoom(t_pointer, scale);
   }
 }
 
@@ -102,7 +102,6 @@ void InputSubject<T>::unsubscribe_from_window_resize(IRecursiveRendererObserver<
 }
 template<typename T>
 void InputSubject<T>::notify_window_resize(int width, int height) {
-  std::cout << "in notify_window_resize" << std::endl;
   for (auto &&observer : window_resize_observers)
   {
     observer->resize_camera(width, height);

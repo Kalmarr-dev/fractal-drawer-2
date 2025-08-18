@@ -5,7 +5,7 @@ BasicLongDouble::BasicLongDouble(double value) {
 }
 
 double BasicLongDouble::get_double(ILongDouble* offset, int scale_exponent) {
-  return (this->value - dynamic_cast<BasicLongDouble*>(offset)->value) * scale_exponent;
+  return (this->value - dynamic_cast<BasicLongDouble*>(offset)->value);
 }
   
 bool BasicLongDouble::operator<(const BasicLongDouble& rhs) {

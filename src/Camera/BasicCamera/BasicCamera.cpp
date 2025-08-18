@@ -2,7 +2,7 @@
 
 template<typename T>
 BasicCamera<T>::BasicCamera(std::pair<Position<T>, Position<T>> camera_corners_default) {
-  this->camera_corners_default = camera_corners_default;
+  this->camera_corners = this->camera_corners_default = camera_corners_default;
 }
 
 template<typename T>
@@ -27,8 +27,8 @@ template<typename T>
 void BasicCamera<T>::zoom(Position<T> pointer, T scale_value) {
   T width = this->camera_corners.second.x - this->camera_corners.first.x;
   T height = this->camera_corners.second.y - this->camera_corners.first.y;
-  T dX = pointer.x * width / 2;
-  T dY = pointer.y * height / 2;
+  T dX = (pointer.x - 0.5) * width;
+  T dY = (pointer.y - 0.5) * height;
   T x = this->camera_corners.first.x;
   T y = this->camera_corners.first.y;
   x = x + width / 2;

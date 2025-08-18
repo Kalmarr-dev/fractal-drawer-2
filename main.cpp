@@ -25,30 +25,32 @@ int main(int argc, char const *argv[])
 
   BasicCamera<LongDouble>* p_camera = new BasicCamera<LongDouble>(
     std::make_pair(
-      Position<LongDouble>{LongDouble(0), LongDouble(0)},
+      Position<LongDouble>{LongDouble(-1), LongDouble(-1)},
       Position<LongDouble>{LongDouble(1), LongDouble(1)}
     )
   );
 
   BasicRecursiveRenderer<LongDouble>* p_recursiveRenderer = new BasicRecursiveRenderer<LongDouble>(p_data_structure, p_camera, configuration);
 
-  p_recursiveRenderer->zoom_in(Position<LongDouble>{LongDouble(0.5), LongDouble(0.5)}, 0.5);
-  p_recursiveRenderer->get_shapes_on_camera();
-  p_recursiveRenderer->resize_camera(1, 1);
+  // p_camera->zoom(Position<LongDouble>{LongDouble(0.5), LongDouble(0.5)}, 0.5);
+  // p_recursiveRenderer->get_shapes_on_camera();
+  p_recursiveRenderer->resize_camera(16, 9);
 
   GLFWViewport* p_viewport = new GLFWViewport(true);
 
   GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(p_viewport, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK);
   p_input->subscribe_viewport_to_callbacks(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
+  p_input->subscribe_to_zoom_in(p_camera);
+  p_input->subscribe_to_zoom_out(p_camera);
   p_viewport->subscribe_to_window_reconstruction(p_input);
 
-  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, configuration);
+  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, p_camera, configuration);
 
-  while (!p_viewport->window_should_close()) {
+  while (!p_viewport->window_should_close()) {   
     p_renderer->clear_screen();
-    
-    
+    p_renderer->render_to_screen();
+ 
     glfwSwapBuffers(p_viewport->getWindowPointer());
     
     if(p_viewport->get_fullscreen_should_be_toggled()) {
