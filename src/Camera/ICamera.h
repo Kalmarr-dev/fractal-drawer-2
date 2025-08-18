@@ -11,4 +11,5 @@ public:
   virtual void set_camera_corners(Position<T> a, Position<T> b) = 0;
   virtual void zoom(Position<T> pointer, T scale_value) = 0;
   virtual void reset_camera_corners() = 0;
+  virtual void resize(T aspect_ratio) = 0;
 };

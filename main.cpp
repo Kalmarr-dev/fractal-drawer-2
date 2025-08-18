@@ -24,6 +24,9 @@ int main(int argc, char const *argv[])
 
   recursiveRenderer.zoom_in(Position<BasicLongDouble>{BasicLongDouble(0.5), BasicLongDouble(0.5)}, 0.5);
   recursiveRenderer.get_shapes_on_camera();
+  recursiveRenderer.resize_camera(1, 1);
+
+  
 
   return 0;
 }

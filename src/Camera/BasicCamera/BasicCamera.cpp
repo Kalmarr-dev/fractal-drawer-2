@@ -49,3 +49,25 @@ template<typename T>
 void BasicCamera<T>::reset_camera_corners() {
   this->camera_corners = this->camera_corners_default;
 }
+
+template<typename T>
+void BasicCamera<T>::resize(T aspect_ratio) {
+  T width = this->camera_corners.second.x - this->camera_corners.first.x;
+  T height = this->camera_corners.second.y - this->camera_corners.first.y;
+  T x = this->camera_corners.first.x;
+  T y = this->camera_corners.first.y;
+  T center_x = x + width / 2;
+  T center_y = y + height / 2;
+  if (T(1.0) < aspect_ratio)
+  {
+    width = height * aspect_ratio;
+  } else {
+    height = width * aspect_ratio;
+  }
+  x = center_x - width / 2;
+  y = center_y - height / 2;
+  this->camera_corners.first.x = x;
+  this->camera_corners.first.y = y;
+  this->camera_corners.second.x = x + width;
+  this->camera_corners.second.y = y + height;
+}

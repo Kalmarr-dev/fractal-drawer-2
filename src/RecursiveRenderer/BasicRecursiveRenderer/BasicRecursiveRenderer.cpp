@@ -28,3 +28,7 @@ template<typename T>
 void BasicRecursiveRenderer<T>::clear_shapes() {
   this->p_data_structure->clear_shapes();
 }
+template<typename T>
+void BasicRecursiveRenderer<T>::resize_camera(int screen_width, int screen_height) {
+  this->p_camera->resize(1.0 * screen_width / screen_height);
+}
