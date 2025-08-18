@@ -22,6 +22,17 @@ ACCEPTS:
 IInput implement subscriber-observer pattern, with subscribtions happening in main
 ACCEPTS: 
 
+IShapeDataStructure returns new Shapes, if needed, based on camera, or clears all Shapes
+ACCEPTS:
+
+IFractal returns new FractalParts, if needed, based on camera, or clears all FractalParts
+ACCEPTS: initial fractal "stub"
+
+FractalPart is drawn, stored, passed.
+Is in a from of one, or several recurred fractal stubs.
+Leaf lines HAVE TO be two times less than the root.
+ACCEPTS: root line, just lines, and leaf lines
+
 Draw space is a 1,1 square
 
 Multi-threading? At least with this simple for loop parallelization
