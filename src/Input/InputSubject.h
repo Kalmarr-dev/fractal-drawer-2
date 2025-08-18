@@ -15,8 +15,7 @@ private:
   // std::list<> pointer_move_observers;
   // std::list<> primary_button_down_observers;
   // std::list<> secondary_button_down_observers;
-  std::list<ICamera<T>*> zoom_in_observers;
-  std::list<ICamera<T>*> zoom_out_observers;
+  std::list<ICamera<T>*> zoom_observers;
   std::list<IRecursiveRendererObserver<T>*> zoom_reset_observers;
   std::list<IViewportObserver*> toggle_fullscreen_observers;
   std::list<IRecursiveRendererObserver<T>*> clear_observers;
@@ -39,13 +38,9 @@ public:
   // void notify_secondary_button_down(Position<double> pointer);
 
 
-  void subscribe_to_zoom_in(ICamera<T>* p_observer);
-  void unsubscribe_from_zoom_in(ICamera<T>* p_observer);
-  void notify_zoom_in(Position<double> pointer, double scale);
-
-  void subscribe_to_zoom_out(ICamera<T>* p_observer);
-  void unsubscribe_from_zoom_out(ICamera<T>* p_observer);
-  void notify_zoom_out(Position<double> pointer, double scale);
+  void subscribe_to_zoom(ICamera<T>* p_observer);
+  void unsubscribe_from_zoom(ICamera<T>* p_observer);
+  void notify_zoom(Position<double> pointer, double scale);
 
   void subscribe_to_zoom_reset(IRecursiveRendererObserver<T>* p_observer);
   void unsubscribe_from_zoom_reset(IRecursiveRendererObserver<T>* p_observer);

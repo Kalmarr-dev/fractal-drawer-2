@@ -41,8 +41,7 @@ int main(int argc, char const *argv[])
   GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(p_viewport, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK);
   p_input->subscribe_viewport_to_callbacks(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
-  p_input->subscribe_to_zoom_in(p_camera);
-  p_input->subscribe_to_zoom_out(p_camera);
+  p_input->subscribe_to_zoom(p_camera);
   p_viewport->subscribe_to_window_reconstruction(p_input);
 
   OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, p_camera, configuration);

@@ -50,10 +50,10 @@ void GLFWInput<T>::on_key_press_callback(GLFWwindow* window, int key, int scanco
     this->notify_zoom_reset();
   }
   if (key == zoom_out_key.code && action != GLFW_RELEASE) {
-    this->notify_zoom_out(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)}, 0.995);
+    this->notify_zoom(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)}, 0.995);
   }
   if (key == zoom_in_key.code && action != GLFW_RELEASE) {
-    this->notify_zoom_in(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)}, 1.0055555555);
+    this->notify_zoom(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)}, 1.0055555555);
   }
   if (key == lock_zoom_key.code && action == GLFW_PRESS) {
     // TODO lock zoom
