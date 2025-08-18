@@ -3,9 +3,14 @@
 #include <iostream>
 #include "../../../include/glad/glad.h"
 
-GLFWViewport::GLFWViewport() {
+void error_callback(int error, const char* description) {
+    fprintf(stderr, "GLFW Error (%d): %s\n", error, description);
+}
+
+GLFWViewport::GLFWViewport(bool fullscreen) {
   glfwInit();
 
+  glfwSetErrorCallback(error_callback);
   // const char* description;
   // int code = glfwGetError(&description);
   
@@ -14,7 +19,8 @@ GLFWViewport::GLFWViewport() {
   //   display_error_message(code, description);
   
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-  this->p_window = create_windowed_window(1280, 720);
+  this->is_fullscreen = !fullscreen;
+  this->toggle_fullscreen();
   if (!this->p_window) {
     glfwTerminate();
     throw "No GLFW window context, terminating";
@@ -24,27 +30,15 @@ GLFWViewport::GLFWViewport() {
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
   {
+    std::cout << "Failed to initialize GLAD" << std::endl;
+  }
+
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+  {
     throw "Failed to initialize GLAD";
   }
 
   glfwSwapInterval(1);
-
-  #ifdef _DEBUG
-    if(glDebugMessageCallback){
-      std::cout << "Register OpenGL debug callback " << std::endl;
-      glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-      glDebugMessageCallback(openglErrorHandlingCallback, nullptr);
-      GLuint unusedIds = 0;
-      glDebugMessageControl(GL_DONT_CARE,
-          GL_DONT_CARE,
-          GL_DONT_CARE,
-          0,
-          &unusedIds,
-          true);
-    }
-    else
-      std::cout << "glDebugMessageCallback not available" << std::endl;
-  #endif
 
   glEnable(GL_POINT_SMOOTH);
 }
@@ -61,8 +55,8 @@ std::pair<int, int> GLFWViewport::get_size() {
 
 GLFWwindow* GLFWViewport::create_windowed_window(int width, int height) {
   glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-  GLFWwindow* window = glfwCreateWindow(width, height, "Fractal Drawer", NULL, this->p_window);
-  // glfwMakeContextCurrent(window);
+  GLFWwindow* window = glfwCreateWindow(width, height, "Fractal Drawer 2.0", NULL, this->p_window);
+  glfwMakeContextCurrent(window);
   // glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
   // glfwSetKeyCallback(window, Input::KeyCallback);
   // glfwSetWindowSizeCallback(window, WindowResizeCallback);
@@ -70,8 +64,8 @@ GLFWwindow* GLFWViewport::create_windowed_window(int width, int height) {
 }
 GLFWwindow* GLFWViewport::create_fullscreen_window(int width, int height) {
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-  GLFWwindow* window = glfwCreateWindow(width, height, "Fractal Drawer", glfwGetPrimaryMonitor(), this->p_window);
-  // glfwMakeContextCurrent(window);
+  GLFWwindow* window = glfwCreateWindow(width, height, "Fractal Drawer 2.0", glfwGetPrimaryMonitor(), this->p_window);
+  glfwMakeContextCurrent(window);
   // glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
   // glfwSetKeyCallback(window, Input::KeyCallback);
   // glfwSetWindowSizeCallback(window, WindowResizeCallback);
@@ -92,6 +86,38 @@ void GLFWViewport::notify_window_reconstruction() {
   {
     observer->subscribe_viewport_to_callbacks(this);
   }
+}
+
+bool GLFWViewport::window_should_close() {
+  return glfwWindowShouldClose(p_window);
+}
+
+void GLFWViewport::toggle_fullscreen() {
+  if (this->is_fullscreen) {
+    glfwDestroyWindow(this->p_window);
+    p_window = create_windowed_window(1280, 720);
+    this->is_fullscreen = false;
+  } else {
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    glfwDestroyWindow(this->p_window);
+    p_window = create_fullscreen_window(mode->width, mode->height);
+    this->is_fullscreen = true;
+  }
+  if (!p_window) {
+    std::cout << "Failed to create window\n" << std::endl;
+    glfwTerminate();
+    exit(EXIT_FAILURE);
+  }
+  fullscreen_should_be_toggled = false;
+  notify_window_reconstruction();
+}
+
+void GLFWViewport::set_fullscreen_should_be_toggled() {
+  fullscreen_should_be_toggled = true;
+}
+
+bool GLFWViewport::get_fullscreen_should_be_toggled() {
+  return fullscreen_should_be_toggled;
 }
 
 GLFWwindow* GLFWViewport::getWindowPointer() {

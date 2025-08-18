@@ -1,7 +1,6 @@
 #include <utility>
 #include <iostream>
 
-// #include "src/glad.h"
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
@@ -37,13 +36,29 @@ int main(int argc, char const *argv[])
   p_recursiveRenderer->get_shapes_on_camera();
   p_recursiveRenderer->resize_camera(1, 1);
 
-  GLFWViewport* p_viewport = new GLFWViewport();
+  GLFWViewport* p_viewport = new GLFWViewport(true);
 
-  GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK);
+  GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(p_viewport, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK);
   p_input->subscribe_viewport_to_callbacks(p_viewport);
+  p_input->subscribe_to_toggle_fullscreen(p_viewport);
   p_viewport->subscribe_to_window_reconstruction(p_input);
 
-  OpenGLRenderer<LongDouble>* renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, configuration);
+  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, configuration);
+
+  while (!p_viewport->window_should_close()) {
+    p_renderer->clear_screen();
+    
+    
+    glfwSwapBuffers(p_viewport->getWindowPointer());
+    
+    if(p_viewport->get_fullscreen_should_be_toggled()) {
+      p_viewport->toggle_fullscreen();
+    }
+
+    // glfwPollEvents();
+    glfwWaitEvents();
+  }
+  
 
   return 0;
 }

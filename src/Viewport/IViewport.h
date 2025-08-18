@@ -13,4 +13,7 @@ public:
   virtual void subscribe_to_window_reconstruction(IInputObserver* observer) = 0;
   virtual void unsubscribe_from_window_reconstruction(IInputObserver* observer) = 0;
   virtual void notify_window_reconstruction() = 0;
+
+  virtual bool window_should_close() = 0;
+  virtual void toggle_fullscreen() = 0;
 };

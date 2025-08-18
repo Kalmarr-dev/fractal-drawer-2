@@ -4,9 +4,9 @@
 #include "../../Viewport/GLFWViewport/GLFWViewport.h"
 
 template<typename T>
-GLFWInput<T>::GLFWInput( GLFWKey fullscreen_key, GLFWKey zoom_reset_key, 
+GLFWInput<T>::GLFWInput(IViewport* p_viewport, GLFWKey fullscreen_key, GLFWKey zoom_reset_key, 
   GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key
-) : fullscreen_key(fullscreen_key), zoom_reset_key(zoom_reset_key),
+) : p_viewport(p_viewport), fullscreen_key(fullscreen_key), zoom_reset_key(zoom_reset_key),
     zoom_in_key(zoom_in_key), zoom_out_key(zoom_out_key), clear_key(clear_key), lock_zoom_key(lock_zoom_key) 
 {}
 
@@ -62,7 +62,7 @@ void GLFWInput<T>::on_key_press_callback(GLFWwindow* window, int key, int scanco
   }
   if (key == fullscreen_key.code && action == GLFW_PRESS) {
     this->notify_toggle_fullscreen();
-    std::pair<int, int> size = p_viewport->get_size();
+    std::pair<int, int> size = this->p_viewport->get_size();
     this->notify_window_resize(size.first, size.second);
   }
 }

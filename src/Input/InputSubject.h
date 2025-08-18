@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <list>
-#include "../Renderer/IRendererObserver.h"
+// #include "../Renderer/IRendererObserver.h"
+#include "../Viewport/IViewportObserver.h"
 #include "../RecursiveRenderer/IRecursiveRendererObserver.h"
 #include "../helpers/Position.h"
 
@@ -16,7 +17,7 @@ private:
   std::list<IRecursiveRendererObserver<T>*> zoom_in_observers;
   std::list<IRecursiveRendererObserver<T>*> zoom_out_observers;
   std::list<IRecursiveRendererObserver<T>*> zoom_reset_observers;
-  std::list<IRendererObserver*> toggle_fullscreen_observers;
+  std::list<IViewportObserver*> toggle_fullscreen_observers;
   std::list<IRecursiveRendererObserver<T>*> clear_observers;
   std::list<IRecursiveRendererObserver<T>*> window_resize_observers;
   
@@ -49,8 +50,8 @@ public:
   void unsubscribe_from_zoom_reset(IRecursiveRendererObserver<T>* p_observer);
   void notify_zoom_reset();
 
-  void subscribe_to_toggle_fullscreen(IRendererObserver* p_observer);
-  void unsubscribe_from_toggle_fullscreen(IRendererObserver* p_observer);
+  void subscribe_to_toggle_fullscreen(IViewportObserver* p_observer);
+  void unsubscribe_from_toggle_fullscreen(IViewportObserver* p_observer);
   void notify_toggle_fullscreen();
 
   void subscribe_to_clear(IRecursiveRendererObserver<T>* p_observer);

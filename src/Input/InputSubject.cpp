@@ -1,5 +1,7 @@
 #include "InputSubject.h"
 
+#include <iostream>
+
 // void InputSubject<T>::subscribe_to_primary_button_down()
 // void InputSubject<T>::unsubscribe_from_primary_button_down()
 // void InputSubject<T>::notify_primary_button_down(Position<double> pointer)
@@ -59,18 +61,18 @@ void InputSubject<T>::notify_zoom_reset() {
 }
 
 template<typename T>
-void InputSubject<T>::subscribe_to_toggle_fullscreen(IRendererObserver* p_observer) {
+void InputSubject<T>::subscribe_to_toggle_fullscreen(IViewportObserver* p_observer) {
   toggle_fullscreen_observers.push_back(p_observer);
 }
 template<typename T>
-void InputSubject<T>::unsubscribe_from_toggle_fullscreen(IRendererObserver* p_observer) {
+void InputSubject<T>::unsubscribe_from_toggle_fullscreen(IViewportObserver* p_observer) {
   toggle_fullscreen_observers.remove(p_observer);
 }
 template<typename T>
 void InputSubject<T>::notify_toggle_fullscreen() {
   for (auto &&observer : toggle_fullscreen_observers)
   {
-    observer->toggle_fullscreen();
+    observer->set_fullscreen_should_be_toggled();
   }
 }
 
@@ -100,6 +102,7 @@ void InputSubject<T>::unsubscribe_from_window_resize(IRecursiveRendererObserver<
 }
 template<typename T>
 void InputSubject<T>::notify_window_resize(int width, int height) {
+  std::cout << "in notify_window_resize" << std::endl;
   for (auto &&observer : window_resize_observers)
   {
     observer->resize_camera(width, height);
