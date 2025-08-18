@@ -12,14 +12,10 @@ Shapes<T> BasicRecursiveRenderer<T>::get_shapes_on_camera() const {
   return shapes.get_first_n(configuration.max_number_of_elements_rendered);
 }
 
-// template<typename T>
-// void BasicRecursiveRenderer<T>::zoom_in(Position<T> pointer, T scale_value) {
-//   this->p_camera->zoom(pointer, scale_value);
-// }
-// template<typename T>
-// void BasicRecursiveRenderer<T>::zoom_out(Position<T> pointer, T scale_value) {
-//   this->p_camera->zoom(pointer, T(1) / scale_value);
-// }
+template<typename T>
+void BasicRecursiveRenderer<T>::zoom(Position<T> pointer, T scale_value) {
+  throw "Not implemented";
+}
 template<typename T>
 void BasicRecursiveRenderer<T>::zoom_reset() {
   this->p_camera->reset_camera_corners();

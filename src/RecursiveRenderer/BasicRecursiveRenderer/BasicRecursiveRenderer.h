@@ -7,7 +7,7 @@
 #include "../IRecursiveRendererObserver.h"
 
 template<typename T>
-class BasicRecursiveRenderer : public IRecursiveRenderer<T>, public IRecursiveRendererObserver<T>
+class BasicRecursiveRenderer : public IRecursiveRenderer<T>
 {
 private:
   IDataStructure2D<T>* p_data_structure;
@@ -20,8 +20,7 @@ public:
 
   Shapes<T> get_shapes_on_camera() const override;
 
-  // void zoom_in(Position<T> pointer, T scale_value) override;
-  // void zoom_out(Position<T> pointer, T scale_value) override;
+  void zoom(Position<T> pointer, T scale_value) override;
   void zoom_reset() override;
   void clear_shapes() override;
   void resize_camera(int screen_width, int screen_height) override;

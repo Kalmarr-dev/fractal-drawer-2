@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../helpers/Position.h"
+#include "../Input/IZoomObserver.h"
 
 template<typename T>
-class ICamera
+class ICamera : public IZoomObserver<T>
 {
 public:
   virtual ~ICamera() = default;

@@ -6,7 +6,7 @@
 #include "../Viewport/IViewportObserver.h"
 #include "../RecursiveRenderer/IRecursiveRendererObserver.h"
 #include "../helpers/Position.h"
-#include "../Camera/ICamera.h"
+#include "IZoomObserver.h"
 
 template<typename T>
 class InputSubject
@@ -15,7 +15,7 @@ private:
   // std::list<> pointer_move_observers;
   // std::list<> primary_button_down_observers;
   // std::list<> secondary_button_down_observers;
-  std::list<ICamera<T>*> zoom_observers;
+  std::list<IZoomObserver<T>*> zoom_observers;
   std::list<IRecursiveRendererObserver<T>*> zoom_reset_observers;
   std::list<IViewportObserver*> toggle_fullscreen_observers;
   std::list<IRecursiveRendererObserver<T>*> clear_observers;
@@ -38,8 +38,8 @@ public:
   // void notify_secondary_button_down(Position<double> pointer);
 
 
-  void subscribe_to_zoom(ICamera<T>* p_observer);
-  void unsubscribe_from_zoom(ICamera<T>* p_observer);
+  void subscribe_to_zoom(IZoomObserver<T>* p_observer);
+  void unsubscribe_from_zoom(IZoomObserver<T>* p_observer);
   void notify_zoom(Position<double> pointer, double scale);
 
   void subscribe_to_zoom_reset(IRecursiveRendererObserver<T>* p_observer);

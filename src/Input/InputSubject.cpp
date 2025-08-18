@@ -11,11 +11,11 @@
 // void InputSubject<T>::notify_secondary_button_down(Position<double> pointer)
 
 template<typename T>
-void InputSubject<T>::subscribe_to_zoom(ICamera<T>* p_observer) {
+void InputSubject<T>::subscribe_to_zoom(IZoomObserver<T>* p_observer) {
   zoom_observers.push_back(p_observer);
 }
 template<typename T>
-void InputSubject<T>::unsubscribe_from_zoom(ICamera<T>* p_observer) {
+void InputSubject<T>::unsubscribe_from_zoom(IZoomObserver<T>* p_observer) {
   zoom_observers.remove(p_observer);
 }
 template<typename T>
