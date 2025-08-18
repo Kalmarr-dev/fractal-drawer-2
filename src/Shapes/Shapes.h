@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 #include "../LongDouble/ILongDouble.h"
 #include "IShape.h"
 
@@ -11,6 +12,11 @@ private:
   std::vector<IShape<T>*> shapes;
 
 public:
+  Shapes() {}
+  Shapes(const std::vector<IShape<T>*>& shapes) : shapes(shapes) {}
+
+  ~Shapes() = default;
+
   void add_shape(IShape<T>* shape) {
     shapes.push_back(shape);
   }
@@ -23,6 +29,18 @@ public:
     shapes.clear();
   }
 
-  ~Shapes() = default;
+  void sort_by_size() {
+    std::sort(
+      shapes.begin(),
+      shapes.end(),
+      [](IShape<T>* lhs, IShape<T>* rhs) {return lhs->get_linear_size_squared() < rhs->get_linear_size_squared();}
+    );
+  }
+
+  Shapes<T> get_first_n(int n) {
+    auto end = shapes.begin();
+    std::advance(end, n);
+    return Shapes<T>(std::vector<IShape<T>*>(shapes.begin(), end));
+  }
 };
 

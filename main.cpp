@@ -23,6 +23,7 @@ int main(int argc, char const *argv[])
   BasicRecursiveRenderer<BasicLongDouble> recursiveRenderer(p_data_structure, p_camera, configuration);
 
   recursiveRenderer.zoom_in(Position<BasicLongDouble>{BasicLongDouble(0.5), BasicLongDouble(0.5)}, 0.5);
+  recursiveRenderer.get_shapes_on_camera();
 
   return 0;
 }
