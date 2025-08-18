@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../helpers/Position.h"
+#include "../Shapes/Shapes.h"
 
 template<typename T>
 class IRecursiveRenderer
