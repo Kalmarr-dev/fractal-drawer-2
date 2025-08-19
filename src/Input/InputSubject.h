@@ -8,14 +8,15 @@
 #include "../helpers/Position.h"
 #include "IZoomObserver.h"
 #include "IWindowResizeObserver.h"
+#include "IPointerObserver.h"
 
 template<typename T>
 class InputSubject
 {
 private:
   // std::list<> pointer_move_observers;
-  // std::list<> primary_button_down_observers;
-  // std::list<> secondary_button_down_observers;
+  std::list<IPointerObserver<T>*> primary_button_down_observers;
+  std::list<IPointerObserver<T>*> secondary_button_down_observers;
   std::list<IZoomObserver<T>*> zoom_observers;
   std::list<IRecursiveRendererObserver<T>*> zoom_reset_observers;
   std::list<IViewportObserver*> toggle_fullscreen_observers;
@@ -30,13 +31,13 @@ public:
   void unsubscribe_from_pointer_move() = delete;
   void notify_pointer_move(Position<double> pointer) = delete;
 
-  // void subscribe_to_primary_button_down();
-  // void unsubscribe_from_primary_button_down();
-  // void notify_primary_button_down(Position<double> pointer);
+  void subscribe_to_primary_button_down(IPointerObserver<T>* p_observer);
+  void unsubscribe_from_primary_button_down(IPointerObserver<T>* p_observer);
+  void notify_primary_button_down(Position<double> pointer);
 
-  // void subscribe_to_secondary_button_down();
-  // void unsubscribe_from_secondary_button_down();
-  // void notify_secondary_button_down(Position<double> pointer);
+  void subscribe_to_secondary_button_down(IPointerObserver<T>* p_observer);
+  void unsubscribe_from_secondary_button_down(IPointerObserver<T>* p_observer);
+  void notify_secondary_button_down(Position<double> pointer);
 
 
   void subscribe_to_zoom(IZoomObserver<T>* p_observer);

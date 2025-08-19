@@ -3,6 +3,7 @@
 #include "../../Configuration/Configuration.h"
 #include "../../DataStructure2D/IDataStructure2D.h"
 #include "../../Camera/ICamera.h"
+#include "../../ShapeDataStructure/IShapeDataStructure.h"
 #include "../IRecursiveRenderer.h"
 #include "../IRecursiveRendererObserver.h"
 
@@ -10,12 +11,14 @@ template<typename T>
 class BasicRecursiveRenderer : public IRecursiveRenderer<T>
 {
 private:
-  IDataStructure2D<T>* p_data_structure;
+  IDataStructure2D<T>* p_data_structure_2d;
   ICamera<T>* p_camera;
+  IShapeDataStructure<T>* p_shape_data_structure;
   Configuration configuration;
 
+  void update_data_structure_2d_with_new_shapes();
 public:
-  BasicRecursiveRenderer(IDataStructure2D<T>* data_structure, ICamera<T>* p_camera, const Configuration& configuration);
+  BasicRecursiveRenderer(IDataStructure2D<T>* data_structure_2d, ICamera<T>* p_camera, IShapeDataStructure<T>* p_shape_data_structure, const Configuration& configuration);
   ~BasicRecursiveRenderer() = default;
 
   Shapes<T> get_shapes_on_camera() const override;
@@ -23,5 +26,4 @@ public:
   void zoom(Position<T> pointer, T scale_value) override;
   void zoom_reset() override;
   void clear_shapes() override;
-  // void resize_camera(int screen_width, int screen_height) override;
 };

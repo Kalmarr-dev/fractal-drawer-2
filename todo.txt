@@ -3,7 +3,7 @@ ACCEPTS: CLI arguments or a file
 
 Recursive renderer is a SEPARATE MODULE, taking in ____ and zoom value, maybe calling something on zoom?
 It is not tied to fractals
-ACCEPTS: IDataStructure2D implementation, Configuration
+ACCEPTS: IDataStructure2D implementation, IShapeDataStructure implementation, Configuration
 
 Data structure can accept Shapes and return locally visible Shapes
 Based on __quad or kd trees, probably__
@@ -23,9 +23,12 @@ IInput implement subscriber-observer pattern, with subscribtions happening in ma
 ACCEPTS: 
 
 IShapeDataStructure returns new Shapes, if needed, based on camera, or clears all Shapes
+It holds ALL the graphics on the screen (i.e. all the fractals)
+Has UpdateOnZoom method, has a queue of Shapes (FractalParts)
+FractalDataStructure holds IFractal
 ACCEPTS:
 
-IFractal returns new FractalParts, if needed, based on camera, or clears all FractalParts
+IFractal returns new FractalParts, if needed, based on camera passed to FractalDataStructure, or clears all FractalParts
 ACCEPTS: initial fractal "stub"
 
 FractalPart is drawn, stored, passed.
@@ -38,3 +41,5 @@ Draw space is a 1,1 square
 Multi-threading? At least with this simple for loop parallelization
 
 Implement color schemes, somehow
+
+Ensure Shapes and others are passed by reference

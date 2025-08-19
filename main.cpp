@@ -14,6 +14,7 @@
 #include "src/Renderer/OpenGLRenderer/OpenGLRenderer.h"
 #include "src/Viewport/GLFWViewport/GLFWViewport.h"
 #include "src/Input/GLFWInput/GLFWInput.h"
+#include "src/ShapeDataStructure/FractalDataStructure/FractalDataStructure.h"
 
 #define LongDouble BasicLongDouble
 
@@ -30,23 +31,27 @@ int main(int argc, char const *argv[])
     )
   );
 
-  BasicRecursiveRenderer<LongDouble>* p_recursiveRenderer = new BasicRecursiveRenderer<LongDouble>(p_data_structure, p_camera, configuration);
+  FractalDataStructure<LongDouble>* p_fractal_data_structure = new FractalDataStructure<LongDouble>;
 
-  // p_camera->zoom(Position<LongDouble>{LongDouble(0.5), LongDouble(0.5)}, 0.5);
-  // p_recursiveRenderer->get_shapes_on_camera();
+  BasicRecursiveRenderer<LongDouble>* p_recursive_renderer = new BasicRecursiveRenderer<LongDouble>(p_data_structure, p_camera, p_fractal_data_structure, configuration);
+
   // p_camera->resize(16.0 / 9.0);
 
   GLFWViewport* p_viewport = new GLFWViewport(true);
   
-  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, p_camera, configuration);
+  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursive_renderer, p_camera, configuration);
   
   GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(p_viewport, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK);
+  
   p_input->subscribe_viewport_to_callbacks(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
   p_input->subscribe_to_zoom(p_camera);
+  p_input->subscribe_to_zoom(p_recursive_renderer); // after subscribing camers to zoom
   p_input->subscribe_to_window_resize(p_camera);
   p_input->subscribe_to_window_resize(p_renderer);
   p_viewport->subscribe_to_window_reconstruction(p_input);
+  p_input->subscribe_to_primary_button_down(p_fractal_data_structure);
+  p_input->subscribe_to_secondary_button_down(p_fractal_data_structure);
 
 
   while (!p_viewport->window_should_close()) {   
