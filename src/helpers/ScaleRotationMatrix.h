@@ -5,8 +5,8 @@
 template<typename T>
 struct ScaleRotationMatrix {
 public:
-  double scaledCos;
-  double scaledSin;
+  T scaledCos;
+  T scaledSin;
 
   ScaleRotationMatrix(const Line<T>& a, const Line<T>& b);
   ScaleRotationMatrix();

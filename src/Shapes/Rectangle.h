@@ -3,6 +3,7 @@
 #include "../LongDouble/ILongDouble.h"
 #include "../helpers/Position.h"
 #include "IShape.h"
+#include <utility>
 
 template<typename T>
 class Rectangle : public IShape<T>

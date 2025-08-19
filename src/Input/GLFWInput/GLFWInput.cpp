@@ -23,7 +23,7 @@ void GLFWInput<T>::on_click_callback(GLFWwindow* window, int button, int action,
       this->notify_secondary_button_down(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)});
     } else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
       // TODO
-      throw "Not implemented";
+      // throw "Not implemented";
     } else {
       this->notify_primary_button_down(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)});
     }

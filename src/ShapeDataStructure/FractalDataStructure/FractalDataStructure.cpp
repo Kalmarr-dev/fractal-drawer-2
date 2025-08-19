@@ -51,6 +51,8 @@ void FractalDataStructure<T>::process_primary_click(Position<T> pointer) {
   T y = corners.first.y + height * pointer.y;
   fractal_stub.add_point_to_root_line({x, y});
 
+  temporary_shapes.clear();
+
   for (auto &&i : fractal_stub.get_recursed_lines(1).get_shapes())
   {
     temporary_shapes.add_shape(i);
@@ -66,6 +68,8 @@ void FractalDataStructure<T>::process_secondary_click(Position<T> pointer) {
   T x = corners.first.x + width * pointer.x;
   T y = corners.first.y + height * pointer.y;
   fractal_stub.add_point_to_direction_line({x, y});
+
+  temporary_shapes.clear();
 
   for (auto &&i : fractal_stub.get_recursed_lines(1).get_shapes())
   {

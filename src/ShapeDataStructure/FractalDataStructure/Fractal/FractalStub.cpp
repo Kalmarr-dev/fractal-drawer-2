@@ -1,5 +1,7 @@
 #include "FractalStub.h"
 
+#include "FractalPart.h"
+
 template<typename T>
 FractalStub<T>::FractalStub() : root_line(Line<T>({-1,1},{1,1})) {}
 
@@ -7,6 +9,16 @@ template<typename T>
 void FractalStub<T>::clear() {
   root_line = Line<T>({-1,1},{1,1});
   direction_lines.clear();
+}
+
+template<typename T>
+Line<T> FractalStub<T>::get_root_line() {
+  return root_line;
+}
+
+template<typename T>
+std::list<Line<T>> FractalStub<T>::get_direction_lines() {
+  return direction_lines;
 }
 
 template<typename T>
@@ -41,9 +53,15 @@ Shapes<T> FractalStub<T>::get_recursed_lines(int recursion_level) {
   {
     shapes.push_back(&i);
   }
-  // TODO recurse
+  
+  FractalPart<T> fractal_part(this, 100000, T(0.0), 3);
 
-
+  for (auto &&i : fractal_part.get_lines())
+  {
+    Line<T>* p_line = new Line<T>(i.a, i.b);
+    shapes.push_back(p_line);
+  }
+  
   
   return Shapes<T>(shapes);
 }

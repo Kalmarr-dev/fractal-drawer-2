@@ -22,6 +22,9 @@ public:
   FractalStub();
   ~FractalStub() = default;
 
+  Line<T> get_root_line();
+  std::list<Line<T>> get_direction_lines();
+
   void clear();
   void add_point_to_root_line(Position<T> new_point);
   void add_point_to_direction_line(Position<T> new_point);

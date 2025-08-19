@@ -3,7 +3,7 @@
 #include <list>
 #include "../IShapeDataStructure.h"
 #include "../../Camera/ICamera.h"
-#include "Fractal/Fractal.h"
+#include "Fractal/FractalPart.h"
 #include "Fractal/FractalStub.h"
 #include "../../Input/IConfirmObserver.h"
 
@@ -12,7 +12,7 @@ class FractalDataStructure : public IShapeDataStructure<T>, IConfirmObserver
 {
 private:
   FractalStub<T> fractal_stub;
-  std::list<Fractal<T>> all_fractals;
+  std::list<FractalPart<T>> all_fractals;
   Shapes<T> all_shapes;
   Shapes<T> new_shapes;
   Shapes<T> temporary_shapes;
