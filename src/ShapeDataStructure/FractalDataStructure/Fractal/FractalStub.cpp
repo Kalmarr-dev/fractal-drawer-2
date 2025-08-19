@@ -54,7 +54,7 @@ Shapes<T> FractalStub<T>::get_recursed_lines(int recursion_level) {
     shapes.push_back(&i);
   }
   
-  FractalPart<T> fractal_part(this, 100000, T(0.0), 3);
+  FractalPart<T> fractal_part(this, 100000, T(0.0), recursion_level);
 
   for (auto &&i : fractal_part.get_lines())
   {

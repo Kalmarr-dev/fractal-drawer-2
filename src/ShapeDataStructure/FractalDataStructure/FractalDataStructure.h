@@ -8,7 +8,7 @@
 #include "../../Input/IConfirmObserver.h"
 
 template<typename T>
-class FractalDataStructure : public IShapeDataStructure<T>, IConfirmObserver
+class FractalDataStructure : public IShapeDataStructure<T>, public IConfirmObserver
 {
 private:
   FractalStub<T> fractal_stub;
@@ -19,6 +19,7 @@ private:
   ICamera<T>* p_camera;
 
   void draw_silly_line(Position<T> pointer);
+  void update_temporary_shapes(Shapes<T>);
 public:
   FractalDataStructure(ICamera<T>* p_camera);
   ~FractalDataStructure() = default;

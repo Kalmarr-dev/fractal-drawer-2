@@ -40,19 +40,19 @@ OpenGLRenderer<T>::~OpenGLRenderer() {
 
 template <typename T>
 void OpenGLRenderer<T>::render_to_screen() {
-  
   auto camera_corners = p_camera->get_camera_corners();
   T* offset_0 = new T(0);
   T* offset_x = new T(camera_corners.first.x);
   T* offset_y = new T(camera_corners.first.y);
   T width = camera_corners.second.x - camera_corners.first.x;
   T height = camera_corners.second.y - camera_corners.first.y;
-  
 
   vector<float> positions;
   vector<unsigned int> indexes;
   Shapes<T> shapes = p_recursive_renderer->get_shapes_on_camera();
   
+  std::cout << shapes.get_shapes().size() << '\n';
+
   for (auto &&shape : shapes.get_shapes())
   {
     auto shape_points = shape->get_points();

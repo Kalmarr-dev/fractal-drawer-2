@@ -17,6 +17,15 @@ void FractalDataStructure<T>::draw_silly_line(Position<T> pointer) {
 }
 
 template<typename T>
+void FractalDataStructure<T>::update_temporary_shapes(Shapes<T> shapes) {
+  temporary_shapes.clear();
+  for (auto &&i : shapes.get_shapes())
+  {
+    temporary_shapes.add_shape(i);
+  }
+}
+
+template<typename T>
 void FractalDataStructure<T>::clear_shapes() {
   fractal_stub.clear();
   all_fractals.clear();
@@ -51,12 +60,8 @@ void FractalDataStructure<T>::process_primary_click(Position<T> pointer) {
   T y = corners.first.y + height * pointer.y;
   fractal_stub.add_point_to_root_line({x, y});
 
-  temporary_shapes.clear();
-
-  for (auto &&i : fractal_stub.get_recursed_lines(1).get_shapes())
-  {
-    temporary_shapes.add_shape(i);
-  }
+  Shapes<T> shapes = fractal_stub.get_recursed_lines(4).get_shapes();
+  update_temporary_shapes(shapes);
 }
 
 template<typename T>
@@ -69,15 +74,24 @@ void FractalDataStructure<T>::process_secondary_click(Position<T> pointer) {
   T y = corners.first.y + height * pointer.y;
   fractal_stub.add_point_to_direction_line({x, y});
 
-  temporary_shapes.clear();
-
-  for (auto &&i : fractal_stub.get_recursed_lines(1).get_shapes())
-  {
-    temporary_shapes.add_shape(i);
-  }
+  Shapes<T> shapes = fractal_stub.get_recursed_lines(4).get_shapes();
+  update_temporary_shapes(shapes);
 }
 
 template<typename T>
 void FractalDataStructure<T>::process_confirm() {
-  
+  FractalPart<T> fractal_part(&this->fractal_stub, 100000, T(0.005), 100);
+
+  this->fractal_stub = FractalStub<T>();
+  Shapes<T> shapes = fractal_stub.get_recursed_lines(4).get_shapes();
+  update_temporary_shapes(shapes);
+
+  auto lines = fractal_part.get_lines();
+
+  for (auto &&i : lines)
+  {
+    Line<T>* line = new Line<T>(i.a, i.b);
+    all_shapes.add_shape(line);
+    new_shapes.add_shape(line);
+  }
 }
