@@ -40,7 +40,14 @@ OpenGLRenderer<T>::~OpenGLRenderer() {
 
 template <typename T>
 void OpenGLRenderer<T>::render_to_screen() {
-  T* offset = new T(0);
+  
+  auto camera_corners = p_camera->get_camera_corners();
+  T* offset_0 = new T(0);
+  T* offset_x = new T(camera_corners.first.x);
+  T* offset_y = new T(camera_corners.first.y);
+  T width = camera_corners.second.x - camera_corners.first.x;
+  T height = camera_corners.second.y - camera_corners.first.y;
+  
 
   vector<float> positions;
   vector<unsigned int> indexes;
@@ -52,8 +59,8 @@ void OpenGLRenderer<T>::render_to_screen() {
     auto shape_indexes = shape->get_indexes();
     for (auto &&i : shape_points)
     {
-      positions.push_back((float)i.x.get_double(offset, 1));
-      positions.push_back((float)i.y.get_double(offset, 1));
+      positions.push_back((float)(((i.x - *offset_x) / width - 0.5) * 2.0).get_double(offset_0, 1));
+      positions.push_back((float)(((i.y - *offset_y) / height - 0.5) * 2.0).get_double(offset_0, 1));
     }
     unsigned int new_index = indexes.size();
     for (auto &&i : shape_indexes)
@@ -61,10 +68,6 @@ void OpenGLRenderer<T>::render_to_screen() {
       indexes.push_back((float)new_index + i);
     }
   }
-
-  
-  // float positions[] = {0, 0, 0.5f, 0.5f};
-  // unsigned int indexes[] = {0, 1};
 
   VertexBuffer vb(&positions[0], positions.size() * sizeof(float));
   IndexBuffer ib(&indexes[0], (unsigned int)indexes.size());
@@ -78,13 +81,17 @@ void OpenGLRenderer<T>::render_to_screen() {
   Shader shader("res/shaders/basic.shader");
   shader.Bind();
 
-  auto camera_corners = p_camera->get_camera_corners();
+  // auto camera_corners = p_camera->get_camera_corners();
+  // shader.SetUniform4f
+  // ( 
+  //   "u_camera", camera_corners.first.x.get_double(offset, 1),
+  //   camera_corners.first.y.get_double(offset, 1),
+  //   camera_corners.second.x.get_double(offset, 1) - camera_corners.first.x.get_double(offset, 1),
+  //   camera_corners.second.y.get_double(offset, 1) - camera_corners.first.y.get_double(offset, 1)
+  // );
   shader.SetUniform4f
   ( 
-    "u_camera", camera_corners.first.x.get_double(offset, 1),
-    camera_corners.first.y.get_double(offset, 1),
-    camera_corners.second.x.get_double(offset, 1) - camera_corners.first.x.get_double(offset, 1),
-    camera_corners.second.y.get_double(offset, 1) - camera_corners.first.y.get_double(offset, 1)
+    "u_camera", -1.0, -1.0, 2.0, 2.0
   );
 
   va.Bind();
