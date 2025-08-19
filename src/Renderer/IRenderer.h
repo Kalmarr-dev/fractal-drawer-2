@@ -1,6 +1,8 @@
 #pragma once
 
-class IRenderer
+#include "../Input/IWindowResizeObserver.h"
+
+class IRenderer : public IWindowResizeObserver
 {
 public:
   virtual ~IRenderer() = default;

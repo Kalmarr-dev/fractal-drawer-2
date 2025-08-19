@@ -34,17 +34,20 @@ int main(int argc, char const *argv[])
 
   // p_camera->zoom(Position<LongDouble>{LongDouble(0.5), LongDouble(0.5)}, 0.5);
   // p_recursiveRenderer->get_shapes_on_camera();
-  p_recursiveRenderer->resize_camera(16, 9);
+  // p_camera->resize(16.0 / 9.0);
 
   GLFWViewport* p_viewport = new GLFWViewport(true);
-
+  
+  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, p_camera, configuration);
+  
   GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(p_viewport, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK);
   p_input->subscribe_viewport_to_callbacks(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
   p_input->subscribe_to_zoom(p_camera);
+  p_input->subscribe_to_window_resize(p_camera);
+  p_input->subscribe_to_window_resize(p_renderer);
   p_viewport->subscribe_to_window_reconstruction(p_input);
 
-  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursiveRenderer, p_camera, configuration);
 
   while (!p_viewport->window_should_close()) {   
     p_renderer->clear_screen();

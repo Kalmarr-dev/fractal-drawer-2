@@ -26,15 +26,10 @@ void main() {
   vec2 vUV = gl_FragCoord.xy/resolution.xy;
 
   color;
-  color.r = 1.0f;
+  color.r = 0.0f;
   color.g = 0.0f;
-  color.b = 1.0f;
-
-  // color;
-  // color.r = 0.0f;
-  // color.g = 0.0f;
-  // color.b = 0.0f;
-  // color.b += ((0.5f + vUV.y) + (0.5f - vUV.x)) / 2;
-  // color.r += 0.5 + (vUV.x - vUV.y) / 2;
-  // color.g += 1 - ((vUV.x - 0.5f) * (vUV.x - 0.5f) * 2 + (vUV.y - 0.5f) * (vUV.y - 0.5f) * 2) / 1.5;
+  color.b = 0.0f;
+  color.b += ((0.5f + vUV.y) + (0.5f - vUV.x)) / 2;
+  color.r += 0.5 + (vUV.x - vUV.y) / 2;
+  color.g += 1 - ((vUV.x - 0.5f) * (vUV.x - 0.5f) * 2 + (vUV.y - 0.5f) * (vUV.y - 0.5f) * 2) / 1.5;
 }

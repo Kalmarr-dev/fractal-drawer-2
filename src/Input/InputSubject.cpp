@@ -76,17 +76,17 @@ void InputSubject<T>::notify_clear() {
 }
 
 template<typename T>
-void InputSubject<T>::subscribe_to_window_resize(IRecursiveRendererObserver<T>* p_observer) {
+void InputSubject<T>::subscribe_to_window_resize(IWindowResizeObserver* p_observer) {
   window_resize_observers.push_back(p_observer);
 }
 template<typename T>
-void InputSubject<T>::unsubscribe_from_window_resize(IRecursiveRendererObserver<T>* p_observer) {
+void InputSubject<T>::unsubscribe_from_window_resize(IWindowResizeObserver* p_observer) {
   window_resize_observers.remove(p_observer);
 }
 template<typename T>
 void InputSubject<T>::notify_window_resize(int width, int height) {
   for (auto &&observer : window_resize_observers)
   {
-    observer->resize_camera(width, height);
+    observer->process_window_resize(width, height);
   }
 }

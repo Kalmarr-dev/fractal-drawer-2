@@ -1,5 +1,8 @@
 #include "BasicCamera.h"
 
+#include <algorithm>
+#include <iostream>
+
 template<typename T>
 BasicCamera<T>::BasicCamera(std::pair<Position<T>, Position<T>> camera_corners_default) {
   this->camera_corners = this->camera_corners_default = camera_corners_default;
@@ -51,23 +54,26 @@ void BasicCamera<T>::reset_camera_corners() {
 }
 
 template<typename T>
-void BasicCamera<T>::resize(T aspect_ratio) {
+void BasicCamera<T>::resize(int window_width, int window_height) {
+  int smaller = std::min(window_width, window_height);
+  T horizontalScaleF = (T)window_width / (T)smaller;
+  T verticalScaleF = (T)window_height / (T)smaller;
   T width = this->camera_corners.second.x - this->camera_corners.first.x;
   T height = this->camera_corners.second.y - this->camera_corners.first.y;
   T x = this->camera_corners.first.x;
   T y = this->camera_corners.first.y;
-  T center_x = x + width / 2;
-  T center_y = y + height / 2;
-  if (T(1.0) < aspect_ratio)
-  {
-    width = height * aspect_ratio;
-  } else {
-    height = width * aspect_ratio;
-  }
-  x = center_x - width / 2;
-  y = center_y - height / 2;
+  T smallerSide = std::min(width, height);
+  x = x + width * .5 - smallerSide * horizontalScaleF * .5;
+  y = y + height * .5 - smallerSide * verticalScaleF * .5;
+  width = smallerSide * horizontalScaleF;
+  height = smallerSide * verticalScaleF;
   this->camera_corners.first.x = x;
   this->camera_corners.first.y = y;
   this->camera_corners.second.x = x + width;
   this->camera_corners.second.y = y + height;
+}
+
+template<typename T>
+void BasicCamera<T>::process_window_resize(int window_width, int window_height) {
+  resize(window_width, window_height);
 }

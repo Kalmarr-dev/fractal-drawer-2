@@ -82,3 +82,8 @@ template <typename T>
 void OpenGLRenderer<T>::clear_screen() {
   glClear(GL_COLOR_BUFFER_BIT);
 }
+
+template <typename T>
+void OpenGLRenderer<T>::process_window_resize(int window_width, int window_height) {
+  glViewport(0, 0, window_width, window_height);
+}

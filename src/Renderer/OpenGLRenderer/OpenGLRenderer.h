@@ -28,4 +28,5 @@ public:
   ~OpenGLRenderer();
   void render_to_screen() override;
   void clear_screen() override;
+  void process_window_resize(int width, int height) override;
 };

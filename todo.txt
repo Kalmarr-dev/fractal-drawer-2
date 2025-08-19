@@ -38,5 +38,3 @@ Draw space is a 1,1 square
 Multi-threading? At least with this simple for loop parallelization
 
 Implement color schemes, somehow
-
-TODO sort Shapes in RecursiveRenderer by size and cut away using configuration.max_number_of_elements_rendered

@@ -7,6 +7,7 @@
 #include "../RecursiveRenderer/IRecursiveRendererObserver.h"
 #include "../helpers/Position.h"
 #include "IZoomObserver.h"
+#include "IWindowResizeObserver.h"
 
 template<typename T>
 class InputSubject
@@ -19,7 +20,7 @@ private:
   std::list<IRecursiveRendererObserver<T>*> zoom_reset_observers;
   std::list<IViewportObserver*> toggle_fullscreen_observers;
   std::list<IRecursiveRendererObserver<T>*> clear_observers;
-  std::list<IRecursiveRendererObserver<T>*> window_resize_observers;
+  std::list<IWindowResizeObserver*> window_resize_observers;
   
 public:
   InputSubject() = default;
@@ -54,7 +55,7 @@ public:
   void unsubscribe_from_clear(IRecursiveRendererObserver<T>* p_observer);
   void notify_clear();
 
-  void subscribe_to_window_resize(IRecursiveRendererObserver<T>* p_observer);
-  void unsubscribe_from_window_resize(IRecursiveRendererObserver<T>* p_observer);
+  void subscribe_to_window_resize(IWindowResizeObserver* p_observer);
+  void unsubscribe_from_window_resize(IWindowResizeObserver* p_observer);
   void notify_window_resize(int width, int height);
 };

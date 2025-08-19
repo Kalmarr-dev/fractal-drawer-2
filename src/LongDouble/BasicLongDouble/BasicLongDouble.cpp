@@ -8,18 +8,18 @@ double BasicLongDouble::get_double(ILongDouble* offset, int scale_exponent) {
   return (this->value - dynamic_cast<BasicLongDouble*>(offset)->value);
 }
   
-bool BasicLongDouble::operator<(const BasicLongDouble& rhs) {
-  return this->value < rhs.value;
+bool operator<(const BasicLongDouble& lhs, const BasicLongDouble& rhs) {
+  return lhs.value < rhs.value;
 }
-BasicLongDouble BasicLongDouble::operator+(const BasicLongDouble& rhs) {
-  return this->value + rhs.value;
+BasicLongDouble operator+(const BasicLongDouble& lhs, const BasicLongDouble& rhs) {
+  return lhs.value + rhs.value;
 }
-BasicLongDouble BasicLongDouble::operator-(const BasicLongDouble& rhs) {
-  return this->value - rhs.value;
+BasicLongDouble operator-(const BasicLongDouble& lhs, const BasicLongDouble& rhs) {
+  return lhs.value - rhs.value;
 }
-BasicLongDouble BasicLongDouble::operator*(const BasicLongDouble& rhs) {
-  return this->value * rhs.value;
+BasicLongDouble operator*(const BasicLongDouble& lhs, const BasicLongDouble& rhs) {
+  return lhs.value * rhs.value;
 }
-BasicLongDouble BasicLongDouble::operator/(const BasicLongDouble& rhs) {
-  return this->value / rhs.value;
+BasicLongDouble operator/(const BasicLongDouble& lhs, const BasicLongDouble& rhs) {
+  return lhs.value / rhs.value;
 }
