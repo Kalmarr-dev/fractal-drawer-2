@@ -13,12 +13,9 @@ private:
   Position<T> higher;
 public:
   Line(Position<T> a, Position<T> b) {
-    if (b.x < a.x)
-    {
-      std::swap(a.x, b.x);
-    }
     if (b.y < a.y)
     {
+      std::swap(a.x, b.x);
       std::swap(a.y, b.y);
     }
     this->lower = a;

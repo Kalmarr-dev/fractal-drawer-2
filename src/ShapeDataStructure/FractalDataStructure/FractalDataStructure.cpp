@@ -18,8 +18,8 @@ void FractalDataStructure<T>::draw_silly_line(Position<T> pointer) {
 
 template<typename T>
 void FractalDataStructure<T>::clear_shapes() {
-  currently_drawn_fractal.clear();
-  // all_fractals.clear();
+  fractal_stub.clear();
+  all_fractals.clear();
   all_shapes.clear();
   new_shapes.clear();
 }
@@ -27,6 +27,11 @@ void FractalDataStructure<T>::clear_shapes() {
 template<typename T>
 void FractalDataStructure<T>::update_shapes_on_zoom() {
   // TODO
+}
+
+template<typename T>
+Shapes<T> FractalDataStructure<T>::get_temporary_shapes() {
+  return temporary_shapes;
 }
 
 template<typename T>
@@ -38,10 +43,37 @@ Shapes<T> FractalDataStructure<T>::get_new_shapes() {
 
 template<typename T>
 void FractalDataStructure<T>::process_primary_click(Position<T> pointer) {
-  draw_silly_line(pointer);
+  // draw_silly_line(pointer);
+  auto corners = p_camera->get_camera_corners();
+  T width = corners.second.x - corners.first.x;
+  T height = corners.second.y - corners.first.y;
+  T x = corners.first.x + width * pointer.x;
+  T y = corners.first.y + height * pointer.y;
+  fractal_stub.add_point_to_root_line({x, y});
+
+  for (auto &&i : fractal_stub.get_recursed_lines(1).get_shapes())
+  {
+    temporary_shapes.add_shape(i);
+  }
 }
 
 template<typename T>
 void FractalDataStructure<T>::process_secondary_click(Position<T> pointer) {
-  draw_silly_line(Position<T>{pointer.x, pointer.y - 0.5});
+  // draw_silly_line(Position<T>{pointer.x, pointer.y - 0.5});
+  auto corners = p_camera->get_camera_corners();
+  T width = corners.second.x - corners.first.x;
+  T height = corners.second.y - corners.first.y;
+  T x = corners.first.x + width * pointer.x;
+  T y = corners.first.y + height * pointer.y;
+  fractal_stub.add_point_to_direction_line({x, y});
+
+  for (auto &&i : fractal_stub.get_recursed_lines(1).get_shapes())
+  {
+    temporary_shapes.add_shape(i);
+  }
+}
+
+template<typename T>
+void FractalDataStructure<T>::process_confirm() {
+  
 }

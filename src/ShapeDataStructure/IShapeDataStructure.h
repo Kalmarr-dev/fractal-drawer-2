@@ -14,4 +14,5 @@ public:
   virtual void clear_shapes() = 0;
   virtual void update_shapes_on_zoom() = 0;
   virtual Shapes<T> get_new_shapes() = 0;
+  virtual Shapes<T> get_temporary_shapes() = 0;
 };

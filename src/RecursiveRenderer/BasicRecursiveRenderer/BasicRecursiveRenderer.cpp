@@ -19,7 +19,12 @@ Shapes<T> BasicRecursiveRenderer<T>::get_shapes_on_camera() const {
   auto corners = this->p_camera->get_camera_corners();
   Shapes<T> shapes = this->p_data_structure_2d->get_visible_shapes_in_area(corners.first, corners.second);
   shapes.sort_by_size();
-  return shapes.get_first_n(configuration.max_number_of_elements_rendered);
+  shapes = shapes.get_first_n(configuration.max_number_of_elements_rendered);
+  for (auto &&i : p_shape_data_structure->get_temporary_shapes().get_shapes())
+  {
+    shapes.add_shape(i);
+  }
+  return shapes;
 }
 
 // HAS TO BE CALLED AFTER CAMERA ZOOM

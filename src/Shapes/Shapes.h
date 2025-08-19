@@ -31,8 +31,8 @@ public:
 
   void sort_by_size() {
     std::sort(
-      shapes.begin(),
-      shapes.end(),
+      shapes.rbegin(),
+      shapes.rend(),
       [](IShape<T>* lhs, IShape<T>* rhs) {return lhs->get_linear_size_squared() < rhs->get_linear_size_squared();}
     );
   }

@@ -1,0 +1,49 @@
+#include "FractalStub.h"
+
+template<typename T>
+FractalStub<T>::FractalStub() : root_line(Line<T>({-1,1},{1,1})) {}
+
+template<typename T>
+void FractalStub<T>::clear() {
+  root_line = Line<T>({-1,1},{1,1});
+  direction_lines.clear();
+}
+
+template<typename T>
+void FractalStub<T>::add_point_to_root_line(Position<T> new_point) {
+  if (current_line_type == LineType::ROOT_LINE)
+  {
+    root_line = Line<T>(current_line_first_point, new_point);
+    current_line_type = LineType::NONE;
+  } else {
+    current_line_type = LineType::ROOT_LINE;
+    current_line_first_point = new_point;
+  }
+}
+
+template<typename T>
+void FractalStub<T>::add_point_to_direction_line(Position<T> new_point) {
+  if (current_line_type == LineType::DIRECTION_LINE)
+  {
+    direction_lines.push_back(Line<T>(current_line_first_point, new_point));
+    current_line_type = LineType::NONE;
+  } else {
+    current_line_type = LineType::DIRECTION_LINE;
+    current_line_first_point = new_point;
+  }
+}
+
+template<typename T>
+Shapes<T> FractalStub<T>::get_recursed_lines(int recursion_level) {
+  std::vector<IShape<T>*> shapes;
+  shapes.push_back(&root_line);
+  for (auto &&i : direction_lines)
+  {
+    shapes.push_back(&i);
+  }
+  // TODO recurse
+
+
+  
+  return Shapes<T>(shapes);
+}

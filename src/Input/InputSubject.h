@@ -9,6 +9,7 @@
 #include "IZoomObserver.h"
 #include "IWindowResizeObserver.h"
 #include "IPointerObserver.h"
+#include "IConfirmObserver.h"
 
 template<typename T>
 class InputSubject
@@ -22,7 +23,8 @@ private:
   std::list<IViewportObserver*> toggle_fullscreen_observers;
   std::list<IRecursiveRendererObserver<T>*> clear_observers;
   std::list<IWindowResizeObserver*> window_resize_observers;
-  
+  std::list<IConfirmObserver*> confirm_observers;
+
 public:
   InputSubject() = default;
   ~InputSubject() = default;
@@ -59,4 +61,8 @@ public:
   void subscribe_to_window_resize(IWindowResizeObserver* p_observer);
   void unsubscribe_from_window_resize(IWindowResizeObserver* p_observer);
   void notify_window_resize(int width, int height);
+
+  void subscribe_to_confirm(IConfirmObserver* p_observer);
+  void unsubscribe_from_confirm(IConfirmObserver* p_observer);
+  void notify_confirm();
 };

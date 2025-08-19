@@ -5,9 +5,10 @@
 
 template<typename T>
 GLFWInput<T>::GLFWInput(IViewport* p_viewport, GLFWKey fullscreen_key, GLFWKey zoom_reset_key, 
-  GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key
+  GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key, GLFWKey confirm_key
 ) : p_viewport(p_viewport), fullscreen_key(fullscreen_key), zoom_reset_key(zoom_reset_key),
-    zoom_in_key(zoom_in_key), zoom_out_key(zoom_out_key), clear_key(clear_key), lock_zoom_key(lock_zoom_key) 
+    zoom_in_key(zoom_in_key), zoom_out_key(zoom_out_key), clear_key(clear_key), lock_zoom_key(lock_zoom_key),
+    confirm_key(confirm_key)
 {}
 
 template<typename T>
@@ -39,9 +40,8 @@ void GLFWInput<T>::on_key_press_callback(GLFWwindow* window, int key, int scanco
   glfwGetCursorPos(window, &mouseX, &mouseY);
   int windowW, windowH;
   glfwGetWindowSize(window, &windowW, &windowH);
-  if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
-    // TODO draw fractal
-    throw "Not implemented";
+  if (key == confirm_key.code && action == GLFW_PRESS) {
+    this->notify_confirm();
   }
   if (key == clear_key.code && action == GLFW_PRESS) {
     this->notify_clear();

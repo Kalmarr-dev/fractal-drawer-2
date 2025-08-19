@@ -17,13 +17,14 @@ private:
   GLFWKey zoom_out_key;
   GLFWKey clear_key;
   GLFWKey lock_zoom_key;
+  GLFWKey confirm_key;
 
   void on_click_callback(GLFWwindow* window, int button, int action, int mods);
   void on_pointer_move_callback(Position<double> position) = delete;
   void on_key_press_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
   void on_window_resize_callback(GLFWwindow* window, int width, int height);
 public:
-  GLFWInput(IViewport* p_viewport, GLFWKey fullscreen_key, GLFWKey zoom_reset_key, GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key);
+  GLFWInput(IViewport* p_viewport, GLFWKey fullscreen_key, GLFWKey zoom_reset_key, GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key, GLFWKey confirm_key);
   ~GLFWInput() = default;
   void subscribe_viewport_to_callbacks(IViewport* p_viewport) override;
 };

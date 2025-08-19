@@ -116,3 +116,19 @@ void InputSubject<T>::notify_window_resize(int width, int height) {
     observer->process_window_resize(width, height);
   }
 }
+
+template<typename T>
+void InputSubject<T>::subscribe_to_confirm(IConfirmObserver* p_observer) {
+  confirm_observers.push_back(p_observer);
+}
+template<typename T>
+void InputSubject<T>::unsubscribe_from_confirm(IConfirmObserver* p_observer) {
+  confirm_observers.remove(p_observer);
+}
+template<typename T>
+void InputSubject<T>::notify_confirm() {
+  for (auto &&observer : confirm_observers)
+  {
+    observer->process_confirm();
+  }
+}
