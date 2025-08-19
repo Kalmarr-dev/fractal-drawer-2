@@ -26,4 +26,6 @@ public:
   void zoom(Position<T> pointer, T scale_value) override;
   void zoom_reset() override;
   void clear_shapes() override;
+  void process_primary_click(Position<T> pointer) override;
+  void process_secondary_click(Position<T> pointer) override;
 };

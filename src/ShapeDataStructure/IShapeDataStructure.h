@@ -12,6 +12,6 @@ public:
   virtual ~IShapeDataStructure() = default;
 
   virtual void clear_shapes() = 0;
-  virtual void update_shapes_on_zoom(ICamera<T>* p_camera) = 0;
+  virtual void update_shapes_on_zoom() = 0;
   virtual Shapes<T> get_new_shapes() = 0;
 };

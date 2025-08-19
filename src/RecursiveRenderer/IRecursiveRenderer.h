@@ -4,9 +4,10 @@
 #include "../Shapes/Shapes.h"
 #include "IRecursiveRendererObserver.h"
 #include "../Input/IZoomObserver.h"
+#include "../Input/IPointerObserver.h"
 
 template<typename T>
-class IRecursiveRenderer : public IRecursiveRendererObserver<T>, public IZoomObserver<T>
+class IRecursiveRenderer : public IRecursiveRendererObserver<T>, public IZoomObserver<T>, public IPointerObserver<T>
 {
 public:
   virtual ~IRecursiveRenderer() = default;

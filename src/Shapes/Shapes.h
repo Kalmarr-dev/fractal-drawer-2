@@ -39,7 +39,7 @@ public:
 
   Shapes<T> get_first_n(int n) {
     auto end = shapes.begin();
-    std::advance(end, n);
+    std::advance(end, std::min(n, (int)shapes.size()));
     return Shapes<T>(std::vector<IShape<T>*>(shapes.begin(), end));
   }
 };

@@ -40,18 +40,34 @@ OpenGLRenderer<T>::~OpenGLRenderer() {
 
 template <typename T>
 void OpenGLRenderer<T>::render_to_screen() {
-  // Shapes<T> shapes = p_recursive_renderer->get_shapes_on_camera();
-  // for (auto &&shape : shapes)
-  // {
-    
-  // }
+  T* offset = new T(0);
+
+  vector<float> positions;
+  vector<unsigned int> indexes;
+  Shapes<T> shapes = p_recursive_renderer->get_shapes_on_camera();
+  
+  for (auto &&shape : shapes.get_shapes())
+  {
+    auto shape_points = shape->get_points();
+    auto shape_indexes = shape->get_indexes();
+    for (auto &&i : shape_points)
+    {
+      positions.push_back((float)i.x.get_double(offset, 1));
+      positions.push_back((float)i.y.get_double(offset, 1));
+    }
+    unsigned int new_index = indexes.size();
+    for (auto &&i : shape_indexes)
+    {
+      indexes.push_back((float)new_index + i);
+    }
+  }
 
   
-  float positions[] = {0, 0, 0.5f, 0.5f};
-  unsigned int indices[] = {0, 1};
+  // float positions[] = {0, 0, 0.5f, 0.5f};
+  // unsigned int indexes[] = {0, 1};
 
-  VertexBuffer vb(positions, 4 * sizeof(float));
-  IndexBuffer ib(indices, (unsigned int)2);
+  VertexBuffer vb(&positions[0], positions.size() * sizeof(float));
+  IndexBuffer ib(&indexes[0], (unsigned int)indexes.size());
 
   VertexBufferLayout layout;
   layout.Push<float>(2);
@@ -63,7 +79,6 @@ void OpenGLRenderer<T>::render_to_screen() {
   shader.Bind();
 
   auto camera_corners = p_camera->get_camera_corners();
-  T* offset = new T(0);
   shader.SetUniform4f
   ( 
     "u_camera", camera_corners.first.x.get_double(offset, 1),

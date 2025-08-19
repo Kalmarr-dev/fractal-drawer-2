@@ -13,12 +13,15 @@ private:
   // std::list<Fractal<T>> all_fractals;
   Shapes<T> all_shapes;
   Shapes<T> new_shapes;
+  ICamera<T>* p_camera;
+
+  void draw_silly_line(Position<T> pointer);
 public:
-  FractalDataStructure();
+  FractalDataStructure(ICamera<T>* p_camera);
   ~FractalDataStructure() = default;
 
   void clear_shapes() override;
-  void update_shapes_on_zoom(ICamera<T>* p_camera) override;
+  void update_shapes_on_zoom() override;
   Shapes<T> get_new_shapes() override;
   void process_primary_click(Position<T> pointer) override;
   void process_secondary_click(Position<T> pointer) override;

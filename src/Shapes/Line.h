@@ -1,7 +1,9 @@
 #pragma once
 
-#include "../LongDouble/ILongDouble.h"
 #include "IShape.h"
+#include <vector>
+#include <utility>
+#include "../LongDouble/ILongDouble.h"
 
 template<typename T>
 class Line : public IShape<T>
@@ -31,6 +33,20 @@ public:
 
   inline T get_linear_size_squared() {
     return (higher.x - lower.x) * (higher.x - lower.x) + (higher.y - lower.y) * (higher.y - lower.y);
+  }
+
+  inline std::vector<Position<T>> get_points() {
+    std::vector<Position<T>> positions;
+    positions.push_back(lower);
+    positions.push_back(higher);
+    return positions;
+  }
+
+  inline std::vector<unsigned int> get_indexes() {
+    std::vector<unsigned int> indexes;
+    indexes.push_back(0);
+    indexes.push_back(1);
+    return indexes;
   }
 };
 

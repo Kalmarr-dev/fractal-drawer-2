@@ -3,7 +3,18 @@
 #include "../../Shapes/Line.h"
 
 template<typename T>
-FractalDataStructure<T>::FractalDataStructure() {}
+FractalDataStructure<T>::FractalDataStructure(ICamera<T>* p_camera) : p_camera(p_camera) {}
+
+template<typename T>
+void FractalDataStructure<T>::draw_silly_line(Position<T> pointer) {
+  auto corners = p_camera->get_camera_corners();
+  T width = corners.second.x - corners.first.x;
+  T height = corners.second.y - corners.first.y;
+  T x = corners.first.x + width * pointer.x;
+  T y = corners.first.y + height * pointer.y;
+  all_shapes.add_shape(new Line<T>({x, y}, {x, y + 0.5}));
+  new_shapes.add_shape(new Line<T>({x, y}, {x, y + 0.5}));
+}
 
 template<typename T>
 void FractalDataStructure<T>::clear_shapes() {
@@ -14,7 +25,7 @@ void FractalDataStructure<T>::clear_shapes() {
 }
 
 template<typename T>
-void FractalDataStructure<T>::update_shapes_on_zoom(ICamera<T>* p_camera) {
+void FractalDataStructure<T>::update_shapes_on_zoom() {
   // TODO
 }
 
@@ -27,12 +38,10 @@ Shapes<T> FractalDataStructure<T>::get_new_shapes() {
 
 template<typename T>
 void FractalDataStructure<T>::process_primary_click(Position<T> pointer) {
-  all_shapes.add_shape(new Line<T>(pointer, Position<T>{pointer.x, pointer.y + 50}));
-  new_shapes.add_shape(new Line<T>(pointer, Position<T>{pointer.x, pointer.y + 50}));
+  draw_silly_line(pointer);
 }
 
 template<typename T>
 void FractalDataStructure<T>::process_secondary_click(Position<T> pointer) {
-  all_shapes.add_shape(new Line<T>(pointer, Position<T>{pointer.x, pointer.y - 50}));
-  new_shapes.add_shape(new Line<T>(pointer, Position<T>{pointer.x, pointer.y - 50}));
+  draw_silly_line(Position<T>{pointer.x, pointer.y - 0.5});
 }

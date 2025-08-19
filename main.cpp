@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
     )
   );
 
-  FractalDataStructure<LongDouble>* p_fractal_data_structure = new FractalDataStructure<LongDouble>;
+  FractalDataStructure<LongDouble>* p_fractal_data_structure = new FractalDataStructure<LongDouble>(p_camera);
 
   BasicRecursiveRenderer<LongDouble>* p_recursive_renderer = new BasicRecursiveRenderer<LongDouble>(p_data_structure, p_camera, p_fractal_data_structure, configuration);
 
@@ -52,6 +52,8 @@ int main(int argc, char const *argv[])
   p_viewport->subscribe_to_window_reconstruction(p_input);
   p_input->subscribe_to_primary_button_down(p_fractal_data_structure);
   p_input->subscribe_to_secondary_button_down(p_fractal_data_structure);
+  p_input->subscribe_to_primary_button_down(p_recursive_renderer); // after subscribing DS
+  p_input->subscribe_to_secondary_button_down(p_recursive_renderer); // after subscribing DS
 
 
   while (!p_viewport->window_should_close()) {   

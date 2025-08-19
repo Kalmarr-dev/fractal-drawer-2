@@ -25,7 +25,7 @@ Shapes<T> BasicRecursiveRenderer<T>::get_shapes_on_camera() const {
 // HAS TO BE CALLED AFTER CAMERA ZOOM
 template<typename T>
 void BasicRecursiveRenderer<T>::zoom(Position<T> pointer, T scale_value) {
-  p_shape_data_structure->update_shapes_on_zoom(p_camera);
+  p_shape_data_structure->update_shapes_on_zoom();
   update_data_structure_2d_with_new_shapes();
 }
 
@@ -38,4 +38,14 @@ template<typename T>
 void BasicRecursiveRenderer<T>::clear_shapes() {
   this->p_data_structure_2d->clear_shapes();
   this->p_shape_data_structure->clear_shapes();
+}
+
+template<typename T>
+void BasicRecursiveRenderer<T>::process_primary_click(Position<T> pointer) {
+  update_data_structure_2d_with_new_shapes();
+}
+
+template<typename T>
+void BasicRecursiveRenderer<T>::process_secondary_click(Position<T> pointer) {
+  update_data_structure_2d_with_new_shapes();
 }
