@@ -7,6 +7,7 @@ Configuration::Configuration(int argc, char const *argv[]) {
   }
   this->max_number_of_elements_rendered = std::atoi(argv[1]);
   this->max_number_of_elements_in_memory = std::atoi(argv[2]);
+  this->threads = 6;
 }
 
 Configuration::~Configuration() {}

@@ -3,6 +3,7 @@
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <omp.h>
 
 #include "src/Configuration/Configuration.h"
 #include "src/Camera/BasicCamera/BasicCamera.h"
@@ -21,6 +22,8 @@
 int main(int argc, char const *argv[])
 {
   Configuration configuration(argc, argv);
+  
+  omp_set_num_threads(configuration.threads);
 
   BasicDataStructure2D<LongDouble>* p_data_structure = new BasicDataStructure2D<LongDouble>;
 
