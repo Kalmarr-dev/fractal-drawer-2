@@ -5,8 +5,8 @@
 template<typename T>
 FractalDataStructure<T>::FractalDataStructure(ICamera<T>* p_camera, Configuration configuration) 
   : p_camera(p_camera), configuration(configuration) {
-  this->minimum_visible_screen_size = 0.0025;
-  this->camera_scale_change_to_recalculate_fractals = 5;
+  this->minimum_visible_screen_size = 0.00125;
+  this->camera_scale_change_to_recalculate_fractals = 4;
   // this->camera_scale_change_to_recalculate_fractals = 2;
   this->previous_camera_scale = p_camera->get_bigger_side();
 }

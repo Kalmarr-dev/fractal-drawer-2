@@ -9,7 +9,7 @@ void BasicDataStructure2D<T>::add_shapes(Shapes<T> shapes) {
 }
 
 template<typename T>
-Shapes<T> BasicDataStructure2D<T>::get_visible_shapes_in_area(Position<T> lower, Position<T> higher) {
+Shapes<T>& BasicDataStructure2D<T>::get_visible_shapes_in_area(Position<T> lower, Position<T> higher) {
   return shapes;
 }
 

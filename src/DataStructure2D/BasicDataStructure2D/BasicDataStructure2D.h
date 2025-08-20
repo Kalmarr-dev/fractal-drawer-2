@@ -12,6 +12,6 @@ public:
   ~BasicDataStructure2D() = default;
 
   void add_shapes(Shapes<T> shapes) override;
-  Shapes<T> get_visible_shapes_in_area(Position<T> lower, Position<T> higher) override;
+  Shapes<T>& get_visible_shapes_in_area(Position<T> lower, Position<T> higher) override;
   void clear_shapes() override;
 };

@@ -19,6 +19,7 @@ private:
   Configuration configuration;
   VertexArray* vertex_array;
   IndexBuffer* index_buffer;
+  Shader* basic_shader;
 
   void render_shapes();
   void render_text();
