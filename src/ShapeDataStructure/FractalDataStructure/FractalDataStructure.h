@@ -26,7 +26,7 @@ private:
   T previous_camera_scale;
 
   void draw_silly_line(Position<T> pointer);
-  void update_temporary_shapes(Shapes<T>);
+  void update_temporary_shapes(const Shapes<T>);
 public:
   FractalDataStructure(ICamera<T>* p_camera, Configuration configuration);
   ~FractalDataStructure() = default;

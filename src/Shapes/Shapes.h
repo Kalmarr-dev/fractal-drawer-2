@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <execution>
 #include "../LongDouble/ILongDouble.h"
 #include "IShape.h"
 
@@ -21,7 +22,7 @@ public:
     shapes.push_back(shape);
   }
 
-  std::vector<IShape<T>*> get_shapes() {
+  const std::vector<IShape<T>*> get_shapes() const {
     return shapes;
   }
 
@@ -38,9 +39,17 @@ public:
   }
 
   Shapes<T> get_first_n(int n) {
+    // auto end = shapes.begin();
+    // std::advance(end, std::min(n, (int)shapes.size()));
+    // return Shapes<T>(std::vector<IShape<T>*>(shapes.begin(), end));
+    
+    Shapes<T> new_shapes;
+    new_shapes.shapes.resize(std::min(n, (int)shapes.size()));
     auto end = shapes.begin();
     std::advance(end, std::min(n, (int)shapes.size()));
-    return Shapes<T>(std::vector<IShape<T>*>(shapes.begin(), end));
+    // std::copy(std::execution::par_unseq, this->shapes.begin(), end, new_shapes.get_shapes().begin());
+    std::copy(std::execution::par_unseq, this->shapes.begin(), end, new_shapes.shapes.begin());
+    return new_shapes;
   }
 };
 

@@ -52,10 +52,10 @@ void FractalStub<T>::add_point_to_direction_line(Position<T> new_point) {
 template<typename T>
 Shapes<T> FractalStub<T>::get_recursed_lines(int recursion_level) {
   std::vector<IShape<T>*> shapes;
-  shapes.push_back(&root_line);
+  shapes.push_back(new Line<T>(Position<T>(root_line.a.x, root_line.a.y), Position<T>(root_line.b.x, root_line.b.y)));
   for (auto &&i : direction_lines)
   {
-    shapes.push_back(&i);
+    shapes.push_back(new Line<T>(Position<T>(i.a.x, i.a.y), Position<T>(i.b.x, i.b.y)));
   }
   
   FractalPart<T> fractal_part(this, 100000, T(0.0), recursion_level);
