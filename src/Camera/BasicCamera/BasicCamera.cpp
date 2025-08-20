@@ -27,7 +27,7 @@ void BasicCamera<T>::set_camera_corners(Position<T> a, Position<T> b) {
 }
 
 template<typename T>
-void BasicCamera<T>::zoom(Position<T> pointer, T scale_value) {
+void BasicCamera<T>::process_zoom(Position<T> pointer, T scale_value) {
   T width = this->camera_corners.second.x - this->camera_corners.first.x;
   T height = this->camera_corners.second.y - this->camera_corners.first.y;
   T dX = (pointer.x - 0.5) * width;
@@ -85,3 +85,9 @@ void BasicCamera<T>::process_zoom_reset() {
   reset_camera_corners();
   resize(last_window_width, last_window_height);
 }
+
+template<typename T>
+T BasicCamera<T>::get_bigger_side() {
+  return std::max(camera_corners.second.x - camera_corners.first.x, camera_corners.second.y - camera_corners.first.y);
+}
+

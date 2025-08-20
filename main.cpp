@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
     )
   );
 
-  FractalDataStructure<LongDouble>* p_fractal_data_structure = new FractalDataStructure<LongDouble>(p_camera);
+  FractalDataStructure<LongDouble>* p_fractal_data_structure = new FractalDataStructure<LongDouble>(p_camera, configuration);
 
   BasicRecursiveRenderer<LongDouble>* p_recursive_renderer = new BasicRecursiveRenderer<LongDouble>(p_data_structure, p_camera, p_fractal_data_structure, configuration);
 
@@ -46,7 +46,8 @@ int main(int argc, char const *argv[])
   p_input->subscribe_viewport_to_callbacks(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
   p_input->subscribe_to_zoom(p_camera);
-  p_input->subscribe_to_zoom(p_recursive_renderer); // after subscribing camers to zoom
+  p_input->subscribe_to_zoom(p_fractal_data_structure); // after subscribing camers to zoom
+  p_input->subscribe_to_zoom(p_recursive_renderer); // after subscribing camera and shape_ds to zoom
   p_input->subscribe_to_zoom_reset(p_camera);
   p_input->subscribe_to_window_resize(p_camera);
   p_input->subscribe_to_window_resize(p_renderer);
@@ -59,6 +60,8 @@ int main(int argc, char const *argv[])
 
 
   while (!p_viewport->window_should_close()) {   
+    glfwWaitEvents();
+    
     p_renderer->clear_screen();
     p_renderer->render_to_screen();
  
@@ -69,7 +72,6 @@ int main(int argc, char const *argv[])
     }
 
     // glfwPollEvents();
-    glfwWaitEvents();
   }
   
 

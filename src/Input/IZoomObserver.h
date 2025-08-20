@@ -7,5 +7,5 @@ class IZoomObserver
 {
 public:
   virtual ~IZoomObserver() = default;
-  virtual void zoom(Position<T> pointer, T scale_value) = 0;
+  virtual void process_zoom(Position<T> pointer, T scale_value) = 0;
 };

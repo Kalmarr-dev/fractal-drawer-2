@@ -49,7 +49,7 @@ void InputSubject<T>::notify_zoom(Position<double> pointer, double scale) {
   Position<T> t_pointer{T(pointer.x), T(pointer.y)};
   for (auto &&observer : zoom_observers)
   {
-    observer->zoom(t_pointer, scale);
+    observer->process_zoom(t_pointer, scale);
   }
 }
 

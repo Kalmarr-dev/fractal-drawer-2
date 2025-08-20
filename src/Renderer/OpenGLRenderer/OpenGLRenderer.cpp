@@ -96,7 +96,7 @@ void OpenGLRenderer<T>::render_to_screen() {
 
   va.Bind();
   ib.Bind();
-  glLineWidth(10);
+  glLineWidth(5);
   glDrawElements(GL_LINES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 

@@ -20,6 +20,7 @@ private:
   std::list<Line<T>> direction_lines;
 public:
   FractalStub();
+  FractalStub(Line<T> root_line, std::list<Line<T>> direction_lines);
   ~FractalStub() = default;
 
   Line<T> get_root_line();

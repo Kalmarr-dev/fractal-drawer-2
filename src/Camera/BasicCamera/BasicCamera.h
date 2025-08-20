@@ -17,9 +17,10 @@ public:
   ~BasicCamera() = default;
   std::pair<Position<T>, Position<T>> get_camera_corners() override;
   void set_camera_corners(Position<T> a, Position<T> b) override;
-  void zoom(Position<T> pointer, T scale_value) override;
+  void process_zoom(Position<T> pointer, T scale_value) override;
   void reset_camera_corners() override;
   void resize(int window_width, int window_height) override;
   void process_window_resize(int width, int height) override;
   void process_zoom_reset() override;
+  T get_bigger_side() override;
 };

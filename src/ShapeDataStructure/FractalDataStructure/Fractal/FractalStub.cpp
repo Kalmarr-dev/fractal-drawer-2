@@ -6,6 +6,10 @@ template<typename T>
 FractalStub<T>::FractalStub() : root_line(Line<T>({-1,1},{1,1})) {}
 
 template<typename T>
+FractalStub<T>::FractalStub(Line<T> root_line, std::list<Line<T>> direction_lines)
+  : root_line(root_line), direction_lines(direction_lines) {}
+
+template<typename T>
 void FractalStub<T>::clear() {
   root_line = Line<T>({-1,1},{1,1});
   direction_lines.clear();

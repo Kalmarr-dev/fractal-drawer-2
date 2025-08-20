@@ -23,7 +23,7 @@ public:
 
   Shapes<T> get_shapes_on_camera() const override;
 
-  void zoom(Position<T> pointer, T scale_value) override;
+  void process_zoom(Position<T> pointer, T scale_value) override;
   void zoom_reset() override;
   void clear_shapes() override;
   void process_primary_click(Position<T> pointer) override;

@@ -24,7 +24,7 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
 
 
   std::vector<Line<T>> reflectionLines;
-  reflectionLines.reserve(MAXLINES + 100); // TODO check if [0] is possible after reserve
+  reflectionLines.reserve(MAXLINES + 100);
   reflectionLines.push_back(this->root_line);
   this->linesOnTheLayer.push_back(1);
   for (size_t i = 1; i < this->direction_lines.size() + 1; i++) {
@@ -41,7 +41,7 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
 
   bool onThisLayerLinesWereCreated = true;
   int depth = 1;
-  while (reflectionLinesOnPrevLayers < MAXLINES && onThisLayerLinesWereCreated && depth < MAX_DEPTH) {
+  while (reflectionLinesOnPrevLayers < MAXLINES && onThisLayerLinesWereCreated && depth < MAX_DEPTH) { // TODO lastReflectionLinesIndices won't be full if this is true
     onThisLayerLinesWereCreated = false;
     depth++;
 
@@ -80,11 +80,6 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
 
   int reflectionLinesCount = reflectionLinesOnPrevLayers;
 
-  // was needed when "reflectionLines = new Line[10000000]""
-  // std::vector<Line<T>> _reflectionLines(reflectionLinesCount);
-  // std::copy(&reflectionLines[0], &reflectionLines[0] + reflectionLinesCount, _reflectionLines);
-  // reflectionLines = _reflectionLines;
-
   this->lastReflectionLines = std::vector<Line<T>>(lastReflectionLinesIndices.size());
   for (int i = 0; i < lastReflectionLinesIndices.size(); i++) {
     this->lastReflectionLines[i] = reflectionLines[lastReflectionLinesIndices[i]];
@@ -101,6 +96,21 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
   for (int i = 0; i < this->direction_lines.size(); i++) {
     delete MTMTDVectorsScaleRotationMatrices[i];
   }
+
+  this->min_x = std::min(this->lines[0].a.x, this->lines[0].b.x);
+  this->max_x = std::max(this->lines[0].a.x, this->lines[0].b.x);
+  this->min_y = std::min(this->lines[0].a.y, this->lines[0].b.y);
+  this->max_y = std::max(this->lines[0].a.y, this->lines[0].b.y);
+  for (auto &&i : this->lines)
+  {
+    this->min_x = std::min(this->lines[0].a.x, std::min(this->lines[0].b.x, this->min_x));
+    this->max_x = std::max(this->lines[0].a.x, std::max(this->lines[0].b.x, this->max_x));
+    this->min_y = std::min(this->lines[0].a.y, std::min(this->lines[0].b.y, this->min_y));
+    this->max_y = std::max(this->lines[0].a.y, std::max(this->lines[0].b.y, this->max_y));
+  }
+  // TODO could add them, but this would render unnesessary fractalparts
+  this->linear_size = std::max(this->max_x - this->min_x, this->max_y - this->min_y);
+  
 }
 
 template<typename T>
@@ -108,3 +118,61 @@ std::vector<Line<T>> FractalPart<T>::get_lines() {
   return this->lines;
 }
 
+template<typename T>
+T FractalPart<T>::get_size() {
+  return this->linear_size;
+}
+
+template<typename T>
+std::pair<Position<T>, Position<T>> FractalPart<T>::get_corners() {
+  return std::make_pair(Position<T>(this->min_x, this->min_y), Position<T>(this->max_x, this->max_y));
+}
+
+
+template<typename T>
+bool FractalPart<T>::intersects_with(std::pair<Position<T>, Position<T>> sorted_corners, std::pair<Position<T>, Position<T>> corners) {
+  T min_x = sorted_corners.first.x;
+  T max_x = sorted_corners.second.x;
+  T min_y = sorted_corners.first.y;
+  T max_y = sorted_corners.second.y;
+  if (
+    max_x < std::min(corners.first.x, corners.second.x)
+    || std::max(corners.first.x, corners.second.x) < min_x
+    || max_y < std::min(corners.first.y, corners.second.y)
+    || std::max(corners.first.y, corners.second.y) < min_y
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+template<typename T>
+Line<T> FractalPart<T>::get_root_line() {
+  return this->root_line;
+}
+
+template<typename T>
+std::vector<Line<T>> FractalPart<T>::get_direction_lines() {
+  return this->direction_lines;
+}
+
+template<typename T>
+std::vector<Line<T>> FractalPart<T>::get_last_reflection_lines() {
+  return this->lastReflectionLines;
+}
+
+template<typename T>
+void FractalPart<T>::insert_used_last_reflection_line(Line<T>* p_line) {
+  this->used_last_reflection_lines.insert(p_line);
+}
+
+template<typename T>
+bool FractalPart<T>::find_used_last_reflection_line(Line<T>* p_line) {
+  return this->used_last_reflection_lines.count(p_line) > 0;
+}
+
+template<typename T>
+int FractalPart<T>::get_used_last_reflection_lines_size() {
+  return this->used_last_reflection_lines.size();
+}
