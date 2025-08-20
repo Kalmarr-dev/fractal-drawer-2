@@ -76,4 +76,12 @@ void BasicCamera<T>::resize(int window_width, int window_height) {
 template<typename T>
 void BasicCamera<T>::process_window_resize(int window_width, int window_height) {
   resize(window_width, window_height);
+  this->last_window_width = window_width;
+  this->last_window_height = window_height;
+}
+
+template<typename T>
+void BasicCamera<T>::process_zoom_reset() {
+  reset_camera_corners();
+  resize(last_window_width, last_window_height);
 }

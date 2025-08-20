@@ -47,6 +47,7 @@ int main(int argc, char const *argv[])
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
   p_input->subscribe_to_zoom(p_camera);
   p_input->subscribe_to_zoom(p_recursive_renderer); // after subscribing camers to zoom
+  p_input->subscribe_to_zoom_reset(p_camera);
   p_input->subscribe_to_window_resize(p_camera);
   p_input->subscribe_to_window_resize(p_renderer);
   p_viewport->subscribe_to_window_reconstruction(p_input);

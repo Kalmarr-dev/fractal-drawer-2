@@ -54,18 +54,18 @@ void InputSubject<T>::notify_zoom(Position<double> pointer, double scale) {
 }
 
 template<typename T>
-void InputSubject<T>::subscribe_to_zoom_reset(IRecursiveRendererObserver<T>* p_observer) {
+void InputSubject<T>::subscribe_to_zoom_reset(IZoomResetObserver* p_observer) {
   zoom_reset_observers.push_back(p_observer);
 }
 template<typename T>
-void InputSubject<T>::unsubscribe_from_zoom_reset(IRecursiveRendererObserver<T>* p_observer) {
+void InputSubject<T>::unsubscribe_from_zoom_reset(IZoomResetObserver* p_observer) {
   zoom_reset_observers.remove(p_observer);
 }
 template<typename T>
 void InputSubject<T>::notify_zoom_reset() {
   for (auto &&observer : zoom_reset_observers)
   {
-    observer->zoom_reset();
+    observer->process_zoom_reset();
   }
 }
 

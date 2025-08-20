@@ -10,6 +10,7 @@
 #include "IWindowResizeObserver.h"
 #include "IPointerObserver.h"
 #include "IConfirmObserver.h"
+#include "IZoomResetObserver.h"
 
 template<typename T>
 class InputSubject
@@ -19,7 +20,7 @@ private:
   std::list<IPointerObserver<T>*> primary_button_down_observers;
   std::list<IPointerObserver<T>*> secondary_button_down_observers;
   std::list<IZoomObserver<T>*> zoom_observers;
-  std::list<IRecursiveRendererObserver<T>*> zoom_reset_observers;
+  std::list<IZoomResetObserver*> zoom_reset_observers;
   std::list<IViewportObserver*> toggle_fullscreen_observers;
   std::list<IRecursiveRendererObserver<T>*> clear_observers;
   std::list<IWindowResizeObserver*> window_resize_observers;
@@ -46,8 +47,8 @@ public:
   void unsubscribe_from_zoom(IZoomObserver<T>* p_observer);
   void notify_zoom(Position<double> pointer, double scale);
 
-  void subscribe_to_zoom_reset(IRecursiveRendererObserver<T>* p_observer);
-  void unsubscribe_from_zoom_reset(IRecursiveRendererObserver<T>* p_observer);
+  void subscribe_to_zoom_reset(IZoomResetObserver* p_observer);
+  void unsubscribe_from_zoom_reset(IZoomResetObserver* p_observer);
   void notify_zoom_reset();
 
   void subscribe_to_toggle_fullscreen(IViewportObserver* p_observer);

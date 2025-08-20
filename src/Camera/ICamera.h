@@ -3,9 +3,10 @@
 #include "../helpers/Position.h"
 #include "../Input/IZoomObserver.h"
 #include "../Input/IWindowResizeObserver.h"
+#include "../Input/IZoomResetObserver.h"
 
 template<typename T>
-class ICamera : public IZoomObserver<T>, public IWindowResizeObserver
+class ICamera : public IZoomObserver<T>, public IWindowResizeObserver, public IZoomResetObserver
 {
 public:
   virtual ~ICamera() = default;

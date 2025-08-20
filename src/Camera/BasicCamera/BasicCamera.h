@@ -10,6 +10,8 @@ class BasicCamera : public ICamera<T>
 private:
   std::pair<Position<T>, Position<T>> camera_corners;
   std::pair<Position<T>, Position<T>> camera_corners_default;
+  int last_window_width = 0;
+  int last_window_height = 0;
 public:
   BasicCamera(std::pair<Position<T>, Position<T>> camera_corners_default);
   ~BasicCamera() = default;
@@ -19,4 +21,5 @@ public:
   void reset_camera_corners() override;
   void resize(int window_width, int window_height) override;
   void process_window_resize(int width, int height) override;
+  void process_zoom_reset() override;
 };
