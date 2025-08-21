@@ -11,7 +11,9 @@ public:
   ~BasicLongDouble() = default;
 
   // casts ILongDouble to BasicLongDouble
-  double get_double(ILongDouble* offset, int scale_exponent);
+  inline double get_double(ILongDouble* offset, int scale_exponent) override {
+    return (this->value - dynamic_cast<BasicLongDouble*>(offset)->value);
+  }
 };
 
 bool operator<(const BasicLongDouble& lhs, const BasicLongDouble& rhs);

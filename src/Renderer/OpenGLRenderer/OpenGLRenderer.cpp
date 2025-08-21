@@ -56,7 +56,7 @@ void OpenGLRenderer<T>::render_to_screen() {
 
   std::cout << shapes_collection.size() << '\n';
 
-  #pragma omp parallel
+  #pragma omp parallel for
   for (int i = 0; i < shapes_collection.size(); i++)
   {
     auto shape = shapes_collection[i];
@@ -67,6 +67,8 @@ void OpenGLRenderer<T>::render_to_screen() {
       auto point = shape_points[j];
       positions[i * 4 + j * 2] = (float)(((point.x - *offset_x) / width - 0.5) * 2.0).get_double(offset_0, 1);
       positions[i * 4 + j * 2 + 1] = (float)(((point.y - *offset_y) / height - 0.5) * 2.0).get_double(offset_0, 1);
+      // positions[i * 4 + j * 2] = (float)point.x.get_double(offset_0, 1);
+      // positions[i * 4 + j * 2 + 1] = (float)point.y.get_double(offset_0, 1);
     }
     for (auto &&j : shape_indexes)
     {
@@ -105,13 +107,12 @@ void OpenGLRenderer<T>::render_to_screen() {
   this->basic_shader = new Shader("res/shaders/basic.shader");
   basic_shader->Bind();
 
-  // auto camera_corners = p_camera->get_camera_corners();
-  // shader.SetUniform4f
+  // basic_shader->SetUniform4f
   // ( 
-  //   "u_camera", camera_corners.first.x.get_double(offset, 1),
-  //   camera_corners.first.y.get_double(offset, 1),
-  //   camera_corners.second.x.get_double(offset, 1) - camera_corners.first.x.get_double(offset, 1),
-  //   camera_corners.second.y.get_double(offset, 1) - camera_corners.first.y.get_double(offset, 1)
+  //   "u_camera", camera_corners.first.x.get_double(offset_0, 1),
+  //   camera_corners.first.y.get_double(offset_0, 1),
+  //   camera_corners.second.x.get_double(&camera_corners.first.x, 1),
+  //   camera_corners.second.y.get_double(&camera_corners.first.y, 1)
   // );
   basic_shader->SetUniform4f
   ( 
