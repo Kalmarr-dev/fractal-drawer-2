@@ -1,6 +1,7 @@
 #include "OpenGLRenderer.h"
 
 #include <iostream>
+#include <math.h>
 
 #define _DEBUG
 
@@ -49,8 +50,9 @@ void OpenGLRenderer<T>::render_to_screen() {
 
   Shapes<T> shapes = p_recursive_renderer->get_shapes_on_camera();
   // vector sizes are subject to change
-  vector<float> positions(shapes.get_shapes().size() * 2 * 2);
-  vector<unsigned int> indexes(positions.size() / 2);
+  const int floats_per_vertex = 5;
+  vector<float> positions(shapes.get_shapes().size() * 2 * floats_per_vertex);
+  vector<unsigned int> indexes(shapes.get_shapes().size() * 2);
   
   auto shapes_collection = shapes.get_shapes();
 
@@ -62,11 +64,19 @@ void OpenGLRenderer<T>::render_to_screen() {
     auto shape = shapes_collection[i];
     auto shape_points = shape->get_points();
     auto shape_indexes = shape->get_indexes();
+    double length_squared_log = std::log2(shape->get_linear_size_squared().get_double(offset_0, 1));
+    double r = std::cos(length_squared_log * 0.15) * 0.5 + 0.5;
+    double g = std::cos(length_squared_log * 0.1 + + 3.1415 * 0.5) * 0.5 + 0.5;
+    double b = std::cos(length_squared_log * 0.25 + 3.1415) * 0.5 + 0.5;
     for (int j = 0; j < shape_points.size(); j++)
     {
       auto point = shape_points[j];
-      positions[i * 4 + j * 2] = (float)(((point.x - *offset_x) / width - 0.5) * 2.0).get_double(offset_0, 1);
-      positions[i * 4 + j * 2 + 1] = (float)(((point.y - *offset_y) / height - 0.5) * 2.0).get_double(offset_0, 1);
+      positions[i * floats_per_vertex * 2 + j * floats_per_vertex] = (float)(((point.x - *offset_x) / width - 0.5) * 2.0).get_double(offset_0, 1);
+      positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 1] = (float)(((point.y - *offset_y) / height - 0.5) * 2.0).get_double(offset_0, 1);
+      positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 2] = (float)r;
+      positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 3] = (float)g;
+      positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 4] = (float)b;
+
       // positions[i * 4 + j * 2] = (float)point.x.get_double(offset_0, 1);
       // positions[i * 4 + j * 2 + 1] = (float)point.y.get_double(offset_0, 1);
     }
@@ -76,45 +86,30 @@ void OpenGLRenderer<T>::render_to_screen() {
     }
   }
 
-  // for (auto &&shape : shapes.get_shapes())
-  // {
-  //   auto shape_points = shape->get_points();
-  //   auto shape_indexes = shape->get_indexes();
-  //   for (auto &&i : shape_points)
-  //   {
-  //     positions.push_back((float)(((i.x - *offset_x) / width - 0.5) * 2.0).get_double(offset_0, 1));
-  //     positions.push_back((float)(((i.y - *offset_y) / height - 0.5) * 2.0).get_double(offset_0, 1));
-  //   }
-  //   unsigned int new_index = indexes.size();
-  //   for (auto &&i : shape_indexes)
-  //   {
-  //     indexes.push_back(new_index + i);
-  //   }
-  // }
-
   VertexBuffer vb(&positions[0], positions.size() * sizeof(float));
   IndexBuffer ib(&indexes[0], (unsigned int)indexes.size());
 
   VertexBufferLayout layout;
   layout.Push<float>(2);
+  layout.Push<float>(3);
 
   VertexArray va;
   va.AddBuffer(vb, layout);
 
   // TODO not doing this every render removes colors somehow
   // TODO can't delete shader??
-  // delete this->basic_shader;
-  this->basic_shader = new Shader("res/shaders/basic.shader");
-  basic_shader->Bind();
+  // delete this->colored_shader;
+  this->colored_shader = new Shader("res/shaders/colored.shader");
+  colored_shader->Bind();
 
-  // basic_shader->SetUniform4f
+  // colored_shader->SetUniform4f
   // ( 
   //   "u_camera", camera_corners.first.x.get_double(offset_0, 1),
   //   camera_corners.first.y.get_double(offset_0, 1),
   //   camera_corners.second.x.get_double(&camera_corners.first.x, 1),
   //   camera_corners.second.y.get_double(&camera_corners.first.y, 1)
   // );
-  basic_shader->SetUniform4f
+  colored_shader->SetUniform4f
   ( 
     "u_camera", -1.0, -1.0, 2.0, 2.0
   );

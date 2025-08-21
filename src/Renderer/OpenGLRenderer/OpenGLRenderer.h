@@ -20,6 +20,7 @@ private:
   VertexArray* vertex_array;
   IndexBuffer* index_buffer;
   Shader* basic_shader;
+  Shader* colored_shader;
 
   void render_shapes();
   void render_text();
