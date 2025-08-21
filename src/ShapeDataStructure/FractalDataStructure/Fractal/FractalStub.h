@@ -30,5 +30,5 @@ public:
   void add_point_to_root_line(Position<T> new_point);
   void add_point_to_direction_line(Position<T> new_point);
   Shapes<T> get_recursed_lines(int recursion_level);
-  // Shapes<T> get_recursed_lines(int recursion_level, Position<T> new_point);
+  Shapes<T> get_recursed_lines(int recursion_level, Position<T> new_point);
 };

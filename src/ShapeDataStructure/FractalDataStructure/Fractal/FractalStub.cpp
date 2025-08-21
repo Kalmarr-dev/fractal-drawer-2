@@ -69,3 +69,43 @@ Shapes<T> FractalStub<T>::get_recursed_lines(int recursion_level) {
   
   return Shapes<T>(shapes);
 }
+
+template<typename T>
+Shapes<T> FractalStub<T>::get_recursed_lines(int recursion_level, Position<T> new_point) {
+  std::vector<IShape<T>*> shapes;
+  if (current_line_type != LineType::NONE) {
+    shapes.push_back(new Line<T>(Position<T>(current_line_first_point.x, current_line_first_point.y), Position<T>(new_point.x, new_point.y)));
+  }
+  Line<T> temporary_root_line;
+  if (current_line_type != LineType::ROOT_LINE)
+  {
+    temporary_root_line = Line<T>(Position<T>(root_line.a.x, root_line.a.y), Position<T>(root_line.b.x, root_line.b.y));
+    // shapes.push_back(new Line<T>(Position<T>(root_line.a.x, root_line.a.y), Position<T>(root_line.b.x, root_line.b.y)));
+  } else {
+    temporary_root_line = Line<T>(Position<T>(current_line_first_point.x, current_line_first_point.y), Position<T>(new_point.x, new_point.y));
+  }
+  
+  std::list<Line<T>> temporary_direction_lines;
+  for (auto &&i : direction_lines)
+  {
+    temporary_direction_lines.push_back(Line<T>(Position<T>(i.a.x, i.a.y), Position<T>(i.b.x, i.b.y)));
+    // shapes.push_back(new Line<T>(Position<T>(i.a.x, i.a.y), Position<T>(i.b.x, i.b.y)));
+  }
+  if (current_line_type == LineType::DIRECTION_LINE)
+  {
+    temporary_direction_lines.push_back(Line<T>(Position<T>(current_line_first_point.x, current_line_first_point.y), Position<T>(new_point.x, new_point.y)));
+  }
+  
+  FractalStub<T>* temporary_fractal_stub = new FractalStub<T>(temporary_root_line, temporary_direction_lines);
+  FractalPart<T> fractal_part(temporary_fractal_stub, 100000, T(0.0), recursion_level);
+  delete temporary_fractal_stub;
+
+  for (auto &&i : fractal_part.get_lines())
+  {
+    Line<T>* p_line = new Line<T>(i.a, i.b);
+    shapes.push_back(p_line);
+  }
+  
+  
+  return Shapes<T>(shapes);
+}

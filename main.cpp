@@ -57,8 +57,9 @@ int main(int argc, char const *argv[])
   p_viewport->subscribe_to_window_reconstruction(p_input);
   p_input->subscribe_to_primary_button_down(p_fractal_data_structure);
   p_input->subscribe_to_secondary_button_down(p_fractal_data_structure);
-  p_input->subscribe_to_primary_button_down(p_recursive_renderer); // after subscribing DS
-  p_input->subscribe_to_secondary_button_down(p_recursive_renderer); // after subscribing DS
+  p_input->subscribe_to_pointer_move(p_fractal_data_structure);
+  // p_input->subscribe_to_primary_button_down(p_recursive_renderer); // after subscribing DS
+  // p_input->subscribe_to_secondary_button_down(p_recursive_renderer); // after subscribing DS
   p_input->subscribe_to_confirm(p_fractal_data_structure);
 
 

@@ -10,3 +10,5 @@ Ensure Shapes and others are passed by reference
 On-screen buttons
 
 Fractal-specific renderer
+
+Lock zoom

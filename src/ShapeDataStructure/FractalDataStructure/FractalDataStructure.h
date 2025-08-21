@@ -7,11 +7,12 @@
 #include "Fractal/Fractal.h"
 #include "Fractal/FractalPart.h"
 #include "Fractal/FractalStub.h"
+#include "../../Input/IPointerMoveObserver.h"
 #include "../../Input/IConfirmObserver.h"
 #include "../../Input/IZoomObserver.h"
 
 template<typename T>
-class FractalDataStructure : public IShapeDataStructure<T>, public IConfirmObserver
+class FractalDataStructure : public IShapeDataStructure<T>, public IConfirmObserver, public IPointerMoveObserver<T>
 {
 private:
   FractalStub<T> fractal_stub;
@@ -34,6 +35,7 @@ public:
   void clear_shapes() override;
   Shapes<T> get_new_shapes() override;
   Shapes<T> get_temporary_shapes() override;
+  void process_pointer_move(Position<T> pointer) override;
   void process_primary_click(Position<T> pointer) override;
   void process_secondary_click(Position<T> pointer) override;
   void process_confirm() override;

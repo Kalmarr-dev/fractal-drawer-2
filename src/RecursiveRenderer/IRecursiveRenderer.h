@@ -7,7 +7,7 @@
 #include "../Input/IPointerObserver.h"
 
 template<typename T>
-class IRecursiveRenderer : public IRecursiveRendererObserver<T>, public IZoomObserver<T>, public IPointerObserver<T>
+class IRecursiveRenderer : public IRecursiveRendererObserver<T>, public IZoomObserver<T>/*, public IPointerObserver<T>*/
 {
 public:
   virtual ~IRecursiveRenderer() = default;

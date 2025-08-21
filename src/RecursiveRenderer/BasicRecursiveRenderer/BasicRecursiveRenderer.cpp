@@ -44,12 +44,12 @@ void BasicRecursiveRenderer<T>::clear_shapes() {
   this->p_shape_data_structure->clear_shapes();
 }
 
-template<typename T>
-void BasicRecursiveRenderer<T>::process_primary_click(Position<T> pointer) {
-  update_data_structure_2d_with_new_shapes();
-}
+// template<typename T>
+// void BasicRecursiveRenderer<T>::process_primary_click(Position<T> pointer) {
+//   update_data_structure_2d_with_new_shapes();
+// }
 
-template<typename T>
-void BasicRecursiveRenderer<T>::process_secondary_click(Position<T> pointer) {
-  update_data_structure_2d_with_new_shapes();
-}
+// template<typename T>
+// void BasicRecursiveRenderer<T>::process_secondary_click(Position<T> pointer) {
+//   update_data_structure_2d_with_new_shapes();
+// }

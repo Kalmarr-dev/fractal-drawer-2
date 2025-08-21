@@ -20,7 +20,7 @@ private:
   GLFWKey confirm_key;
 
   void on_click_callback(GLFWwindow* window, int button, int action, int mods);
-  void on_pointer_move_callback(Position<double> position) = delete;
+  void on_pointer_move_callback(GLFWwindow* window, double x, double y);
   void on_key_press_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
   void on_window_resize_callback(GLFWwindow* window, int width, int height);
 public:

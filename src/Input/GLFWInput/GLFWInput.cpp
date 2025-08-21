@@ -29,10 +29,13 @@ void GLFWInput<T>::on_click_callback(GLFWwindow* window, int button, int action,
     }
   }
 }
-// template<typename T>
-// void GLFWInput<T>::on_pointer_move(Position<double> position) {
-//   void notify_pointer_move(Position<double> pointer);
-// }
+
+template<typename T>
+void GLFWInput<T>::on_pointer_move_callback(GLFWwindow* window, double x, double y) {
+  int windowW, windowH;
+  glfwGetWindowSize(window, &windowW, &windowH);
+  this->notify_pointer_move(Position<double>{x / windowW, (- y / windowH + 1.0)});
+}
 
 template<typename T>
 void GLFWInput<T>::on_key_press_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -83,11 +86,11 @@ void GLFWInput<T>::subscribe_viewport_to_callbacks(IViewport* p_viewport)
       static_cast<GLFWInput*>(glfwGetWindowUserPointer(w))->on_click_callback(w, a, b, c);
   };
   glfwSetMouseButtonCallback(p_viewport_cast->getWindowPointer(), on_click_callback);
-  // auto MouseMoveCallback = [](GLFWwindow* w, int a, int b, int c)
-  // {
-  //     static_cast<GLFWInput*>(glfwGetWindowUserPointer(w))->MouseMoveCallback(w, a, b, c);
-  // };
-  // glfwSetCursorPosCallback	(p_viewport_cast->getWindowPointer(), MouseMoveCallback);
+  auto on_pointer_move_callback = [](GLFWwindow* w, double x, double y)
+  {
+      static_cast<GLFWInput*>(glfwGetWindowUserPointer(w))->on_pointer_move_callback(w, x, y);
+  };
+  glfwSetCursorPosCallback(p_viewport_cast->getWindowPointer(), on_pointer_move_callback);
   auto on_key_press_callback = [](GLFWwindow* w, int a, int b, int c, int d)
   {
       static_cast<GLFWInput*>(glfwGetWindowUserPointer(w))->on_key_press_callback(w, a, b, c, d);

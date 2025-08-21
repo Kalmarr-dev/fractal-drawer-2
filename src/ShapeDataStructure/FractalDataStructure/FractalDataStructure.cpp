@@ -76,6 +76,18 @@ Shapes<T> FractalDataStructure<T>::get_new_shapes() {
 }
 
 template<typename T>
+void FractalDataStructure<T>::process_pointer_move(Position<T> pointer) {
+  auto corners = p_camera->get_camera_corners();
+  T width = corners.second.x - corners.first.x;
+  T height = corners.second.y - corners.first.y;
+  T x = corners.first.x + width * pointer.x;
+  T y = corners.first.y + height * pointer.y;
+
+  const Shapes<T>& shapes = fractal_stub.get_recursed_lines(7, {x, y});
+  update_temporary_shapes(shapes);
+}
+
+template<typename T>
 void FractalDataStructure<T>::process_primary_click(Position<T> pointer) {
   // draw_silly_line(pointer);
   auto corners = p_camera->get_camera_corners();
@@ -85,7 +97,7 @@ void FractalDataStructure<T>::process_primary_click(Position<T> pointer) {
   T y = corners.first.y + height * pointer.y;
   fractal_stub.add_point_to_root_line({x, y});
 
-  const Shapes<T>& shapes = fractal_stub.get_recursed_lines(4);
+  const Shapes<T>& shapes = fractal_stub.get_recursed_lines(7);
   update_temporary_shapes(shapes);
 }
 
@@ -99,19 +111,19 @@ void FractalDataStructure<T>::process_secondary_click(Position<T> pointer) {
   T y = corners.first.y + height * pointer.y;
   fractal_stub.add_point_to_direction_line({x, y});
 
-  const Shapes<T>& shapes = fractal_stub.get_recursed_lines(4);
+  const Shapes<T>& shapes = fractal_stub.get_recursed_lines(7);
   update_temporary_shapes(shapes);
 }
 
 template<typename T>
 void FractalDataStructure<T>::process_confirm() {
   T minimum_visible_line_size = T(this->minimum_visible_screen_size) * p_camera->get_bigger_side();
-  FractalPart<T>* fractal_part = new FractalPart<T>(&this->fractal_stub, configuration.max_number_of_elements_in_memory, minimum_visible_line_size, 100);
+  FractalPart<T>* fractal_part = new FractalPart<T>(&this->fractal_stub, configuration.max_number_of_elements_in_memory, minimum_visible_line_size, 1000);
   Fractal<T>* fractal = new Fractal<T>(fractal_part);
   all_fractals.push_back(fractal);
 
   this->fractal_stub = FractalStub<T>();
-  const Shapes<T>& shapes = fractal_stub.get_recursed_lines(4);
+  const Shapes<T>& shapes = fractal_stub.get_recursed_lines(7);
   update_temporary_shapes(shapes);
 
   auto lines = fractal_part->get_lines();

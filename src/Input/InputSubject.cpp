@@ -3,6 +3,23 @@
 #include <iostream>
 
 template<typename T>
+void InputSubject<T>::subscribe_to_pointer_move(IPointerMoveObserver<T>* p_observer) {
+  pointer_move_observers.push_back(p_observer);
+}
+template<typename T>
+void InputSubject<T>::unsubscribe_from_pointer_move(IPointerMoveObserver<T>* p_observer) {
+  pointer_move_observers.remove(p_observer);
+}
+template<typename T>
+void InputSubject<T>::notify_pointer_move(Position<double> pointer) {
+  Position<T> t_pointer{T(pointer.x), T(pointer.y)};
+  for (auto &&observer : pointer_move_observers)
+  {
+    observer->process_pointer_move(t_pointer);
+  }
+}
+
+template<typename T>
 void InputSubject<T>::subscribe_to_primary_button_down(IPointerObserver<T>* p_observer) {
   primary_button_down_observers.push_back(p_observer);
 }
