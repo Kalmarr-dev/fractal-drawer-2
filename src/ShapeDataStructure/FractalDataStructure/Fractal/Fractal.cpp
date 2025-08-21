@@ -6,7 +6,7 @@
 
 template<typename T>
 Fractal<T>::Fractal(FractalPart<T>* root_fractal_part) : root_fractal_part(root_fractal_part) {
-  all_fractal_parts.push_back(root_fractal_part);
+  // all_fractal_parts.push_back(root_fractal_part);
   peripheral_fractal_parts.insert(root_fractal_part);
 }
 
@@ -23,17 +23,28 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
     fractal_parts_to_process.push_back(i);
   }
 
+  int new_lines_count = 0;
+
   #pragma omp parallel for
   for (int i = 0; i < fractal_parts_to_process.size(); i++)
   {
+    // #pragma omp critical(new_lines_count)
+    if (new_lines_count > MAXLINES)
+    {
+      continue;
+    }
     auto& current_fractal_part = fractal_parts_to_process[i];
     auto root_line = current_fractal_part->get_root_line();
     auto corners = current_fractal_part->get_corners();
     auto direction_lines = current_fractal_part->get_direction_lines();
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for (auto &reflection_line : current_fractal_part->get_last_reflection_lines())
     {
       if (current_fractal_part->find_used_last_reflection_line(reflection_line))
+      {
+        continue;
+      }
+      if (new_lines_count > MAXLINES)
       {
         continue;
       }
@@ -90,23 +101,27 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
         {
           new_fractal_parts.push_back(p_new_fractal_part);
         }
-        #pragma omp critical(all_fractal_parts)
-        {
-          all_fractal_parts.push_back(p_new_fractal_part);
-        }
+        // #pragma omp critical(all_fractal_parts)
+        // {
+        //   all_fractal_parts.push_back(p_new_fractal_part);
+        // }
         #pragma omp critical(peripheral_fractal_parts)
         {
           peripheral_fractal_parts.insert(p_new_fractal_part);
         }
+        #pragma omp critical(new_lines_count)
+        {
+          new_lines_count += p_new_fractal_part->get_lines().size();
+        }
 
         current_fractal_part->insert_used_last_reflection_line(reflection_line);
-        // #pragma omp critical(peripheral_fractal_parts)
-        // {
         //   if (current_fractal_part->get_used_last_reflection_lines_size() >= current_fractal_part->get_last_reflection_lines().size())
         //   {
+          // #pragma omp critical(peripheral_fractal_parts)
+          // {
         //     peripheral_fractal_parts.erase(current_fractal_part);
-        //   }
         // }
+        //   }
         
         // auto new_corners_check = p_new_fractal_part->get_corners();
         // auto offset = new T(0);
@@ -119,6 +134,6 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
     }
   }
 
-  std::cout << "this->all_fractal_parts.size() " << this->all_fractal_parts.size() << '\n';
+  // std::cout << "this->all_fractal_parts.size() " << this->all_fractal_parts.size() << '\n';
   return new_fractal_parts;
 }
