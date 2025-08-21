@@ -16,29 +16,31 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
 
   auto camera_corners = p_camera->get_camera_corners();
 
-  std::queue<FractalPart<T>*> fractal_part_queue;
+  std::vector<FractalPart<T>*> fractal_parts_to_process;
+  fractal_parts_to_process.reserve(this->peripheral_fractal_parts.size());
   for (auto &&i : this->peripheral_fractal_parts)
   {
-    fractal_part_queue.push(i);
+    fractal_parts_to_process.push_back(i);
   }
 
-  while (fractal_part_queue.size() > 0)
+  #pragma omp parallel for
+  for (int i = 0; i < fractal_parts_to_process.size(); i++)
   {
-    FractalPart<T>* current_fractal_part = fractal_part_queue.front();
-    fractal_part_queue.pop();
+    auto& current_fractal_part = fractal_parts_to_process[i];
     auto root_line = current_fractal_part->get_root_line();
     auto corners = current_fractal_part->get_corners();
     auto direction_lines = current_fractal_part->get_direction_lines();
+    // #pragma omp parallel for
     for (auto &reflection_line : current_fractal_part->get_last_reflection_lines())
     {
-      if (current_fractal_part->find_used_last_reflection_line(&reflection_line))
+      if (current_fractal_part->find_used_last_reflection_line(reflection_line))
       {
         continue;
       }
       
       // find bounding coordinates (min_x, etc) of potential new FractalPart
-      ScaleRotationMatrix<T> RTRVectorsScaleRotationMatrix(root_line, reflection_line);
-      Line<T> RSTRSVector = Line<T>(Position<T>(root_line.a.x, root_line.a.y), Position<T>(reflection_line.a.x, reflection_line.a.y));
+      ScaleRotationMatrix<T> RTRVectorsScaleRotationMatrix(root_line, *reflection_line);
+      Line<T> RSTRSVector = Line<T>(Position<T>(root_line.a.x, root_line.a.y), Position<T>(reflection_line->a.x, reflection_line->a.y));
       ScaleRotationMatrix<T> RTRSTRSVectorsScaleRotationMatrix(root_line, RSTRSVector);
 
       Line<T> RSTXYVector1 = Line<T>(Position<T>(0, 0), Position<T>(corners.first.x - root_line.a.x, corners.first.y - root_line.a.y));
@@ -52,10 +54,10 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
       Line<T> transformedX4 = RTRVectorsScaleRotationMatrix.MultiplyByVector(RSTXYVector4);
 
       // second coordinates are the transformed {min_x, miny}, {min_x, max_y} etc
-      transformedX1 = Line<T>(Position<T>(reflection_line.a.x, reflection_line.a.y), Position<T>(reflection_line.a.x + transformedX1.b.x, reflection_line.a.y + transformedX1.b.y));
-      transformedX2 = Line<T>(Position<T>(reflection_line.a.x, reflection_line.a.y), Position<T>(reflection_line.a.x + transformedX2.b.x, reflection_line.a.y + transformedX2.b.y));
-      transformedX3 = Line<T>(Position<T>(reflection_line.a.x, reflection_line.a.y), Position<T>(reflection_line.a.x + transformedX3.b.x, reflection_line.a.y + transformedX3.b.y));
-      transformedX4 = Line<T>(Position<T>(reflection_line.a.x, reflection_line.a.y), Position<T>(reflection_line.a.x + transformedX4.b.x, reflection_line.a.y + transformedX4.b.y));
+      transformedX1 = Line<T>(Position<T>(reflection_line->a.x, reflection_line->a.y), Position<T>(reflection_line->a.x + transformedX1.b.x, reflection_line->a.y + transformedX1.b.y));
+      transformedX2 = Line<T>(Position<T>(reflection_line->a.x, reflection_line->a.y), Position<T>(reflection_line->a.x + transformedX2.b.x, reflection_line->a.y + transformedX2.b.y));
+      transformedX3 = Line<T>(Position<T>(reflection_line->a.x, reflection_line->a.y), Position<T>(reflection_line->a.x + transformedX3.b.x, reflection_line->a.y + transformedX3.b.y));
+      transformedX4 = Line<T>(Position<T>(reflection_line->a.x, reflection_line->a.y), Position<T>(reflection_line->a.x + transformedX4.b.x, reflection_line->a.y + transformedX4.b.y));
 
       T min_x = std::min(std::min(transformedX1.b.x, transformedX2.b.x), std::min(transformedX3.b.x, transformedX4.b.x));
       T max_x = std::max(std::max(transformedX1.b.x, transformedX2.b.x), std::max(transformedX3.b.x, transformedX4.b.x));
@@ -71,29 +73,40 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
         {
           Line<T> RSTLSVector = Line<T>(Position<T>(root_line.a.x, root_line.a.y), Position<T>(line.a.x, line.a.y));
           ScaleRotationMatrix<T> RSTLSVectorsScaleRotationMatrix(root_line, RSTLSVector);
-          Line<T> start_to_start_vector = RSTLSVectorsScaleRotationMatrix.MultiplyByVector(reflection_line);
+          Line<T> start_to_start_vector = RSTLSVectorsScaleRotationMatrix.MultiplyByVector(*reflection_line);
           Line<T> new_direction_line_vector = RTRVectorsScaleRotationMatrix.MultiplyByVector(line);
           T x0, y0, x1, y1;
-          x0 = reflection_line.a.x + start_to_start_vector.b.x;
-          y0 = reflection_line.a.y + start_to_start_vector.b.y;
+          x0 = reflection_line->a.x + start_to_start_vector.b.x;
+          y0 = reflection_line->a.y + start_to_start_vector.b.y;
           x1 = x0 + new_direction_line_vector.b.x;
           y1 = y0 + new_direction_line_vector.b.y;
           new_direction_lines.push_back(Line<T>(Position<T>(x0, y0), Position<T>(x1, y1)));
         }
 
-        FractalStub<T>* p_fractal_stub = new FractalStub<T>(reflection_line, new_direction_lines);
+        FractalStub<T>* p_fractal_stub = new FractalStub<T>(*reflection_line, new_direction_lines);
         FractalPart<T>* p_new_fractal_part = new FractalPart<T>(p_fractal_stub, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH);
         
-        new_fractal_parts.push_back(p_new_fractal_part);
-        all_fractal_parts.push_back(p_new_fractal_part);
-        peripheral_fractal_parts.insert(p_new_fractal_part);
-        // fractal_part_queue.push(p_new_fractal_part); // TODO i think this is not needed cause p_new_fractal_part is fully drawn
-
-        current_fractal_part->insert_used_last_reflection_line(&reflection_line);
-        if (current_fractal_part->get_used_last_reflection_lines_size() >= current_fractal_part->get_last_reflection_lines().size())
+        #pragma omp critical(new_fractal_parts)
         {
-          peripheral_fractal_parts.erase(current_fractal_part);
+          new_fractal_parts.push_back(p_new_fractal_part);
         }
+        #pragma omp critical(all_fractal_parts)
+        {
+          all_fractal_parts.push_back(p_new_fractal_part);
+        }
+        #pragma omp critical(peripheral_fractal_parts)
+        {
+          peripheral_fractal_parts.insert(p_new_fractal_part);
+        }
+
+        current_fractal_part->insert_used_last_reflection_line(reflection_line);
+        // #pragma omp critical(peripheral_fractal_parts)
+        // {
+        //   if (current_fractal_part->get_used_last_reflection_lines_size() >= current_fractal_part->get_last_reflection_lines().size())
+        //   {
+        //     peripheral_fractal_parts.erase(current_fractal_part);
+        //   }
+        // }
         
         // auto new_corners_check = p_new_fractal_part->get_corners();
         // auto offset = new T(0);

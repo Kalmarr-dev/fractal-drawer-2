@@ -80,9 +80,10 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
 
   int reflectionLinesCount = reflectionLinesOnPrevLayers;
 
-  this->lastReflectionLines = std::vector<Line<T>>(lastReflectionLinesIndices.size());
+  this->lastReflectionLines = std::vector<Line<T>*>(lastReflectionLinesIndices.size());
   for (int i = 0; i < lastReflectionLinesIndices.size(); i++) {
-    this->lastReflectionLines[i] = reflectionLines[lastReflectionLinesIndices[i]];
+    auto& reflection_line = reflectionLines[lastReflectionLinesIndices[i]];
+    this->lastReflectionLines[i] = new Line<T>({reflection_line.a.x, reflection_line.a.y}, {reflection_line.b.x, reflection_line.b.y});
   }
 
   // std::cout << "Last reflection lines count: " << lastReflectionLinesCount << '\n';
@@ -103,10 +104,10 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
   this->max_y = std::max(this->lines[0].a.y, this->lines[0].b.y);
   for (auto &&i : this->lines)
   {
-    this->min_x = std::min(this->lines[0].a.x, std::min(this->lines[0].b.x, this->min_x));
-    this->max_x = std::max(this->lines[0].a.x, std::max(this->lines[0].b.x, this->max_x));
-    this->min_y = std::min(this->lines[0].a.y, std::min(this->lines[0].b.y, this->min_y));
-    this->max_y = std::max(this->lines[0].a.y, std::max(this->lines[0].b.y, this->max_y));
+    this->min_x = std::min(i.a.x, std::min(i.b.x, this->min_x));
+    this->max_x = std::max(i.a.x, std::max(i.b.x, this->max_x));
+    this->min_y = std::min(i.a.y, std::min(i.b.y, this->min_y));
+    this->max_y = std::max(i.a.y, std::max(i.b.y, this->max_y));
   }
   // TODO could add them, but this would render unnesessary fractalparts
   this->linear_size = std::max(this->max_x - this->min_x, this->max_y - this->min_y);
@@ -158,7 +159,7 @@ std::vector<Line<T>> FractalPart<T>::get_direction_lines() {
 }
 
 template<typename T>
-std::vector<Line<T>> FractalPart<T>::get_last_reflection_lines() {
+std::vector<Line<T>*> FractalPart<T>::get_last_reflection_lines() {
   return this->lastReflectionLines;
 }
 
