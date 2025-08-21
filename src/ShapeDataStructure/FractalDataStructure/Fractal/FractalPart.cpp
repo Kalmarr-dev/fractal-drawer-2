@@ -13,11 +13,11 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
   ScaleRotationMatrix<T>* MTDVectorsScaleRotationMatrices[this->direction_lines.size()]; //main-to-direction
   ScaleRotationMatrix<T>* MTMTDVectorsScaleRotationMatrices[this->direction_lines.size()]; //main-to-main-start-to-direction-start
 
-  for (int i = 0; i < this->direction_lines.size(); i++) {
+  for (size_t i = 0; i < this->direction_lines.size(); i++) {
     MTDVectorsScaleRotationMatrices[i] = new ScaleRotationMatrix<T>(this->root_line, this->direction_lines[i]);
   }
 
-  for (int i = 0; i < this->direction_lines.size(); i++) {
+  for (size_t i = 0; i < this->direction_lines.size(); i++) {
     Line<T> MTDLine = Line<T>(Position<T>(this->root_line.a.x, this->root_line.a.y), Position<T>(this->direction_lines[i].a.x, this->direction_lines[i].a.y));
     MTMTDVectorsScaleRotationMatrices[i] = new ScaleRotationMatrix<T>(this->root_line, MTDLine);
   }
@@ -50,8 +50,7 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
         lastReflectionLinesIndices.push_back(i);
         continue;
       }
-      for (int dLType = 0; dLType < this->direction_lines.size(); dLType++) {
-        int currentIndex = reflectionLinesOnPrevLayers + reflectionLinesOnThisLayer;
+      for (size_t dLType = 0; dLType < this->direction_lines.size(); dLType++) {
         Line<T> startToStartVector = MTMTDVectorsScaleRotationMatrices[dLType]->MultiplyByVector(reflectionLines[i]);
         Line<T> reflectionLineVector = MTDVectorsScaleRotationMatrices[dLType]->MultiplyByVector(reflectionLines[i]);
         T x0, y0, x1, y1;
@@ -78,10 +77,8 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
     lastReflectionLinesIndices.push_back(i);
   }
 
-  int reflectionLinesCount = reflectionLinesOnPrevLayers;
-
   this->lastReflectionLines = std::vector<Line<T>*>(lastReflectionLinesIndices.size());
-  for (int i = 0; i < lastReflectionLinesIndices.size(); i++) {
+  for (size_t i = 0; i < lastReflectionLinesIndices.size(); i++) {
     auto& reflection_line = reflectionLines[lastReflectionLinesIndices[i]];
     this->lastReflectionLines[i] = new Line<T>({reflection_line.a.x, reflection_line.a.y}, {reflection_line.b.x, reflection_line.b.y});
   }
@@ -91,10 +88,10 @@ FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_
   this->lines = reflectionLines;
 
   // destructors
-  for (int i = 0; i < this->direction_lines.size(); i++) {
+  for (size_t i = 0; i < this->direction_lines.size(); i++) {
     delete MTDVectorsScaleRotationMatrices[i];
   }
-  for (int i = 0; i < this->direction_lines.size(); i++) {
+  for (size_t i = 0; i < this->direction_lines.size(); i++) {
     delete MTMTDVectorsScaleRotationMatrices[i];
   }
 
