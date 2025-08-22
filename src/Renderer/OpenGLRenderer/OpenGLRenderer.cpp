@@ -54,12 +54,15 @@ void OpenGLRenderer<T>::render_to_screen() {
   vector<float> positions(shapes.get_shapes().size() * 2 * floats_per_vertex);
   vector<unsigned int> indexes(shapes.get_shapes().size() * 2);
   
-  auto shapes_collection = shapes.get_shapes();
+  const auto& shapes_collection = shapes.get_shapes();
 
-  std::cout << shapes_collection.size() << '\n';
+  #ifdef _DEBUG
+    std::cout << shapes_collection.size() << '\n';
+  #endif
 
-  #pragma omp parallel for schedule(static)
-  for (int i = 0; i < shapes_collection.size(); i++)
+  size_t shapes_collection_size = shapes_collection.size();
+  #pragma omp parallel for schedule(static) if(10000 < shapes_collection_size)
+  for (int i = 0; i < (int)shapes_collection.size(); i++)
   {
     auto shape = shapes_collection[i];
     auto shape_points = shape->get_points();
@@ -68,7 +71,7 @@ void OpenGLRenderer<T>::render_to_screen() {
     double r = std::cos(length_squared_log * 0.15) * 0.5 + 0.5;
     double g = std::cos(length_squared_log * 0.1 + + 3.1415 * 0.5) * 0.5 + 0.5;
     double b = std::cos(length_squared_log * 0.25 + 3.1415) * 0.5 + 0.5;
-    for (int j = 0; j < shape_points.size(); j++)
+    for (int j = 0; j < (int)shape_points.size(); j++)
     {
       auto point = shape_points[j];
       positions[i * floats_per_vertex * 2 + j * floats_per_vertex] = (float)(((point.x - *offset_x) / width - 0.5) * 2.0).get_double(offset_0, 1);

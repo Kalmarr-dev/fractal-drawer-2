@@ -114,7 +114,7 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
         }
 
         current_fractal_part->insert_used_last_reflection_line(reflection_line);
-        if (current_fractal_part->get_used_last_reflection_lines_size() >= current_fractal_part->get_last_reflection_lines().size())
+        if ((size_t)current_fractal_part->get_used_last_reflection_lines_size() >= current_fractal_part->get_last_reflection_lines().size())
         {
           #pragma omp critical(peripheral_fractal_parts)
           {
