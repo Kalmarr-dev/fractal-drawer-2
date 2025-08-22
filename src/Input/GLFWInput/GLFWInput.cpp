@@ -1,6 +1,7 @@
 #include "GLFWInput.h"
 
 #include <utility>
+#include <math.h>
 #include "../../Viewport/GLFWViewport/GLFWViewport.h"
 
 template<typename T>
@@ -53,15 +54,21 @@ void GLFWInput<T>::on_key_press_callback(GLFWwindow* window, int key, int scanco
     this->notify_zoom_reset();
   }
   if (key == zoom_out_key.code && action != GLFW_RELEASE) {
+    if (lock_zoom_key.amount_of_times_clicked && action == GLFW_PRESS)
+    {
+      this->zoom_out_key.amount_of_times_clicked++;
+    }
     this->notify_zoom(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)}, 0.995);
   }
   if (key == zoom_in_key.code && action != GLFW_RELEASE) {
+    if (lock_zoom_key.amount_of_times_clicked && action == GLFW_PRESS)
+    {
+      this->zoom_in_key.amount_of_times_clicked++;
+    }
     this->notify_zoom(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)}, 1.0055555555);
   }
   if (key == lock_zoom_key.code && action == GLFW_PRESS) {
-    // TODO lock zoom
-    lock_zoom_key.amount_of_times_clicked++;
-    throw "Lock zoom not implemented";
+    lock_zoom_key.amount_of_times_clicked = (mods & GLFW_MOD_CAPS_LOCK) ? 1 : 0;
   }
   if (key == fullscreen_key.code && action == GLFW_PRESS) {
     this->notify_toggle_fullscreen();
@@ -80,6 +87,7 @@ template<typename T>
 void GLFWInput<T>::subscribe_viewport_to_callbacks(IViewport* p_viewport)
 {
   GLFWViewport* p_viewport_cast = dynamic_cast<GLFWViewport*>(p_viewport);
+  glfwSetInputMode(p_viewport_cast->getWindowPointer(), GLFW_LOCK_KEY_MODS, GLFW_TRUE);
   glfwSetWindowUserPointer(p_viewport_cast->getWindowPointer(), this);
   auto on_click_callback = [](GLFWwindow* w, int a, int b, int c)
   {
@@ -101,4 +109,24 @@ void GLFWInput<T>::subscribe_viewport_to_callbacks(IViewport* p_viewport)
       static_cast<GLFWInput*>(glfwGetWindowUserPointer(w))->on_window_resize_callback(w, a, b);
   };
   glfwSetWindowSizeCallback(p_viewport_cast->getWindowPointer(), on_window_resize_callback);
+}
+
+template<typename T>
+void GLFWInput<T>::send_recurring_events() {
+  GLFWViewport* p_viewport_cast = dynamic_cast<GLFWViewport*>(p_viewport);
+  double mouseX, mouseY;
+  glfwGetCursorPos(p_viewport_cast->getWindowPointer(), &mouseX, &mouseY);
+  int windowW, windowH;
+  glfwGetWindowSize(p_viewport_cast->getWindowPointer(), &windowW, &windowH);
+  if (this->lock_zoom_key.amount_of_times_clicked)
+  {
+    this->notify_zoom
+    (
+      Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)},
+      std::pow(0.9975, this->zoom_out_key.amount_of_times_clicked - this->zoom_in_key.amount_of_times_clicked)
+    );
+  } else {
+    this->zoom_in_key.amount_of_times_clicked = 0;
+    this->zoom_out_key.amount_of_times_clicked = 0;
+  }
 }

@@ -3,11 +3,12 @@
 #include <GLFW/glfw3.h>
 #include "GLFWKey.h"
 #include "../InputSubject.h"
+#include "../IInput.h"
 #include "../../helpers/Position.h"
 #include "../../Viewport/IViewport.h"
 
 template<typename T>
-class GLFWInput : public InputSubject<T>, public IInputObserver
+class GLFWInput : public InputSubject<T>, public IInputObserver, public IInput
 {
 private:
   IViewport* p_viewport;
@@ -27,4 +28,5 @@ public:
   GLFWInput(IViewport* p_viewport, GLFWKey fullscreen_key, GLFWKey zoom_reset_key, GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key, GLFWKey confirm_key);
   ~GLFWInput() = default;
   void subscribe_viewport_to_callbacks(IViewport* p_viewport) override;
+  void send_recurring_events() override;
 };

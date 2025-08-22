@@ -64,7 +64,9 @@ int main(int argc, char const *argv[])
 
 
   while (!p_viewport->window_should_close()) {   
-    glfwWaitEvents();
+    // glfwWaitEvents();
+
+    p_input->send_recurring_events();
     
     p_renderer->clear_screen();
     p_renderer->render_to_screen();
@@ -75,7 +77,7 @@ int main(int argc, char const *argv[])
       p_viewport->toggle_fullscreen();
     }
 
-    // glfwPollEvents();
+    glfwPollEvents();
   }
   
 
