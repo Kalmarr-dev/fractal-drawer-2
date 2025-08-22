@@ -58,7 +58,7 @@ void OpenGLRenderer<T>::render_to_screen() {
 
   std::cout << shapes_collection.size() << '\n';
 
-  #pragma omp parallel for
+  #pragma omp parallel for schedule(static)
   for (int i = 0; i < shapes_collection.size(); i++)
   {
     auto shape = shapes_collection[i];

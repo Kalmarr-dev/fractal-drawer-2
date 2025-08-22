@@ -25,10 +25,9 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
 
   int new_lines_count = 0;
 
-  #pragma omp parallel for
+  #pragma omp parallel for schedule(dynamic)
   for (size_t i = 0; i < fractal_parts_to_process.size(); i++)
   {
-    // #pragma omp critical(new_lines_count)
     if (new_lines_count > MAXLINES)
     {
       continue;
@@ -37,7 +36,7 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
     auto root_line = current_fractal_part->get_root_line();
     auto corners = current_fractal_part->get_corners();
     auto direction_lines = current_fractal_part->get_direction_lines();
-    #pragma omp parallel for
+    // #pragma omp parallel for schedule(static)
     for (auto &reflection_line : current_fractal_part->get_last_reflection_lines())
     {
       if (current_fractal_part->find_used_last_reflection_line(reflection_line))

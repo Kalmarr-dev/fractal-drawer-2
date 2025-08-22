@@ -12,3 +12,7 @@ On-screen buttons
 Fractal-specific renderer
 
 Lock zoom
+
+Port to web with Emscripten
+
+Find out why when no fractal is drawn and moving cursor all cores are loaded 60%
