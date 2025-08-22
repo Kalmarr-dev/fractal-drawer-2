@@ -3,7 +3,7 @@
 #include <iostream>
 #include <math.h>
 
-#define _DEBUG
+// #define _DEBUG
 
 template <typename T>
 OpenGLRenderer<T>::OpenGLRenderer(
