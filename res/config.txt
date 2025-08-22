@@ -1,0 +1,11 @@
+# max number of shapes on screen
+5000000
+# max number of new shapes per "fractal zoom"
+500000
+# number of threads
+64
+# smallest shape size as porportion of screen size (so 0.001 is rougly 2 pixels).
+# Note that after zooming for a bit the actual line size will grow, until next "fractal zoom"
+0.001
+# camera size change for "zooming in fractal" (calculating smaller parts). Smaller means more updates
+4.0
