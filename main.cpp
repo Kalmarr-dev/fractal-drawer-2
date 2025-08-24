@@ -17,11 +17,30 @@
 #include "src/Input/GLFWInput/GLFWInput.h"
 #include "src/ShapeDataStructure/FractalDataStructure/FractalDataStructure.h"
 #include "src/OnScreenButton/BasicSquareOnScreenButton/PredefinedButtons.h"
+// #include "src/LongDouble/LongDoubleVector/LongDoubleVector.h"
+#include "src/LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 
 #define LongDouble BasicLongDouble
+#define LongDoubleBitset LongDoubleBitset<1024>
 
 int main(int argc, char const *argv[])
 {
+  LongDoubleBitset* zero_ldb = new LongDoubleBitset(0);
+  std::cout << zero_ldb->get_double(zero_ldb, 0) << '\n';
+  LongDoubleBitset ldb(-100000.000001);
+  std::cout << ldb.get_double(zero_ldb, 0) << '\n';
+  LongDoubleBitset ldb1(-0.0000000000001);
+  std::cout << ldb1.get_double(zero_ldb, 0) << '\n';
+  LongDoubleBitset ldb2(1);
+  std::cout << ldb2.get_double(zero_ldb, 0) << '\n';
+  LongDoubleBitset ldb3(-0.00000000000010001);
+  
+  LongDoubleBitset ldb1_zero = ldb1 + *zero_ldb;
+  LongDoubleBitset ldb1_1 = ldb1 + ldb1;
+  
+  std::cout << ldb1_zero.get_double(zero_ldb, 0) << '\n';
+  std::cout << ldb1_1.get_double(zero_ldb, 0) << '\n';
+
   Configuration configuration;
   if (argc > 1)
   {

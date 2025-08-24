@@ -1,1 +1,1 @@
-g++ -std=c++17 -O2 -Wall -g $(find src -name "*.cpp") $(find dependencies -name "*.c") $(find dependencies -name "*.cpp") main.cpp -fopenmp -lglfw -lGL -lX11 -lpthread -lXrandr -ldl -lOpenGL -ltbb -o fractal-drawer-2
+g++ -std=c++17 -Wall -g $(find src -name "*.cpp") $(find dependencies -name "*.c") $(find dependencies -name "*.cpp") main.cpp -fopenmp -lglfw -lGL -lX11 -lpthread -lXrandr -ldl -lOpenGL -ltbb -o fractal-drawer-2

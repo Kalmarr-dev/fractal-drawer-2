@@ -53,6 +53,7 @@
     "ctime": "cpp",
     "set": "cpp",
     "ratio": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "bitset": "cpp"
   }
 }
