@@ -123,7 +123,7 @@ LongDoubleBitset<LENGTH> operator+(const LongDoubleBitset<LENGTH>& lhs, const Lo
   std::bitset<LENGTH + 2> raw_result;
   bool result_sign;
 
-  if (lhs.signbit == rhs.signbit) {
+  if (lhs.signbit == !rhs.signbit) {
     raw_result = LongDoubleBitset<LENGTH>::add_mantissas(new_lhs_values, new_rhs_values);
     result_sign = lhs.signbit;
   } else {
@@ -133,7 +133,7 @@ LongDoubleBitset<LENGTH> operator+(const LongDoubleBitset<LENGTH>& lhs, const Lo
       result_sign = lhs.signbit;
     } else {
       raw_result = LongDoubleBitset<LENGTH>::subtract_mantissas(new_rhs_values, new_lhs_values);
-      result_sign = rhs.signbit;
+      result_sign = !rhs.signbit;
     }
   }
 
@@ -166,4 +166,87 @@ LongDoubleBitset<LENGTH> operator+(const LongDoubleBitset<LENGTH>& lhs, const Lo
   }
 
   return LongDoubleBitset<LENGTH>(mantissa, result_sign, result_exponent, false);
+}
+
+template<int LENGTH>
+LongDoubleBitset<LENGTH> operator-(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs) {
+  auto new_rhs = LongDoubleBitset<LENGTH>(rhs.values, rhs.signbit, rhs.exponent, rhs.is_zero);
+  return lhs + new_rhs;
+}
+
+template<int LENGTH>
+LongDoubleBitset<LENGTH> operator*(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs) {
+  if (lhs.is_zero || rhs.is_zero) {
+    return LongDoubleBitset<LENGTH>(
+      std::bitset<LENGTH>(0), 
+      lhs.signbit ^ rhs.signbit, 
+      0,
+      true
+    );
+  }
+
+  bool result_sign = lhs.signbit ^ rhs.signbit;
+
+  int result_exponent = lhs.exponent + rhs.exponent;
+
+  std::bitset<LENGTH + 2> lhs_mant = lhs.get_full_mantissa();
+  std::bitset<LENGTH + 2> rhs_mant = rhs.get_full_mantissa();
+
+  constexpr int FULL = LENGTH + 2;
+  constexpr int RESULT_BITS = 2 * FULL;
+  std::bitset<RESULT_BITS> product;
+
+  
+for (int i = 0; i < FULL; ++i) {
+  if (rhs_mant[i]) {
+    std::bitset<RESULT_BITS> shifted_lhs;
+    for (int j = 0; j < FULL; ++j) {
+      if (lhs_mant[j]) {
+        shifted_lhs[i + j] = 1;
+      }
+    }
+
+    bool carry = false;
+    for (int k = 0; k < RESULT_BITS; ++k) {
+      bool a = product[k];
+      bool b = shifted_lhs[k];
+      bool sum = a ^ b ^ carry;
+      carry = (a && b) || (a && carry) || (b && carry);
+      product[k] = sum;
+    }
+  }
+}
+
+  // SECTION Normalize the result
+  int msb = -1;
+  for (int i = RESULT_BITS - 1; i >= 0; --i) {
+    if (product[i]) {
+      msb = i;
+      break;
+    }
+  }
+
+  if (msb == -1) {
+    // Product is zero (shouldn't happen if both are non-zero, but safe fallback)
+    return LongDoubleBitset<LENGTH>(std::bitset<LENGTH>(0), result_sign, 0, true);
+  }
+
+  int shift = msb - (LENGTH);
+  std::bitset<RESULT_BITS> normalized;
+  if (shift >= 0) {
+    normalized = product >> shift;
+  } else {
+    normalized = product << (-shift);
+  }
+
+  // Adjust exponent due to normalization
+  result_exponent += shift - LENGTH - 1;
+
+  // SECTION Extract mantissa bits (drop the leading 1)
+  std::bitset<LENGTH> result_mantissa;
+  for (int i = 0; i < LENGTH; ++i) {
+    result_mantissa[i] = normalized[i];
+  }
+
+  return LongDoubleBitset<LENGTH>(result_mantissa, result_sign, result_exponent, false);
 }

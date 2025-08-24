@@ -44,7 +44,11 @@ int main(int argc, char const *argv[])
   // std::cout << (LongDoubleBitset(0.0000011) < LongDoubleBitset(0.000001)) << " false" << '\n';
   // std::cout << (LongDoubleBitset(0.000001) < LongDoubleBitset(0.0000011)) << " true" << '\n';
   // std::cout << (LongDoubleBitset(-100) < LongDoubleBitset(-10)) << " true" << '\n';
-  
+  // std::cout << (LongDoubleBitset(100) - LongDoubleBitset(10)).get_double(zero_ldb, 0) << '\n';
+  std::cout << (LongDoubleBitset(101) * LongDoubleBitset(10)).get_double(zero_ldb, 0) << '\n';
+  std::cout << (LongDoubleBitset(7) * LongDoubleBitset(0.15)).get_double(zero_ldb, 0) << '\n';
+  std::cout << (LongDoubleBitset(0.01) * LongDoubleBitset(0.101)).get_double(zero_ldb, 0) << '\n';
+
 
   Configuration configuration;
   if (argc > 1)
