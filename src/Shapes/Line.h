@@ -9,6 +9,8 @@ template<typename T>
 class Line : public IShape<T>
 {
 private:
+  ShapeType type = ShapeType::LINE;
+
 public:
   Position<T> a;
   Position<T> b;
@@ -45,6 +47,26 @@ public:
     indexes.push_back(0);
     indexes.push_back(1);
     return indexes;
+  }
+
+  inline ShapeType get_type() const {
+    return this->type;
+  }
+
+  inline Line* scale(double scale_x, double scale_y) const {
+    return new Line({a.x * scale_x, a.y * scale_y}, {b.x * scale_x, b.y * scale_y});
+  }
+
+  inline Line* add_one_to_negative_coordinates() const {
+    return new Line(
+      {
+        a.x < 0 ? a.x + 1 : a.x,
+        a.y < 0 ? a.y + 1 : a.y
+      }, {
+        b.x < 0 ? b.x + 1 : b.x,
+        b.y < 0 ? b.y + 1 : b.y
+      }
+    );
   }
 };
 

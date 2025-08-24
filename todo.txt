@@ -20,3 +20,7 @@ Find out why when no fractal is drawn and moving cursor all cores are loaded 60%
 CPU is not fully used when number of lines is large, implement better DS2D
 
 Add text
+
+License and Readme
+
+Check if my exe & appimage are x64

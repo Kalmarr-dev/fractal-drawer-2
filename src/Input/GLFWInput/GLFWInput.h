@@ -6,12 +6,15 @@
 #include "../IInput.h"
 #include "../../helpers/Position.h"
 #include "../../Viewport/IViewport.h"
+#include "../../OnScreenButton/IOnScreenButton.h"
 
 template<typename T>
 class GLFWInput : public InputSubject<T>, public IInputObserver, public IInput
 {
 private:
   IViewport* p_viewport;
+  IOnScreenButton* button_zoom_in;
+  IOnScreenButton* button_zoom_out;
   GLFWKey fullscreen_key;
   GLFWKey zoom_reset_key;
   GLFWKey zoom_in_key;
@@ -26,6 +29,7 @@ private:
   void on_window_resize_callback(GLFWwindow* window, int width, int height);
 public:
   GLFWInput(IViewport* p_viewport, GLFWKey fullscreen_key, GLFWKey zoom_reset_key, GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key, GLFWKey confirm_key);
+  GLFWInput(IViewport* p_viewport, IOnScreenButton* button_zoom_in, IOnScreenButton* button_zoom_out, GLFWKey fullscreen_key, GLFWKey zoom_reset_key, GLFWKey zoom_in_key, GLFWKey zoom_out_key, GLFWKey clear_key, GLFWKey lock_zoom_key, GLFWKey confirm_key);
   ~GLFWInput() = default;
   void subscribe_viewport_to_callbacks(IViewport* p_viewport) override;
   void send_recurring_events() override;

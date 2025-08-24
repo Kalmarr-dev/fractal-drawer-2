@@ -16,6 +16,7 @@
 #include "src/Viewport/GLFWViewport/GLFWViewport.h"
 #include "src/Input/GLFWInput/GLFWInput.h"
 #include "src/ShapeDataStructure/FractalDataStructure/FractalDataStructure.h"
+#include "src/OnScreenButton/BasicSquareOnScreenButton/PredefinedButtons.h"
 
 #define LongDouble BasicLongDouble
 
@@ -48,9 +49,15 @@ int main(int argc, char const *argv[])
 
   GLFWViewport* p_viewport = new GLFWViewport(true);
   
-  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursive_renderer, p_camera, configuration);
-  
-  GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(p_viewport, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK, GLFW_KEY_ENTER);
+  std::list<IOnScreenButton*> on_screen_buttons;
+  IOnScreenButton* button_zoom_in = get_predefined_basic_on_screen_button_zoom_in();
+  on_screen_buttons.push_back(button_zoom_in);
+  IOnScreenButton* button_zoom_out = get_predefined_basic_on_screen_button_zoom_out();
+  on_screen_buttons.push_back(button_zoom_out);
+
+  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursive_renderer, p_camera, configuration, on_screen_buttons);
+
+  GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(p_viewport, button_zoom_in, button_zoom_out, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK, GLFW_KEY_ENTER);
   
   p_input->subscribe_viewport_to_callbacks(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);

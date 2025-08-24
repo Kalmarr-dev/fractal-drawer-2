@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <math.h>
+#include "../../helpers/Color.h"
+#include "../../Shapes/IShape.h"
 
 // #define _DEBUG
 
@@ -9,8 +11,10 @@ template <typename T>
 OpenGLRenderer<T>::OpenGLRenderer(
   IRecursiveRenderer<T>* p_recursive_renderer,
   ICamera<T>* p_camera,
-  Configuration configuration
-) : p_recursive_renderer(p_recursive_renderer), p_camera(p_camera), configuration(configuration) {
+  Configuration configuration,
+  std::list<IOnScreenButton*> on_screen_buttons
+) : p_recursive_renderer(p_recursive_renderer), p_camera(p_camera), configuration(configuration),
+    on_screen_buttons(on_screen_buttons)  {
 
   // this->vertex_array = new;
   // this->index_buffer.Unbind();
@@ -37,6 +41,59 @@ template <typename T>
 OpenGLRenderer<T>::~OpenGLRenderer() {
   this->vertex_array->Unbind();
   this->index_buffer->Unbind();
+}
+
+template <typename T>
+void OpenGLRenderer<T>::render_buttons() {
+  vector<float> positions;
+  vector<unsigned int> indexes;
+
+  const int floats_per_vertex = 5;
+  
+  for (auto &&p_button : on_screen_buttons)
+  {
+    Shapes<double> shapes = p_button->get_shapes(this->window_width, this->window_height);
+    Color<double> color = p_button->get_color();
+    for (auto &&p_shape : shapes.get_shapes())
+    {
+      int current_index = positions.size() / floats_per_vertex;
+      for (auto &&i : p_shape->get_points())
+      {
+        positions.push_back((float)(i.x - 0.5) * 2);
+        positions.push_back((float)(i.y - 0.5) * 2);
+        positions.push_back(color.r);
+        positions.push_back(color.g);
+        positions.push_back(color.b);
+      }
+      for (auto &&i : p_shape->get_indexes())
+      {
+        indexes.push_back(current_index + i);
+      }
+    }
+  }
+
+  VertexBuffer vb(&positions[0], positions.size() * sizeof(float));
+  IndexBuffer ib(&indexes[0], (unsigned int)indexes.size());
+
+  VertexBufferLayout layout;
+  layout.Push<float>(2);
+  layout.Push<float>(3);
+
+  VertexArray va;
+  va.AddBuffer(vb, layout);
+
+  this->colored_shader = new Shader("res/shaders/colored.shader");
+  colored_shader->Bind();
+
+  colored_shader->SetUniform4f
+  ( 
+    "u_camera", -1.0, -1.0, 2.0, 2.0
+  );
+
+  va.Bind();
+  ib.Bind();
+  glLineWidth(5);
+  glDrawElements(GL_LINES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
 template <typename T>
@@ -121,6 +178,8 @@ void OpenGLRenderer<T>::render_to_screen() {
   ib.Bind();
   glLineWidth(5);
   glDrawElements(GL_LINES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
+
+  render_buttons();
 }
 
 template <typename T>
@@ -131,4 +190,6 @@ void OpenGLRenderer<T>::clear_screen() {
 template <typename T>
 void OpenGLRenderer<T>::process_window_resize(int window_width, int window_height) {
   glViewport(0, 0, window_width, window_height);
+  this->window_width = window_width;
+  this->window_height = window_height;
 }

@@ -10,6 +10,19 @@ GLFWInput<T>::GLFWInput(IViewport* p_viewport, GLFWKey fullscreen_key, GLFWKey z
 ) : p_viewport(p_viewport), fullscreen_key(fullscreen_key), zoom_reset_key(zoom_reset_key),
     zoom_in_key(zoom_in_key), zoom_out_key(zoom_out_key), clear_key(clear_key), lock_zoom_key(lock_zoom_key),
     confirm_key(confirm_key)
+{
+  this->button_zoom_in = nullptr;
+  this->button_zoom_out = nullptr;
+}
+
+template<typename T>
+GLFWInput<T>::GLFWInput(IViewport* p_viewport, IOnScreenButton* button_zoom_in, IOnScreenButton* button_zoom_out,
+  GLFWKey fullscreen_key, GLFWKey zoom_reset_key, 
+  GLFWKey zoom_in_key, GLFWKey zoom_out_key,
+  GLFWKey clear_key, GLFWKey lock_zoom_key, GLFWKey confirm_key
+) : p_viewport(p_viewport), button_zoom_in(button_zoom_in), button_zoom_out(button_zoom_out),
+    fullscreen_key(fullscreen_key), zoom_reset_key(zoom_reset_key), zoom_in_key(zoom_in_key), zoom_out_key(zoom_out_key),
+    clear_key(clear_key), lock_zoom_key(lock_zoom_key), confirm_key(confirm_key)
 {}
 
 template<typename T>
@@ -18,16 +31,36 @@ void GLFWInput<T>::on_click_callback(GLFWwindow* window, int button, int action,
   glfwGetCursorPos(window, &mouseX, &mouseY);
   int windowW, windowH;
   glfwGetWindowSize(window, &windowW, &windowH);
+  Position<double> mouse_position = {mouseX / windowW, (- mouseY / windowH + 1.0)};
 
   if (action == GLFW_PRESS) {
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-      this->notify_secondary_button_down(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)});
-    } else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-      // TODO
-      // throw "Not implemented";
-    } else {
-      this->notify_primary_button_down(Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)});
+    bool button_was_pressed = false;
+    if (this->button_zoom_in != nullptr && this->button_zoom_in->pointer_is_inside(mouse_position, windowW, windowH))
+    {
+      this->button_zoom_in->set_clicked();
+      button_was_pressed = true;
     }
+    if (this->button_zoom_out != nullptr && this->button_zoom_out->pointer_is_inside(mouse_position, windowW, windowH))
+    {
+      this->button_zoom_out->set_clicked();
+      button_was_pressed = true;
+    }
+    if (!button_was_pressed)
+    {
+      if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        this->notify_secondary_button_down(mouse_position);
+      } else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+        // TODO
+        // throw "Not implemented";
+      } else {
+        this->notify_primary_button_down(mouse_position);
+      }
+    }
+  }
+
+  if (action == GLFW_RELEASE) {
+    this->button_zoom_in->set_not_clicked();
+    this->button_zoom_out->set_not_clicked();
   }
 }
 
@@ -118,11 +151,18 @@ void GLFWInput<T>::send_recurring_events() {
   glfwGetCursorPos(p_viewport_cast->getWindowPointer(), &mouseX, &mouseY);
   int windowW, windowH;
   glfwGetWindowSize(p_viewport_cast->getWindowPointer(), &windowW, &windowH);
-  if (this->lock_zoom_key.amount_of_times_clicked)
+  auto mouse_position = Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)};
+  if (this->button_zoom_in != nullptr && this->button_zoom_in->is_clicked())
+  {
+    this->notify_zoom(mouse_position, 1 / 0.995);
+  } else if (this->button_zoom_out != nullptr && this->button_zoom_out->is_clicked())
+  {
+    this->notify_zoom(mouse_position, 0.995);
+  } else if (this->lock_zoom_key.amount_of_times_clicked)
   {
     this->notify_zoom
     (
-      Position<double>{mouseX / windowW, (- mouseY / windowH + 1.0)},
+      mouse_position,
       std::pow(0.9975, this->zoom_out_key.amount_of_times_clicked - this->zoom_in_key.amount_of_times_clicked)
     );
   } else {
