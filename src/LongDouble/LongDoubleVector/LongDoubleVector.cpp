@@ -51,32 +51,32 @@ double LongDoubleVector::get_double(ILongDouble* offset, int scale_exponent) {
   return d;
 }
 
-LongDoubleVector LongDoubleVector::get_normalized() const {
-  // std::vector<int> new_values;
-  // int sign = 0;
+// LongDoubleVector LongDoubleVector::get_normalized() const {
+//   // std::vector<int> new_values;
+//   // int sign = 0;
   
-  // for (int i = this->values.size() - 1; i > -1; i--)
-  // {
-  //   int element = this->values[i];
-  //   if (std::abs(element) > (1ll << this->precision_per_int))
-  //   {
-  //     // TODO
-  //   }
-  // }
+//   // for (int i = this->values.size() - 1; i > -1; i--)
+//   // {
+//   //   int element = this->values[i];
+//   //   if (std::abs(element) > (1ll << this->precision_per_int))
+//   //   {
+//   //     // TODO
+//   //   }
+//   // }
   
-  // int first_non_zero_i = -1;
-  // for (int i = 0; i < this->values.size(); i++)
-  // {
-  //   int element = this->values[i];
-  //   if (first_non_zero_i == -1 && element != 0)
-  //   {
-  //     first_non_zero_i = i;
-  //   }    
-  // }
-  // if (first_non_zero_i == -1) first_non_zero_i = this->current_exponent / this->precision_per_int;
-  // // TODO truncate new_values using first_non_zero_i
-  // return LongDoubleVector(new_values, this->current_exponent - this->precision_per_int * first_non_zero_i);
-}
+//   // int first_non_zero_i = -1;
+//   // for (int i = 0; i < this->values.size(); i++)
+//   // {
+//   //   int element = this->values[i];
+//   //   if (first_non_zero_i == -1 && element != 0)
+//   //   {
+//   //     first_non_zero_i = i;
+//   //   }    
+//   // }
+//   // if (first_non_zero_i == -1) first_non_zero_i = this->current_exponent / this->precision_per_int;
+//   // // TODO truncate new_values using first_non_zero_i
+//   // return LongDoubleVector(new_values, this->current_exponent - this->precision_per_int * first_non_zero_i);
+// }
   
 bool operator<(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
   if (lhs.get_sign() != rhs.get_sign())
@@ -99,7 +99,6 @@ bool operator<(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
       return lhs.current_exponent > rhs.current_exponent;
     }
   }
-  int exponent = lhs.current_exponent;
 
   for (size_t i = 0; i < lhs.values.size(); i++)
   {
@@ -127,41 +126,41 @@ bool operator<(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
 
   return false;
 }
-LongDoubleVector operator+(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
-  // std::vector<int> accumulator;
-  // int exponent = std::max(lhs.current_exponent, rhs.current_exponent);
+// LongDoubleVector operator+(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
+//   // std::vector<int> accumulator;
+//   // int exponent = std::max(lhs.current_exponent, rhs.current_exponent);
 
-  // for (int e = exponent; e > lhs.current_exponent; e -= lhs.precision_per_int)
-  // {
-  //   accumulator.push_back(0);
-  // }
-  // for (int i = 0; i < lhs.values.size(); i += lhs.precision_per_int)
-  // {
-  //   accumulator.push_back(lhs.values[i]);
-  // }
+//   // for (int e = exponent; e > lhs.current_exponent; e -= lhs.precision_per_int)
+//   // {
+//   //   accumulator.push_back(0);
+//   // }
+//   // for (int i = 0; i < lhs.values.size(); i += lhs.precision_per_int)
+//   // {
+//   //   accumulator.push_back(lhs.values[i]);
+//   // }
   
-  // int starting_index = exponent - rhs.current_exponent;
-  // for (int i = 0; i < rhs.values.size(); i++)
-  // {
-  //   if (i < accumulator.size())
-  //   {
-  //     accumulator[starting_index + i] += rhs.values[i];
-  //   } else {
-  //     accumulator.push_back(rhs.values[i]);
-  //   }
-  // }
+//   // int starting_index = exponent - rhs.current_exponent;
+//   // for (int i = 0; i < rhs.values.size(); i++)
+//   // {
+//   //   if (i < accumulator.size())
+//   //   {
+//   //     accumulator[starting_index + i] += rhs.values[i];
+//   //   } else {
+//   //     accumulator.push_back(rhs.values[i]);
+//   //   }
+//   // }
 
-  // LongDoubleVector res(accumulator, exponent);
+//   // LongDoubleVector res(accumulator, exponent);
 
-  // // TODO normalize (every number in the vector is the same sign & less than pow(2, precision_per_int))
-  // return res.get_normalized();
-}
-LongDoubleVector operator-(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
-  // TODO
-}
-LongDoubleVector operator*(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
+//   // // TODO normalize (every number in the vector is the same sign & less than pow(2, precision_per_int))
+//   // return res.get_normalized();
+// }
+// LongDoubleVector operator-(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
+//   // TODO
+// }
+// LongDoubleVector operator*(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
 
-}
-LongDoubleVector operator/(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
+// }
+// LongDoubleVector operator/(const LongDoubleVector& lhs, const LongDoubleVector& rhs) {
 
-}
+// }
