@@ -13,6 +13,7 @@ LongDoubleBitset<LENGTH>::LongDoubleBitset(double value) {
   // So multiply by 2 and subtract 1 to get fractional part
   if (value != 0)
   {
+    this->is_zero = false;
     mantissa *= 2;
     mantissa -= 1.0;
   
@@ -34,6 +35,7 @@ LongDoubleBitset<LENGTH>::LongDoubleBitset(const std::bitset<LENGTH>& values, bo
 
 template<int LENGTH>
 double LongDoubleBitset<LENGTH>::get_double(ILongDouble* offset, int scale_exponent) {
+  // TODO consider offset !!!
   double mantissa = 0.0;
 
   // Convert bitset to fractional part
@@ -71,6 +73,41 @@ std::bitset<LENGTH + 2> LongDoubleBitset<LENGTH>::get_full_mantissa() const {
   }
   
   return full;
+}
+
+template<int LENGTH>
+bool operator<(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs) {
+  if (lhs.signbit != rhs.signbit) {
+    return lhs.signbit; // true if lhs is negative and rhs is positive
+  }
+
+  if (lhs.is_zero && rhs.is_zero) return false;
+  if (lhs.is_zero) return !rhs.signbit;
+  if (rhs.is_zero) return lhs.signbit;
+
+  // Both positive or both negative
+  bool abs_less_than;
+
+  if (lhs.exponent != rhs.exponent) {
+    abs_less_than = lhs.exponent < rhs.exponent;
+  } else {
+    std::bitset<LENGTH + 2> lhs_mant = lhs.get_full_mantissa();
+    std::bitset<LENGTH + 2> rhs_mant = rhs.get_full_mantissa();
+
+    for (int i = LENGTH + 1; i >= 0; --i) {
+      if (lhs_mant[i] != rhs_mant[i]) {
+        abs_less_than = !lhs_mant[i] && rhs_mant[i];
+        break;
+      }
+    }
+
+    // If identical, not less than
+    if (lhs.get_full_mantissa() == rhs.get_full_mantissa()) {
+        return false;
+    }
+  }
+
+  return lhs.signbit ? !abs_less_than : abs_less_than;
 }
 
 template<int LENGTH>

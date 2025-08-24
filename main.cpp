@@ -31,15 +31,20 @@ int main(int argc, char const *argv[])
   std::cout << ldb.get_double(zero_ldb, 0) << '\n';
   LongDoubleBitset ldb1(-0.0000000000001);
   std::cout << ldb1.get_double(zero_ldb, 0) << '\n';
-  LongDoubleBitset ldb2(1);
+  LongDoubleBitset ldb2(-0.00000000000010001);
   std::cout << ldb2.get_double(zero_ldb, 0) << '\n';
-  LongDoubleBitset ldb3(-0.00000000000010001);
   
-  LongDoubleBitset ldb1_zero = ldb1 + *zero_ldb;
-  LongDoubleBitset ldb1_1 = ldb1 + ldb1;
+  // LongDoubleBitset ldb1_zero = ldb1 + *zero_ldb;
+  // LongDoubleBitset ldb1_1 = ldb1 + ldb1;
+  // std::cout << ldb1_zero.get_double(zero_ldb, 0) << '\n';
+  // std::cout << ldb1_1.get_double(zero_ldb, 0) << '\n';
+  // std::cout << (LongDoubleBitset(100) + LongDoubleBitset(10)).get_double(zero_ldb, 0) << '\n';
+  // std::cout << (LongDoubleBitset(100) < LongDoubleBitset(10)) << " false" << '\n';
+  // std::cout << (LongDoubleBitset(0.01) < LongDoubleBitset(0.1)) << " true" << '\n';
+  // std::cout << (LongDoubleBitset(0.0000011) < LongDoubleBitset(0.000001)) << " false" << '\n';
+  // std::cout << (LongDoubleBitset(0.000001) < LongDoubleBitset(0.0000011)) << " true" << '\n';
+  // std::cout << (LongDoubleBitset(-100) < LongDoubleBitset(-10)) << " true" << '\n';
   
-  std::cout << ldb1_zero.get_double(zero_ldb, 0) << '\n';
-  std::cout << ldb1_1.get_double(zero_ldb, 0) << '\n';
 
   Configuration configuration;
   if (argc > 1)
