@@ -30,18 +30,18 @@ template<typename T>
 void BasicCamera<T>::process_zoom(Position<T> pointer, T scale_value) {
   T width = this->camera_corners.second.x - this->camera_corners.first.x;
   T height = this->camera_corners.second.y - this->camera_corners.first.y;
-  T dX = (pointer.x - 0.5) * width;
-  T dY = (pointer.y - 0.5) * height;
+  T dX = (pointer.x - T(0.5)) * width;
+  T dY = (pointer.y - T(0.5)) * height;
   T x = this->camera_corners.first.x;
   T y = this->camera_corners.first.y;
-  x = x + width / 2;
-  y = y + height / 2;
+  x = x + width / T(2.0);
+  y = y + height / T(2.0);
   x = x + dX - dX / scale_value;
   y = y + dY - dY / scale_value;
   width = width / scale_value;
   height = height / scale_value;
-  x = x - width / 2;
-  y = y - height / 2;
+  x = x - width / T(2.0);
+  y = y - height / T(2.0);
   this->camera_corners.first.x = x;
   this->camera_corners.first.y = y;
   this->camera_corners.second.x = x + width;
@@ -63,8 +63,8 @@ void BasicCamera<T>::resize(int window_width, int window_height) {
   T x = this->camera_corners.first.x;
   T y = this->camera_corners.first.y;
   T smallerSide = std::min(width, height);
-  x = x + width * .5 - smallerSide * horizontalScaleF * .5;
-  y = y + height * .5 - smallerSide * verticalScaleF * .5;
+  x = x + width * T(.5) - smallerSide * horizontalScaleF * T(.5);
+  y = y + height * T(.5) - smallerSide * verticalScaleF * T(.5);
   width = smallerSide * horizontalScaleF;
   height = smallerSide * verticalScaleF;
   this->camera_corners.first.x = x;

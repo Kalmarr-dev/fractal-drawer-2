@@ -1,7 +1,7 @@
 #include "FractalDataStructure.cpp"
 
 #include "../../LongDouble/BasicLongDouble/BasicLongDouble.h"
-// #include "../../LongDouble/LongDoubleVector/LongDoubleVector.h"
+#include "../../LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 
 template class FractalDataStructure<BasicLongDouble>;
-// template class FractalDataStructure<LongDoubleVector>;
+template class FractalDataStructure<_LongDoubleBitset>;

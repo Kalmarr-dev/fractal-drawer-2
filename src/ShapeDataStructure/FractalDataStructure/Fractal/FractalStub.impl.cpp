@@ -1,7 +1,7 @@
 #include "FractalStub.cpp"
 
 #include "../../../LongDouble/BasicLongDouble/BasicLongDouble.h"
-// #include "../../../LongDouble/LongDoubleVector/LongDoubleVector.h"
+#include "../../../LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 
 template class FractalStub<BasicLongDouble>;
-// template class FractalStub<LongDoubleVector>;
+template class FractalStub<_LongDoubleBitset>;

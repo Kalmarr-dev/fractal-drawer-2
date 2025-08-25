@@ -1,7 +1,7 @@
 #include "InputSubject.cpp"
 
 #include "../LongDouble/BasicLongDouble/BasicLongDouble.h"
-// #include "../LongDouble/LongDoubleVector/LongDoubleVector.h"
+#include "../LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 
 template class InputSubject<BasicLongDouble>;
-// template class InputSubject<LongDoubleVector>;
+template class InputSubject<_LongDoubleBitset>;

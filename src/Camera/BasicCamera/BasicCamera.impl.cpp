@@ -1,7 +1,7 @@
 #include "BasicCamera.cpp"
 
 #include "../../LongDouble/BasicLongDouble/BasicLongDouble.h"
-// #include "../../LongDouble/LongDoubleVector/LongDoubleVector.h"
+#include "../../LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 
 template class BasicCamera<BasicLongDouble>;
-// template class BasicDataStructure2D<LongDoubleVector>;
+template class BasicCamera<_LongDoubleBitset>;

@@ -18,8 +18,11 @@ GLFWViewport::GLFWViewport(bool fullscreen) {
   //   std::cout << code << '\n';
   //   display_error_message(code, description);
   
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+  #ifdef _DEBUG
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+  #endif
   this->is_fullscreen = !fullscreen;
+  this->p_window = nullptr;
   this->toggle_fullscreen();
   if (!this->p_window) {
     glfwTerminate();

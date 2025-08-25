@@ -1,7 +1,7 @@
 #include "GLFWInput.cpp"
 
 #include "../../LongDouble/BasicLongDouble/BasicLongDouble.h"
-// #include "../../LongDouble/LongDoubleVector/LongDoubleVector.h"
+#include "../../LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 
 template class GLFWInput<BasicLongDouble>;
-// template class GLFWInput<LongDoubleVector>;
+template class GLFWInput<_LongDoubleBitset>;

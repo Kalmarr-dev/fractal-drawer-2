@@ -124,15 +124,23 @@ void OpenGLRenderer<T>::render_to_screen() {
     auto shape = shapes_collection[i];
     auto shape_points = shape->get_points();
     auto shape_indexes = shape->get_indexes();
-    double length_squared_log = std::log2(shape->get_linear_size_squared().get_double(offset_0, 1));
+    double length_squared_log = std::log2(shape->get_linear_size_squared().get_double(offset_0, 0));
     double r = std::cos(length_squared_log * 0.15) * 0.5 + 0.5;
     double g = std::cos(length_squared_log * 0.1 + + 3.1415 * 0.5) * 0.5 + 0.5;
     double b = std::cos(length_squared_log * 0.25 + 3.1415) * 0.5 + 0.5;
     for (int j = 0; j < (int)shape_points.size(); j++)
     {
       auto point = shape_points[j];
-      positions[i * floats_per_vertex * 2 + j * floats_per_vertex] = (float)(((point.x - *offset_x) / width - 0.5) * 2.0).get_double(offset_0, 1);
-      positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 1] = (float)(((point.y - *offset_y) / height - 0.5) * 2.0).get_double(offset_0, 1);
+      double point_x_double = point.x.get_double(offset_0, 0);
+      T offset_point_x = (point.x - *offset_x);
+      double offset_point_x_double = offset_point_x.get_double(offset_0, 0);
+      double width_double = width.get_double(offset_0, 0);
+      T scaled_point_x = offset_point_x / width;
+      double scaled_point_x_double = scaled_point_x.get_double(offset_0, 0);
+      T rescaled_point_x = (scaled_point_x - T(0.5)) * T(2.0);
+      double rescaled_point_x_double = rescaled_point_x.get_double(offset_0, 0);
+      positions[i * floats_per_vertex * 2 + j * floats_per_vertex] = (float)(rescaled_point_x).get_double(offset_0, 0);
+      positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 1] = (float)(((point.y - *offset_y) / height - T(0.5)) * T(2.0)).get_double(offset_0, 0);
       positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 2] = (float)r;
       positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 3] = (float)g;
       positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 4] = (float)b;

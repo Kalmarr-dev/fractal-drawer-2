@@ -54,17 +54,17 @@ public:
   }
 
   inline Line* scale(double scale_x, double scale_y) const {
-    return new Line({a.x * scale_x, a.y * scale_y}, {b.x * scale_x, b.y * scale_y});
+    return new Line({a.x * T(scale_x), a.y * T(scale_y)}, {b.x * T(scale_x), b.y * T(scale_y)});
   }
 
   inline Line* add_one_to_negative_coordinates() const {
     return new Line(
       {
-        a.x < 0 ? a.x + 1 : a.x,
-        a.y < 0 ? a.y + 1 : a.y
+        a.x < T(0.0) ? a.x + T(1.0) : a.x,
+        a.y < T(0.0) ? a.y + T(1.0) : a.y
       }, {
-        b.x < 0 ? b.x + 1 : b.x,
-        b.y < 0 ? b.y + 1 : b.y
+        b.x < T(0.0) ? b.x + T(1.0) : b.x,
+        b.y < T(0.0) ? b.y + T(1.0) : b.y
       }
     );
   }

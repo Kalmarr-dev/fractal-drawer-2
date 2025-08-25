@@ -122,7 +122,7 @@ LongDoubleBitset<LENGTH> operator+(const LongDoubleBitset<LENGTH>& lhs, const Lo
     new_rhs_values >>= (lhs.exponent - rhs.exponent);
   }
 
-  std::bitset<LENGTH + 2> raw_result;
+  std::bitset<LENGTH + 2> raw_result(0);
   bool result_sign;
 
   if (lhs.signbit == rhs.signbit) {
@@ -172,7 +172,7 @@ LongDoubleBitset<LENGTH> operator+(const LongDoubleBitset<LENGTH>& lhs, const Lo
 
 template<int LENGTH>
 LongDoubleBitset<LENGTH> operator-(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs) {
-  auto new_rhs = LongDoubleBitset<LENGTH>(rhs.values, rhs.signbit, rhs.exponent, rhs.is_zero);
+  auto new_rhs = LongDoubleBitset<LENGTH>(rhs.values, !rhs.signbit, rhs.exponent, rhs.is_zero);
   return lhs + new_rhs;
 }
 
@@ -196,28 +196,28 @@ LongDoubleBitset<LENGTH> operator*(const LongDoubleBitset<LENGTH>& lhs, const Lo
 
   constexpr int FULL = LENGTH + 2;
   constexpr int RESULT_BITS = 2 * FULL;
-  std::bitset<RESULT_BITS> product;
+  std::bitset<RESULT_BITS> product(0);
 
   
-for (int i = 0; i < FULL; ++i) {
-  if (rhs_mant[i]) {
-    std::bitset<RESULT_BITS> shifted_lhs;
-    for (int j = 0; j < FULL; ++j) {
-      if (lhs_mant[j]) {
-        shifted_lhs[i + j] = 1;
+  for (int i = 0; i < FULL; ++i) {
+    if (rhs_mant[i]) {
+      std::bitset<RESULT_BITS> shifted_lhs(0);
+      for (int j = 0; j < FULL; ++j) {
+        if (lhs_mant[j]) {
+          shifted_lhs[i + j] = 1;
+        }
+      }
+
+      bool carry = false;
+      for (int k = 0; k < RESULT_BITS; ++k) {
+        bool a = product[k];
+        bool b = shifted_lhs[k];
+        bool sum = a ^ b ^ carry;
+        carry = (a && b) || (a && carry) || (b && carry);
+        product[k] = sum;
       }
     }
-
-    bool carry = false;
-    for (int k = 0; k < RESULT_BITS; ++k) {
-      bool a = product[k];
-      bool b = shifted_lhs[k];
-      bool sum = a ^ b ^ carry;
-      carry = (a && b) || (a && carry) || (b && carry);
-      product[k] = sum;
-    }
   }
-}
 
   // SECTION Normalize the result
   int msb = -1;
@@ -275,19 +275,19 @@ LongDoubleBitset<LENGTH> operator/(const LongDoubleBitset<LENGTH>& lhs, const Lo
   std::bitset<FULL> den = rhs.get_full_mantissa();
 
   // 2. Left-align numerator to DIV_BITS
-  std::bitset<DIV_BITS> dividend;
+  std::bitset<DIV_BITS> dividend(0);
   for (int i = 0; i < FULL; ++i) {
     dividend[DIV_BITS - 1 - i] = num[FULL - 1 - i];
   }
 
-  std::bitset<DIV_BITS> divisor;
+  std::bitset<DIV_BITS> divisor(0);
   for (int i = 0; i < FULL; ++i) {
     divisor[FULL - 1 - i] = den[FULL - 1 - i];
   }
 
   // 3. Perform binary long division
-  std::bitset<DIV_BITS> quotient;
-  std::bitset<DIV_BITS> remainder;
+  std::bitset<DIV_BITS> quotient(0);
+  std::bitset<DIV_BITS> remainder(0);
 
   for (int i = DIV_BITS - 1; i >= 0; --i) {
     remainder <<= 1;
@@ -302,25 +302,25 @@ LongDoubleBitset<LENGTH> operator/(const LongDoubleBitset<LENGTH>& lhs, const Lo
   // 4. Find MSB of result to normalize
   int msb = -1;
   for (int i = DIV_BITS - 1; i >= 0; --i) {
-      if (quotient[i]) {
-          msb = i;
-          break;
-      }
+    if (quotient[i]) {
+      msb = i;
+      break;
+    }
   }
 
   if (msb == -1) {
-      // Result is zero
-      return LongDoubleBitset<LENGTH>(
-          std::bitset<LENGTH>(0),
-          lhs.signbit ^ rhs.signbit,
-          0,
-          true
-      );
+    // Result is zero
+    return LongDoubleBitset<LENGTH>(
+      std::bitset<LENGTH>(0),
+      lhs.signbit ^ rhs.signbit,
+      0,
+      true
+    );
   }
 
   // 5. Normalize
   int shift = msb - (LENGTH);
-  std::bitset<DIV_BITS> normalized;
+  std::bitset<DIV_BITS> normalized(0);
   if (shift >= 0) {
     normalized = quotient >> shift;
   } else {
@@ -328,13 +328,13 @@ LongDoubleBitset<LENGTH> operator/(const LongDoubleBitset<LENGTH>& lhs, const Lo
   }
 
   // 6. Extract mantissa
-  std::bitset<LENGTH> result_mantissa;
+  std::bitset<LENGTH> result_mantissa(0);
   for (int i = 0; i < LENGTH; ++i) {
     result_mantissa[i] = normalized[i];
   }
 
   // 7. Compute exponent
-  int result_exponent = lhs.exponent - rhs.exponent - (shift - 3);
+  int result_exponent = lhs.exponent - rhs.exponent + (shift - 1);
 
   // 8. Return result
   return LongDoubleBitset<LENGTH>(

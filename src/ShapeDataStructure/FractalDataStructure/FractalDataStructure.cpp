@@ -17,8 +17,8 @@ void FractalDataStructure<T>::draw_silly_line(Position<T> pointer) {
   T height = corners.second.y - corners.first.y;
   T x = corners.first.x + width * pointer.x;
   T y = corners.first.y + height * pointer.y;
-  all_shapes.add_shape(new Line<T>({x, y}, {x, y + 0.5}));
-  new_shapes.add_shape(new Line<T>({x, y}, {x, y + 0.5}));
+  all_shapes.add_shape(new Line<T>({x, y}, {x, y + T(0.5)}));
+  new_shapes.add_shape(new Line<T>({x, y}, {x, y + T(0.5)}));
 }
 
 template<typename T>
