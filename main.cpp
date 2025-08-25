@@ -17,47 +17,13 @@
 #include "src/Input/GLFWInput/GLFWInput.h"
 #include "src/ShapeDataStructure/FractalDataStructure/FractalDataStructure.h"
 #include "src/OnScreenButton/BasicSquareOnScreenButton/PredefinedButtons.h"
-// #include "src/LongDouble/LongDoubleVector/LongDoubleVector.h"
 #include "src/LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 
-#define LongDouble LongDoubleBitset
-#define LongDoubleBitset LongDoubleBitset<1024>
+// #define LongDouble _LongDoubleBitset
+#define LongDouble BasicLongDouble
 
 int main(int argc, char const *argv[])
 {
-  LongDoubleBitset* zero_ldb = new LongDoubleBitset(0);
-  std::cout << zero_ldb->get_double(zero_ldb, 0) << '\n';
-  LongDoubleBitset ldb(-100000.000001);
-  std::cout << ldb.get_double(zero_ldb, 0) << '\n';
-  LongDoubleBitset ldb1(-0.0000000000001);
-  std::cout << ldb1.get_double(zero_ldb, 0) << '\n';
-  LongDoubleBitset ldb2(-0.00000000000010001);
-  std::cout << ldb2.get_double(zero_ldb, 0) << '\n';
-  
-  // LongDoubleBitset ldb1_zero = ldb1 + *zero_ldb;
-  // LongDoubleBitset ldb1_1 = ldb1 + ldb1;
-  // std::cout << ldb1_zero.get_double(zero_ldb, 0) << '\n';
-  // std::cout << ldb1_1.get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(100) + LongDoubleBitset(10)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(-1.001) + LongDoubleBitset(2.002)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(100) < LongDoubleBitset(10)) << " false" << '\n';
-  // std::cout << (LongDoubleBitset(0.01) < LongDoubleBitset(0.1)) << " true" << '\n';
-  // std::cout << (LongDoubleBitset(0.0000011) < LongDoubleBitset(0.000001)) << " false" << '\n';
-  // std::cout << (LongDoubleBitset(0.000001) < LongDoubleBitset(0.0000011)) << " true" << '\n';
-  // std::cout << (LongDoubleBitset(-100) < LongDoubleBitset(-10)) << " true" << '\n';
-  // std::cout << (LongDoubleBitset(100) - LongDoubleBitset(10)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(1) - LongDoubleBitset(-1)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(101) * LongDoubleBitset(10)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(7) * LongDoubleBitset(0.15)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(0.01) * LongDoubleBitset(0.101)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(4) / LongDoubleBitset(2)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(1010) / LongDoubleBitset(101)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(1010) / LongDoubleBitset(10)).get_double(zero_ldb, 0) << '\n';
-  // std::cout << (LongDoubleBitset(0.0101) / LongDoubleBitset(101)).get_double(zero_ldb, 0) << '\n';
-  std::cout << (LongDoubleBitset(0.75) / LongDoubleBitset(2.5)).get_double(zero_ldb, 0) << std::endl;
-  std::cout << (LongDoubleBitset(0.77777777777777768) / LongDoubleBitset(3.5555555555555554)).get_double(zero_ldb, 0) << std::endl;
-
-
   Configuration configuration;
   if (argc > 1)
   {
@@ -97,10 +63,10 @@ int main(int argc, char const *argv[])
   
   p_input->subscribe_viewport_to_callbacks(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
-  // p_input->subscribe_to_zoom(p_camera);
+  p_input->subscribe_to_zoom(p_camera);
   p_input->subscribe_to_zoom(p_fractal_data_structure); // after subscribing camers to zoom
   p_input->subscribe_to_zoom(p_recursive_renderer); // after subscribing camera and shape_ds to zoom
-  // p_input->subscribe_to_zoom_reset(p_camera);
+  p_input->subscribe_to_zoom_reset(p_camera);
   p_input->subscribe_to_window_resize(p_camera);
   p_input->subscribe_to_window_resize(p_renderer);
   p_viewport->subscribe_to_window_reconstruction(p_input);
@@ -111,14 +77,13 @@ int main(int argc, char const *argv[])
 
 
   while (!p_viewport->window_should_close()) {   
-    glfwWaitEvents();
+    // glfwWaitEvents();
 
     p_input->send_recurring_events();
     
     p_renderer->clear_screen();
     p_renderer->render_to_screen();
 
-    auto test = p_camera->get_camera_corners();
  
     glfwSwapBuffers(p_viewport->getWindowPointer());
     
@@ -126,7 +91,7 @@ int main(int argc, char const *argv[])
       p_viewport->toggle_fullscreen();
     }
 
-    // glfwPollEvents();
+    glfwPollEvents();
   }
   
 
