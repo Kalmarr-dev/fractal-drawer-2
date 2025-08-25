@@ -1,7 +1,9 @@
 #include "LongDoubleBitset.h"
 
 #include <math.h>
+#include <stdexcept>
 #include "../../helpers/bitset_lt.h"
+#include "../../helpers/bitset_subtract.h"
 
 template<int LENGTH>
 LongDoubleBitset<LENGTH>::LongDoubleBitset(double value) {
@@ -123,17 +125,17 @@ LongDoubleBitset<LENGTH> operator+(const LongDoubleBitset<LENGTH>& lhs, const Lo
   std::bitset<LENGTH + 2> raw_result;
   bool result_sign;
 
-  if (lhs.signbit == !rhs.signbit) {
+  if (lhs.signbit == rhs.signbit) {
     raw_result = LongDoubleBitset<LENGTH>::add_mantissas(new_lhs_values, new_rhs_values);
     result_sign = lhs.signbit;
   } else {
     // Compare to determine sign
-    if (!bitset_lt<LENGTH>(lhs.values, rhs.values)) {
+    if (!bitset_lt<LENGTH + 2>(new_lhs_values, new_rhs_values)) {
       raw_result = LongDoubleBitset<LENGTH>::subtract_mantissas(new_lhs_values, new_rhs_values);
       result_sign = lhs.signbit;
     } else {
       raw_result = LongDoubleBitset<LENGTH>::subtract_mantissas(new_rhs_values, new_lhs_values);
-      result_sign = !rhs.signbit;
+      result_sign = rhs.signbit;
     }
   }
 
@@ -249,4 +251,96 @@ for (int i = 0; i < FULL; ++i) {
   }
 
   return LongDoubleBitset<LENGTH>(result_mantissa, result_sign, result_exponent, false);
+}
+
+template<int LENGTH>
+LongDoubleBitset<LENGTH> operator/(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs) {
+  if (rhs.is_zero) {
+    throw std::runtime_error("Division by zero in LongDoubleBitset");
+  }
+  if (lhs.is_zero) {
+      return LongDoubleBitset<LENGTH>(
+          std::bitset<LENGTH>(0), 
+          lhs.signbit ^ rhs.signbit,
+          0,
+          true
+      );
+  }
+
+  constexpr int FULL = LENGTH + 2;
+  constexpr int DIV_BITS = 2 * FULL;
+
+  // 1. Get mantissas with leading 1
+  std::bitset<FULL> num = lhs.get_full_mantissa();
+  std::bitset<FULL> den = rhs.get_full_mantissa();
+
+  // 2. Left-align numerator to DIV_BITS
+  std::bitset<DIV_BITS> dividend;
+  for (int i = 0; i < FULL; ++i) {
+    dividend[DIV_BITS - 1 - i] = num[FULL - 1 - i];
+  }
+
+  std::bitset<DIV_BITS> divisor;
+  for (int i = 0; i < FULL; ++i) {
+    divisor[FULL - 1 - i] = den[FULL - 1 - i];
+  }
+
+  // 3. Perform binary long division
+  std::bitset<DIV_BITS> quotient;
+  std::bitset<DIV_BITS> remainder;
+
+  for (int i = DIV_BITS - 1; i >= 0; --i) {
+    remainder <<= 1;
+    remainder[0] = dividend[i];
+
+    if (!bitset_lt<DIV_BITS>(remainder, divisor)) {
+      remainder = bitset_subtract<DIV_BITS>(remainder, divisor);
+      quotient.set(i);
+    }
+  }
+
+  // 4. Find MSB of result to normalize
+  int msb = -1;
+  for (int i = DIV_BITS - 1; i >= 0; --i) {
+      if (quotient[i]) {
+          msb = i;
+          break;
+      }
+  }
+
+  if (msb == -1) {
+      // Result is zero
+      return LongDoubleBitset<LENGTH>(
+          std::bitset<LENGTH>(0),
+          lhs.signbit ^ rhs.signbit,
+          0,
+          true
+      );
+  }
+
+  // 5. Normalize
+  int shift = msb - (LENGTH);
+  std::bitset<DIV_BITS> normalized;
+  if (shift >= 0) {
+    normalized = quotient >> shift;
+  } else {
+    normalized = quotient << -shift;
+  }
+
+  // 6. Extract mantissa
+  std::bitset<LENGTH> result_mantissa;
+  for (int i = 0; i < LENGTH; ++i) {
+    result_mantissa[i] = normalized[i];
+  }
+
+  // 7. Compute exponent
+  int result_exponent = lhs.exponent - rhs.exponent - (shift - 3);
+
+  // 8. Return result
+  return LongDoubleBitset<LENGTH>(
+      result_mantissa,
+      lhs.signbit ^ rhs.signbit,
+      result_exponent,
+      false
+  );
 }
