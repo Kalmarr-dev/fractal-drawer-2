@@ -1,18 +1,23 @@
 #pragma once
 
+#include <vector>
 #include "../IDataStructure2D.h"
 #include "../../Shapes/Shapes.h"
+#include "../../Shapes/IShape.h"
+#include "KDTreeNode.h"
 
 template<typename T>
-class BasicDataStructure2D : public IDataStructure2D<T>
+class KDTree2D : public IDataStructure2D<T>
 {
 private:
-  Shapes<T> shapes;
+  std::vector<KDTreeNode<T>> nodes;
+
+  bool shape_is_inside(Position<T> corner1, Position<T> corner2, IShape<T>* p_shape);
 public:
-  ~BasicDataStructure2D() = default;
+  KDTree2D();
+  ~KDTree2D();
 
   void add_shapes(Shapes<T> shapes) override;
-  // TODO return by reference here
   Shapes<T> get_visible_shapes_in_area(Position<T> lower, Position<T> higher) override;
   void clear_shapes() override;
 };

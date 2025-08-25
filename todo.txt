@@ -24,3 +24,5 @@ Add text
 License and Readme
 
 Check if my exe & appimage are x64
+
+Sign exe & appimage
