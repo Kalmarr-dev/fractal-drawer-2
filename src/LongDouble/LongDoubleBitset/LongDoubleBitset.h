@@ -48,6 +48,8 @@ public:
 
 template<int LENGTH>
 bool operator<(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs);
+template<int LENGTH>
+bool operator==(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs);
 
 template<int LENGTH>
 LongDoubleBitset<LENGTH> operator+(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs);

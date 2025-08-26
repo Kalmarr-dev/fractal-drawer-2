@@ -19,7 +19,15 @@ struct QuadTreeNode {
     top_right = nullptr;
   }
 
-  void create_children_if_not_exist() {
+  bool create_children_if_not_exist() {
+    if (lower.x + (higher.x - lower.x) / T(2.0) == lower.x
+          || lower.y + (higher.y - lower.y) / T(2.0) == lower.y
+          || lower.x + (higher.x - lower.x) / T(2.0) == higher.x
+          || lower.y + (higher.y - lower.y) / T(2.0) == higher.y)
+    {
+      return false;
+    }
+    
     Position<T> center(lower.x + (higher.x - lower.x) / T(2.0), lower.y + (higher.y - lower.y) / T(2.0));
     if (bottom_left == nullptr)
     {
@@ -37,6 +45,7 @@ struct QuadTreeNode {
     {
       top_right = new QuadTreeNode<T>(center, higher);
     }
+    return true;
   }
   
   bool shape_is_inside(IShape<T>* shape) {

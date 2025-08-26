@@ -35,8 +35,8 @@ int main(int argc, char const *argv[])
   
   omp_set_num_threads(configuration.threads);
 
-  BasicDataStructure2D<LongDouble>* p_data_structure = new BasicDataStructure2D<LongDouble>;
-  // QuadTree2D<LongDouble>* p_data_structure = new QuadTree2D<LongDouble>({-2, -2}, {2, 2}, configuration);
+  // BasicDataStructure2D<LongDouble>* p_data_structure = new BasicDataStructure2D<LongDouble>;
+  QuadTree2D<LongDouble>* p_data_structure = new QuadTree2D<LongDouble>({-2, -2}, {2, 2}, configuration);
 
   BasicCamera<LongDouble>* p_camera = new BasicCamera<LongDouble>(
     std::make_pair(

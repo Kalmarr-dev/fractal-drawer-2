@@ -1,6 +1,7 @@
 #include "QuadTree2D.h"
 
 #include <omp.h>
+#include <iostream>
 
 template<typename T>
 QuadTree2D<T>::QuadTree2D(Position<T> a, Position<T> b, Configuration configuration)
@@ -29,24 +30,51 @@ QuadTree2D<T>::~QuadTree2D()
 
 template<typename T>
 void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
+  this->shapes_amount += shapes.get_shapes().size();
+  std::cout << this->shapes_amount << '\n';
   #pragma omp parallel for schedule(dynamic)
   for (auto &&shape : shapes.get_shapes())
   {
     QuadTreeNode<T>* node = root;
     bool inserted = false;
-
-    while (!inserted && node->shape_is_inside(shape))
+    if (shape->get_linear_size_squared() == T(0.0))
     {
       #pragma omp critical(node_shapes)
       {
-        if (node->shapes.get_shapes().size() < MIN_SHAPES_PER_NODE) {
-          node->shapes.add_shape(shape);
-          inserted = true;
-        }
+        node->shapes.add_shape(shape);
+        inserted = true;
       }
+    }
+
+    while (!inserted && node->shape_is_inside(shape))
+    {
+      // if (node->higher.x - node->lower.x == T(0.0) || node->higher.y - node->lower.y == T(0.0))
+      // {
+      //   #pragma omp critical(node_shapes)
+      //   {
+      //     node->shapes.add_shape(shape);
+      //     inserted = true;
+      //   }
+      // }
+      // #pragma omp critical(node_shapes)
+      // {
+      //   if (node->shapes.get_shapes().size() < MIN_SHAPES_PER_NODE) {
+      //     node->shapes.add_shape(shape);
+      //     inserted = true;
+      //   }
+      // }
       if (!inserted)
       {
-        node->create_children_if_not_exist();
+        bool nodes_created = node->create_children_if_not_exist();
+        if (!nodes_created)
+        {
+          #pragma omp critical(node_shapes)
+          {
+            node->shapes.add_shape(shape);
+            inserted = true;
+          }
+          continue;
+        }
         if (node->bottom_left->shape_is_inside(shape))
         {
           node = node->bottom_left;
@@ -95,6 +123,7 @@ void QuadTree2D<T>::clear_shapes() {
   {
     this->root->delete_children();
   }
-  root->shapes.clear();
+  this->root->shapes.clear();
+  this->shapes_amount = 0;
 }
 

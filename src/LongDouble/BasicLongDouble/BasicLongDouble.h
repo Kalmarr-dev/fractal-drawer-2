@@ -17,6 +17,7 @@ public:
 };
 
 bool operator<(const BasicLongDouble& lhs, const BasicLongDouble& rhs);
+bool operator==(const BasicLongDouble& lhs, const BasicLongDouble& rhs);
 
 BasicLongDouble operator+(const BasicLongDouble& lhs, const BasicLongDouble& rhs);
 BasicLongDouble operator-(const BasicLongDouble& lhs, const BasicLongDouble& rhs);

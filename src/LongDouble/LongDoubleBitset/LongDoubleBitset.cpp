@@ -113,6 +113,18 @@ bool operator<(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGT
 }
 
 template<int LENGTH>
+bool operator==(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs) {
+  if (lhs.signbit != rhs.signbit) {
+    return false;
+  }
+
+  if (lhs.is_zero && rhs.is_zero) return true;
+
+  // Both positive or both negative
+  return lhs.exponent == rhs.exponent && lhs.values == rhs.values;
+}
+
+template<int LENGTH>
 LongDoubleBitset<LENGTH> operator+(const LongDoubleBitset<LENGTH>& lhs, const LongDoubleBitset<LENGTH>& rhs) {
   std::bitset<LENGTH + 2> new_lhs_values = lhs.get_full_mantissa();
   std::bitset<LENGTH + 2> new_rhs_values = rhs.get_full_mantissa();

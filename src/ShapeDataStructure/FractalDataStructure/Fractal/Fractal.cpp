@@ -96,21 +96,22 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
         FractalStub<T>* p_fractal_stub = new FractalStub<T>(*reflection_line, new_direction_lines);
         FractalPart<T>* p_new_fractal_part = new FractalPart<T>(p_fractal_stub, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH);
         
+        #pragma omp critical(new_lines_count)
+        {
+          new_lines_count += p_new_fractal_part->get_lines().size();
+        }
+        // guard against adding parts past MAXLINES limit by other threads
+        if (new_lines_count > MAXLINES)
+        {
+          continue;
+        }
         #pragma omp critical(new_fractal_parts)
         {
           new_fractal_parts.push_back(p_new_fractal_part);
         }
-        // #pragma omp critical(all_fractal_parts)
-        // {
-        //   all_fractal_parts.push_back(p_new_fractal_part);
-        // }
         #pragma omp critical(peripheral_fractal_parts)
         {
           peripheral_fractal_parts.insert(p_new_fractal_part);
-        }
-        #pragma omp critical(new_lines_count)
-        {
-          new_lines_count += p_new_fractal_part->get_lines().size();
         }
 
         current_fractal_part->insert_used_last_reflection_line(reflection_line);

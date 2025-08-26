@@ -11,7 +11,8 @@ class QuadTree2D : public IDataStructure2D<T>
 private:
   QuadTreeNode<T>* root;
   Configuration configuration;
-  const unsigned int MIN_SHAPES_PER_NODE = 500; // before is spawns children
+  // const unsigned int MIN_SHAPES_PER_NODE = 500; // before is spawns children
+  int shapes_amount = 0;
 public:
   QuadTree2D(Position<T> a, Position<T> b, Configuration configuration);
   ~QuadTree2D();
