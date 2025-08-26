@@ -304,7 +304,8 @@ LongDoubleUInt64<LENGTH> operator*(const LongDoubleUInt64<LENGTH>& lhs, const Lo
 
   for (int i = FULL - 1; i >= 0; --i) {
     unsigned __int128 carry = 0;
-    for (int j = FULL - 1; j >= 0; --j) {
+    // remove "- i" for more precision due to carry 
+    for (int j = FULL - 1 - i; j >= 0; --j) {
       unsigned __int128 sum = (unsigned __int128)m1[i] * m2[j] + prod[i + j] + carry;
       prod[i + j] = (uint64_t)sum;
       carry = sum >> 64;
@@ -313,17 +314,7 @@ LongDoubleUInt64<LENGTH> operator*(const LongDoubleUInt64<LENGTH>& lhs, const Lo
     {
       unsigned __int128 sum = (unsigned __int128)prod[i - 1] + carry;
       prod[i - 1] = (uint64_t)sum;
-      unsigned __int128 carry2 = sum >> 64;
-      if (carry2 > 0)
-      {
-        for (int k = i + FULL + 1; k < FULL * 2; k++) {
-          sum = (unsigned __int128)prod[k] + carry2;
-          prod[k] = (uint64_t)sum;
-          carry2 = sum >> 64;
-        }
-      }
     }
-    
   }
 
   // 6. Normalize the result (find top bit at index)
@@ -332,7 +323,6 @@ LongDoubleUInt64<LENGTH> operator*(const LongDoubleUInt64<LENGTH>& lhs, const Lo
   while (top_index < total_words && prod[top_index] == 0) {
     ++top_index;
   }
-
   
   // 7. Shift left to normalize mantissa
   std::array<uint64_t, FULL> normalized = {0};
