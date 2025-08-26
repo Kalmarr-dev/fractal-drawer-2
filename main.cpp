@@ -35,6 +35,10 @@ int main(int argc, char const *argv[])
   // std::cout << (LongDoubleUInt64<8>(0.3) + LongDoubleUInt64<8>(0.4)).get_double(&offset_zero, 0) << '\n';
   // std::cout << (LongDoubleUInt64<8>(0.3) + LongDoubleUInt64<8>(-0.4)).get_double(&offset_zero, 0) << '\n';
   // std::cout << (LongDoubleUInt64<8>(1.0 / (uint64_t(1) << 32) / (uint64_t(1) << 32)) + LongDoubleUInt64<8>(1)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(0.4) - LongDoubleUInt64<8>(0.3)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(2) * LongDoubleUInt64<8>(0.5)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(0.4) * LongDoubleUInt64<8>(0.3)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(4321) * LongDoubleUInt64<8>(0.321)).get_double(&offset_zero, 0) << '\n';
 
   Configuration configuration;
   if (argc > 1)

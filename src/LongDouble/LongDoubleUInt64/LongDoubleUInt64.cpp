@@ -268,3 +268,101 @@ LongDoubleUInt64<LENGTH> operator+(const LongDoubleUInt64<LENGTH>& lhs, const Lo
 
   return LongDoubleUInt64<LENGTH>(result_of_needed_length, result_sign, result_exp, is_zero_result);
 }
+
+template<int LENGTH>
+LongDoubleUInt64<LENGTH> operator-(const LongDoubleUInt64<LENGTH>& lhs, const LongDoubleUInt64<LENGTH>& rhs) {
+  auto new_rhs = LongDoubleUInt64<LENGTH>(rhs.values, !rhs.signbit, rhs.exponent, rhs.is_zero);
+  return lhs + new_rhs;
+}
+
+template<int LENGTH> 
+LongDoubleUInt64<LENGTH> operator*(const LongDoubleUInt64<LENGTH>& lhs, const LongDoubleUInt64<LENGTH>& rhs) {
+  if (lhs.is_zero || rhs.is_zero) {
+    return LongDoubleUInt64<LENGTH>({0},
+                                    lhs.signbit ^ rhs.signbit,
+                                    0, true);
+  }
+
+  bool result_sign = lhs.signbit ^ rhs.signbit;
+
+  int exp_sum = lhs.exponent + rhs.exponent - 1;
+
+  // 4. Build full mantissas (with implicit leading 1)
+  const int FULL = LENGTH + 1;
+  std::array<uint64_t, FULL> m1 = {0}, m2 = {0};
+
+  m1[0] = UINT64_C(1);
+  m2[0] = UINT64_C(1);
+
+  for (int i = 0; i < LENGTH; ++i) {
+      m1[i + 1] = lhs.values[i];
+      m2[i + 1] = rhs.values[i];
+  }
+
+  // 5. Multiply mantissas using schoolbook O(N^2)
+  std::array<uint64_t, FULL * 2> prod = {0};
+
+  for (int i = FULL - 1; i >= 0; --i) {
+    unsigned __int128 carry = 0;
+    for (int j = FULL - 1; j >= 0; --j) {
+      unsigned __int128 sum = (unsigned __int128)m1[i] * m2[j] + prod[i + j] + carry;
+      prod[i + j] = (uint64_t)sum;
+      carry = sum >> 64;
+    }
+    unsigned __int128 sum = (unsigned __int128)prod[i + FULL] + carry;
+    prod[i + FULL] = (uint64_t)sum;
+    unsigned __int128 carry2 = sum >> 64;
+    if (carry2 > 0)
+    {
+      for (int k = i + FULL + 1; k < FULL * 2; k++) {
+        sum = (unsigned __int128)prod[k] + carry2;
+        prod[k] = (uint64_t)sum;
+        carry2 = sum >> 64;
+      }
+    }
+  }
+
+  // 6. Normalize the result (find top bit at index)
+  int total_words = FULL * 2;
+  int top_index = 0;
+  while (top_index < total_words && prod[top_index] == 0) {
+    ++top_index;
+  }
+
+  int leading_zeros = __builtin_clzll(prod[top_index]);
+  int shift = leading_zeros - (64 - 1);  // target MSB at bit 63
+
+  // int word_shift = 0;
+  int bit_shift = 0;
+
+  if (shift > 0) {
+      // word_shift = shift / 64;
+      bit_shift = shift % 64;
+  }
+
+  // 7. Shift left to normalize mantissa
+  std::array<uint64_t, FULL> normalized = {0};
+
+  int src_index = top_index;
+  for (int dest_index = 0; dest_index < FULL && (size_t)src_index < prod.size(); dest_index++)
+  {
+    unsigned __int128 x = (unsigned __int128)prod[src_index] << bit_shift;
+    if (bit_shift != 0 && (size_t)src_index + 1 < prod.size()) {
+      x |= (unsigned __int128)prod[src_index + 1] >> (64 - bit_shift);
+    }
+    normalized[dest_index] = (uint64_t)x;
+    ++src_index;
+  }
+
+  // shouldn't do anything
+  exp_sum += (top_index * 64 + (63 - leading_zeros));
+
+  std::array<uint64_t, LENGTH> final_mant;
+  for (int i = 0; i < LENGTH; ++i) {
+      final_mant[i] = normalized[i + 1];
+  }
+
+  return LongDoubleUInt64<LENGTH>(final_mant, result_sign, int(exp_sum), false);
+}
+
+
