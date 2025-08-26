@@ -19,12 +19,23 @@
 #include "src/OnScreenButton/BasicSquareOnScreenButton/PredefinedButtons.h"
 #include "src/LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 #include "src/DataStructure2D/QuadTree2D/QuadTree2D.h"
+#include "src/LongDouble/LongDoubleUInt64/LongDoubleUInt64.h"
 
 // #define LongDouble _LongDoubleBitset
 #define LongDouble BasicLongDouble
 
 int main(int argc, char const *argv[])
 {
+  LongDoubleUInt64<8> offset_zero(0);
+  // std::cout << LongDoubleUInt64<8>(3).get_double(&offset_zero, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(0.3).get_double(&offset_zero, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(-0.3).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(-0.3) < LongDoubleUInt64<8>(-0.4)) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(0.3) < LongDoubleUInt64<8>(0.4)) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(0.3) + LongDoubleUInt64<8>(0.4)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(0.3) + LongDoubleUInt64<8>(-0.4)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(1.0 / (uint64_t(1) << 32) / (uint64_t(1) << 32)) + LongDoubleUInt64<8>(1)).get_double(&offset_zero, 0) << '\n';
+
   Configuration configuration;
   if (argc > 1)
   {
