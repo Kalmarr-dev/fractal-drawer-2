@@ -22,8 +22,8 @@
 #include "src/LongDouble/LongDoubleUInt64/LongDoubleUInt64.h"
 
 // #define LongDouble _LongDoubleBitset
-#define LongDouble BasicLongDouble
-// #define LongDouble LongDoubleUInt64<8>
+// #define LongDouble BasicLongDouble
+#define LongDouble LongDoubleUInt64<8>
 
 int main(int argc, char const *argv[])
 {
@@ -45,6 +45,11 @@ int main(int argc, char const *argv[])
   // std::cout << (LongDoubleUInt64<8>(0.9) / LongDoubleUInt64<8>(0.9)).get_double(&offset_zero, 0) << '\n';
   // std::cout << (LongDoubleUInt64<8>(1010) / LongDoubleUInt64<8>(0.101)).get_double(&offset_zero, 0) << '\n';
   // std::cout << (LongDoubleUInt64<8>(1) / LongDoubleUInt64<8>(3)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(21) / LongDoubleUInt64<8>(7)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(21) / LongDoubleUInt64<8>(2)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(21) * LongDoubleUInt64<8>(0.7)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << (LongDoubleUInt64<8>(1.93611) / LongDoubleUInt64<8>(3.55556)).get_double(&offset_zero, 0) << '\n';
+
 
   Configuration configuration;
   if (argc > 1)

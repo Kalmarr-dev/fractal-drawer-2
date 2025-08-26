@@ -40,7 +40,7 @@ void FractalDataStructure<T>::clear_shapes() {
 
 template<typename T>
 void FractalDataStructure<T>::process_zoom(Position<T> pointer, T scale_value) {
-  if (p_camera->get_bigger_side() < this->previous_camera_scale / this->camera_scale_change_to_recalculate_fractals
+  if (p_camera->get_bigger_side() * this->camera_scale_change_to_recalculate_fractals < this->previous_camera_scale
   || this->previous_camera_scale * this->camera_scale_change_to_recalculate_fractals < p_camera->get_bigger_side())
   {
     this->previous_camera_scale = p_camera->get_bigger_side();

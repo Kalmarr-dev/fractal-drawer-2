@@ -457,16 +457,16 @@ again:
 
     // Multiply and subtract.
     unsigned __int128 k = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = n - 1; i >= 0; i--) {
         unsigned __int128 p = qhat * divisor[i];
         __int128 t = rem[i+j] - k - (p & UINT64_MAX);
         rem[i+j] = t;
         k = (p >> 64) - (t >> 64);
     }
     __int128 t = 0 - k;
-    if (j + n < DOUBLE_FULL) {
-      t = rem[j+n] - k; 
-      rem[j+n] = t;
+    if (j - 1 > 0) {
+      t = rem[j - 1] - k; 
+      rem[j - 1] = t;
     }
 
     quotient[j] = qhat;              // Store quotient digit.

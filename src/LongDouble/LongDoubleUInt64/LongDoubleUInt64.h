@@ -34,3 +34,5 @@ template<int LENGTH>
 LongDoubleUInt64<LENGTH> operator*(const LongDoubleUInt64<LENGTH>& lhs, const LongDoubleUInt64<LENGTH>& rhs);
 template<int LENGTH>
 LongDoubleUInt64<LENGTH> operator/(const LongDoubleUInt64<LENGTH>& lhs, const LongDoubleUInt64<LENGTH>& rhs);
+
+#define _LongDoubleUInt64 LongDoubleUInt64<8>
