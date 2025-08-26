@@ -397,6 +397,7 @@ LongDoubleUInt64<LENGTH> operator/(const LongDoubleUInt64<LENGTH>& lhs, const Lo
 
   // 4. Build full normalized mantissas (implicit leading 1)
   const int FULL = LENGTH + 1;
+  const int DOUBLE_FULL = FULL * 2;
   std::array<uint64_t, FULL> m1 = {0}, m2 = {0};
   m1[0] = UINT64_C(1);
   m2[0] = UINT64_C(1);
@@ -419,52 +420,67 @@ LongDoubleUInt64<LENGTH> operator/(const LongDoubleUInt64<LENGTH>& lhs, const Lo
   } else {
     int bit_shift = normalize_shift;
     int rev_shift = 64 - bit_shift;
-    for (int i = FULL - 1; i > 0; --i) {
-      dividend[i] = (m1[i] << bit_shift) | (m1[i - 1] >> rev_shift);
+    for (int i = 0; i < FULL; ++i) {
+      dividend[i] = (m1[i] << bit_shift) | ((i + 1 < FULL) ? (m1[i + 1] >> rev_shift) : 0);
     }
-    dividend[0] = m1[0] << bit_shift;
-    for (int i = FULL - 1; i > 0; --i) {
-      divisor[i] = (m2[i] << bit_shift) | (m2[i - 1] >> rev_shift);
+    for (int i = 0; i < FULL; ++i) {
+      divisor[i] = (m2[i] << bit_shift) | ((i + 1 < FULL) ? (m2[i + 1] >> rev_shift) : 0);
     }
-    divisor[0] = m2[0] << bit_shift;
   }
 
   // Prepare quotient and remainder words
   std::array<uint64_t, FULL> quotient = {0};
-  std::array<uint64_t, FULL> rem = dividend;
-
-  // Long division: quotient word-by-word
-  for (int k = 0; k < FULL; ++k) {
-    // Index in rem to estimate quotient
-    int idx = k;
-    unsigned __int128 r_hi = rem[idx];
-    unsigned __int128 r_lo = (idx + 1 < FULL) ? rem[idx + 1] : 0;
-    unsigned __int128 r_comb = (r_hi << 64) | r_lo;
-
-    unsigned __int128 d_hi = divisor[0];
-    unsigned long long q_hat = (unsigned long long)(r_hi / (d_hi + 1));
-    if (q_hat > UINT64_MAX) q_hat = UINT64_MAX;
-
-    // Multiply divisor by q_hat and subtract from rem:
-    __uint128_t borrow = 0;
-    for (int j = 0; j < FULL; ++j) {
-      __uint128_t prod = (unsigned __int128)divisor[j] * q_hat;
-      __uint128_t sub = (__uint128_t)rem[idx + j] - (uint64_t)prod - borrow;
-      rem[idx + j] = (uint64_t)sub;
-      borrow = (prod >> 64) + ((sub >> 127) & 1);
-    }
-    // If negative: adjust by adding back divisor
-    if (borrow != 0) {
-      q_hat--;
-      __uint128_t carry = 0;
-      for (int j = 0; j < FULL; ++j) {
-        __uint128_t sum = (__uint128_t)rem[idx + j] + divisor[j] + carry;
-        rem[idx + j] = (uint64_t)sum;
-        carry = sum >> 64;
-      }
-    }
-    quotient[k] = q_hat;
+  std::array<uint64_t, DOUBLE_FULL> rem = {0};
+  for (size_t i = 0; i < FULL; i++) {
+    rem[i] = dividend[i];
   }
+  
+  // Long division: quotient word-by-word
+  const unsigned __int128 base = UINT64_MAX;
+  int m = DOUBLE_FULL, n = FULL;
+  for (int j = 0; j < m - n; j++) {       // Main loop.
+    // Compute estimate qhat of q[j].
+    unsigned __int128 qhat = (/*rem[j - 1]*base +*/ rem[j]) / divisor[0];
+    unsigned __int128 rhat = (/*rem[j - 1]*base +*/ rem[j]) - qhat * divisor[0];
+    if (j > 0)
+    {
+      qhat = (rem[j - 1]*base + rem[j]) / divisor[0];
+      rhat = (rem[j - 1]*base + rem[j]) - qhat * divisor[0];
+    }
+again:
+    if (qhat >= base || qhat*divisor[1] > base*rhat + rem[j+1])
+    {
+      qhat = qhat - 1;
+      rhat = rhat + divisor[0];
+      if (rhat < base) goto again;
+    }
+
+    // Multiply and subtract.
+    unsigned __int128 k = 0;
+    for (int i = 0; i < n; i++) {
+        unsigned __int128 p = qhat * divisor[i];
+        __int128 t = rem[i+j] - k - (p & UINT64_MAX);
+        rem[i+j] = t;
+        k = (p >> 64) - (t >> 64);
+    }
+    __int128 t = 0 - k;
+    if (j + n < DOUBLE_FULL) {
+      t = rem[j+n] - k; 
+      rem[j+n] = t;
+    }
+
+    quotient[j] = qhat;              // Store quotient digit.
+    if (t < 0) {              // If we subtracted too
+      quotient[j] = quotient[j] - 1;       // much, add back.
+      k = 0;
+      for (int i = 0; i < n; i++) {
+        t = (unsigned __int128)rem[i+j] + divisor[i] + k;
+        rem[i+j] = t;
+        k = t >> 64;
+      }
+      rem[j+n] = rem[j+n] + k;
+    }
+  } // End j.
 
   // 6. Normalize quotient mantissa, find msb at bit 63
   int q_top = 0;
@@ -473,7 +489,7 @@ LongDoubleUInt64<LENGTH> operator/(const LongDoubleUInt64<LENGTH>& lhs, const Lo
     return LongDoubleUInt64<LENGTH>({0}, result_sign, 0, true);
   }
 
-  int leading = __builtin_clzll(quotient[q_top]);
+  int leading = 63 - __builtin_clzll(quotient[q_top]);
   int bit_shift = leading;
   int rev_shift = 64 - bit_shift;
   std::array<uint64_t, FULL> norm_quot = {0};
@@ -482,16 +498,19 @@ LongDoubleUInt64<LENGTH> operator/(const LongDoubleUInt64<LENGTH>& lhs, const Lo
       norm_quot[i - q_top] = quotient[i];
     }
   } else {
-    for (int i = q_top; i < FULL - 1; ++i) {
-      norm_quot[i - q_top] = (quotient[i] << bit_shift) |
-                            (quotient[i + 1] >> rev_shift);
+    for (int i = q_top; i < FULL; ++i) {
+      norm_quot[i - q_top] = (quotient[i] >> bit_shift) 
+                              | (i - 1 < 0 ? 0 : (quotient[i - 1] << rev_shift));
     }
     // Last word only shifted (no higher word to pull from)
-    norm_quot[FULL - 1 - q_top] = quotient[FULL - 1] << bit_shift;
+    if (q_top > 0)
+    {
+      norm_quot[FULL - q_top] = quotient[FULL - 1] << rev_shift;
+    }
   }
 
-  exp_diff -= normalize_shift;             // Undo initial normalization
-  exp_diff -= (q_top * 64 + leading);      // Account for shifting MSB to bit63
+  // exp_diff += normalize_shift;             // Undo initial normalization
+  exp_diff -= (q_top * 64 - leading);      // Account for shifting MSB to bit63
 
   // 7. Build final mantissa (drop implicit 1)
   std::array<uint64_t, LENGTH> final_mant;
