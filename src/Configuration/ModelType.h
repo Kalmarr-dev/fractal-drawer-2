@@ -1,0 +1,1 @@
+enum ModelType { FAST, DEEP };

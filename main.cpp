@@ -23,68 +23,23 @@
 
 // #define LongDouble _LongDoubleBitset
 // #define LongDouble BasicLongDouble
-#define LongDouble LongDoubleUInt64<8>
+// #define LongDouble LongDoubleUInt64<8>
 
-int main(int argc, char const *argv[])
-{
-  LongDoubleUInt64<8> offset_zero(0);
-  // std::cout << LongDoubleUInt64<8>(3).get_double(&offset_zero, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(0.3).get_double(&offset_zero, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(-0.3).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(-0.3) < LongDoubleUInt64<8>(-0.4)) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(0.3) < LongDoubleUInt64<8>(0.4)) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(0.3) + LongDoubleUInt64<8>(0.4)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(0.3) + LongDoubleUInt64<8>(-0.4)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(1.0 / (uint64_t(1) << 32) / (uint64_t(1) << 32)) + LongDoubleUInt64<8>(1)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(0.4) - LongDoubleUInt64<8>(0.3)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(2) * LongDoubleUInt64<8>(0.5)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(0.4) * LongDoubleUInt64<8>(0.3)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(4321) * LongDoubleUInt64<8>(0.321)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(0.9) * LongDoubleUInt64<8>(0.9)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(2.0) / LongDoubleUInt64<8>(0.5)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(0.9) / LongDoubleUInt64<8>(0.9)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(1010) / LongDoubleUInt64<8>(0.101)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(1) / LongDoubleUInt64<8>(3)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(21) / LongDoubleUInt64<8>(7)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(21) / LongDoubleUInt64<8>(2)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(21) * LongDoubleUInt64<8>(0.7)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << (LongDoubleUInt64<8>(1.93611) / LongDoubleUInt64<8>(3.55556)).get_double(&offset_zero, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(3).get_double(&offset_zero, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(7).get_double(&offset_zero, 0) << '\n';
-  LongDoubleUInt64<8> offset_one(1);
-  // std::cout << LongDoubleUInt64<8>(3).get_double(&offset_one, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(0.3).get_double(&offset_one, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(-0.3).get_double(&offset_one, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(-1).get_double(&offset_one, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(0).get_double(&offset_zero, 0) << '\n';
-  // std::cout << LongDoubleUInt64<8>(0).get_double(&offset_one, 0) << '\n';
+template <typename T>
+void initialize_loop(Configuration configuration) {
+  // BasicDataStructure2D<T>* p_data_structure = new BasicDataStructure2D<T>;
+  QuadTree2D<T>* p_data_structure = new QuadTree2D<T>({-2, -2}, {2, 2}, configuration);
 
-
-  Configuration configuration;
-  if (argc > 1)
-  {
-    configuration = Configuration(argc, argv);
-  } else {
-    configuration = Configuration("res/config.txt");
-  }
-  
-  omp_set_num_threads(configuration.threads);
-
-  // BasicDataStructure2D<LongDouble>* p_data_structure = new BasicDataStructure2D<LongDouble>;
-  QuadTree2D<LongDouble>* p_data_structure = new QuadTree2D<LongDouble>({-2, -2}, {2, 2}, configuration);
-
-  BasicCamera<LongDouble>* p_camera = new BasicCamera<LongDouble>(
+  BasicCamera<T>* p_camera = new BasicCamera<T>(
     std::make_pair(
-      Position<LongDouble>{LongDouble(-1), LongDouble(-1)},
-      Position<LongDouble>{LongDouble(1), LongDouble(1)}
+      Position<T>{T(-1), T(-1)},
+      Position<T>{T(1), T(1)}
     )
   );
 
-  FractalDataStructure<LongDouble>* p_fractal_data_structure = new FractalDataStructure<LongDouble>(p_camera, configuration);
+  FractalDataStructure<T>* p_fractal_data_structure = new FractalDataStructure<T>(p_camera, configuration);
 
-  BasicRecursiveRenderer<LongDouble>* p_recursive_renderer = new BasicRecursiveRenderer<LongDouble>(p_data_structure, p_camera, p_fractal_data_structure, configuration);
-
-  // p_camera->resize(16.0 / 9.0);
+  BasicRecursiveRenderer<T>* p_recursive_renderer = new BasicRecursiveRenderer<T>(p_data_structure, p_camera, p_fractal_data_structure, configuration);
 
   GLFWViewport* p_viewport = new GLFWViewport(true);
   
@@ -94,9 +49,9 @@ int main(int argc, char const *argv[])
   IOnScreenButton* button_zoom_out = get_predefined_basic_on_screen_button_zoom_out();
   on_screen_buttons.push_back(button_zoom_out);
 
-  OpenGLRenderer<LongDouble>* p_renderer = new OpenGLRenderer<LongDouble>(p_recursive_renderer, p_camera, configuration, on_screen_buttons);
+  OpenGLRenderer<T>* p_renderer = new OpenGLRenderer<T>(p_recursive_renderer, p_camera, configuration, on_screen_buttons);
 
-  GLFWInput<LongDouble>* p_input = new GLFWInput<LongDouble>(p_viewport, button_zoom_in, button_zoom_out, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK, GLFW_KEY_ENTER);
+  GLFWInput<T>* p_input = new GLFWInput<T>(p_viewport, button_zoom_in, button_zoom_out, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK, GLFW_KEY_ENTER);
   
   p_input->subscribe_viewport_to_callbacks(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
@@ -130,7 +85,26 @@ int main(int argc, char const *argv[])
 
     glfwPollEvents();
   }
+}
+
+int main(int argc, char const *argv[])
+{
+  Configuration configuration;
+  if (argc > 1)
+  {
+    configuration = Configuration(argc, argv);
+  } else {
+    configuration = Configuration("res/config.txt");
+  }
   
+  omp_set_num_threads(configuration.threads);
+  
+  if (configuration.model_type == FAST)
+  {
+    initialize_loop<BasicLongDouble>(configuration);
+  } else if (configuration.model_type == DEEP) {
+    initialize_loop<LongDoubleUInt64<8>>(configuration);
+  }
 
   return 0;
 }

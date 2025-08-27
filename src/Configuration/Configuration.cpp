@@ -8,6 +8,7 @@ Configuration::Configuration() {
   this->threads = 0;
   this->minimum_shape_size = 0;
   this->camera_change = 0;
+  this->model_type = FAST;
 }
 
 Configuration::Configuration(int argc, char const *argv[]) {
@@ -25,6 +26,7 @@ Configuration::Configuration(int argc, char const *argv[]) {
   this->threads = std::atoi(argv[3]);
   this->minimum_shape_size = std::atof(argv[4]);
   this->camera_change = std::atof(argv[5]);
+  this->model_type = ModelType(std::atoi(argv[6]));
 }
 
 Configuration::Configuration(std::string config_file_path) {
@@ -55,6 +57,9 @@ Configuration::Configuration(std::string config_file_path) {
       case 4:
         this->camera_change = std::atof(line.c_str());
         break;
+      case 5:
+        this->model_type = ModelType(std::atoi(line.c_str()));
+        break;
       default:
         break;
       }
@@ -62,7 +67,7 @@ Configuration::Configuration(std::string config_file_path) {
     }
   }
 
-  if (current_line < 5)
+  if (current_line < 6)
   {
     throw std::runtime_error("Config file is missing some opotions");
   }

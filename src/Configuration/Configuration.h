@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include "ModelType.h"
 
 struct Configuration
 {
@@ -9,6 +10,7 @@ struct Configuration
   int threads;
   double minimum_shape_size;
   float camera_change;
+  ModelType model_type;
 
   Configuration();
   Configuration(int argc, char const *argv[]);
