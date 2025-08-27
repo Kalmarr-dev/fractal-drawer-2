@@ -49,6 +49,15 @@ int main(int argc, char const *argv[])
   // std::cout << (LongDoubleUInt64<8>(21) / LongDoubleUInt64<8>(2)).get_double(&offset_zero, 0) << '\n';
   // std::cout << (LongDoubleUInt64<8>(21) * LongDoubleUInt64<8>(0.7)).get_double(&offset_zero, 0) << '\n';
   // std::cout << (LongDoubleUInt64<8>(1.93611) / LongDoubleUInt64<8>(3.55556)).get_double(&offset_zero, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(3).get_double(&offset_zero, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(7).get_double(&offset_zero, 0) << '\n';
+  LongDoubleUInt64<8> offset_one(1);
+  // std::cout << LongDoubleUInt64<8>(3).get_double(&offset_one, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(0.3).get_double(&offset_one, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(-0.3).get_double(&offset_one, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(-1).get_double(&offset_one, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(0).get_double(&offset_zero, 0) << '\n';
+  // std::cout << LongDoubleUInt64<8>(0).get_double(&offset_one, 0) << '\n';
 
 
   Configuration configuration;

@@ -36,26 +36,35 @@ template<int LENGTH>
 double LongDoubleUInt64<LENGTH>::get_double(ILongDouble* offset, int scale_exponent) {
   LongDoubleUInt64<LENGTH>* offset_cast = dynamic_cast<LongDoubleUInt64<LENGTH>*>(offset);
   
-  uint64_t result_uint64_t = 0;
-  bool result_signbit = 0;
-  if (this->signbit == offset_cast->signbit)
+  if (!offset_cast->is_zero)
   {
-    result_signbit = this->signbit;
-    result_uint64_t = (values[0] >> (64 - std::numeric_limits<double>::digits))
-                      + (offset_cast->values[0] >> (64 - std::numeric_limits<double>::digits));
-  } else {
-    if (values[0] > offset_cast->values[0])
-    {
-      result_signbit = this->signbit;
-      result_uint64_t = (values[0] >> (64 - std::numeric_limits<double>::digits))
-                        - (offset_cast->values[0] >> (64 - std::numeric_limits<double>::digits));
-    } else {
-      result_signbit = offset_cast->signbit;
-      result_uint64_t = (offset_cast->values[0] >> (64 - std::numeric_limits<double>::digits))
-                        - (values[0] >> (64 - std::numeric_limits<double>::digits));
-    }
+    throw std::logic_error("Offset != 0 not implemented");
   }
 
+  // uint64_t result_uint64_t = 0;
+  // bool result_signbit = 0;
+
+  // bool reverse_offset_signbit = !offset_cast->signbit;
+  // if (this->signbit == reverse_offset_signbit)
+  // {
+  //   result_signbit = this->signbit;
+  //   result_uint64_t = (values[0] >> (64 - std::numeric_limits<double>::digits))
+  //                     + (offset_cast->values[0] >> (64 - std::numeric_limits<double>::digits));
+  // } else {
+  //   if (values[0] > offset_cast->values[0])
+  //   {
+  //     result_signbit = this->signbit;
+  //     result_uint64_t = (values[0] >> (64 - std::numeric_limits<double>::digits))
+  //                       - (offset_cast->values[0] >> (64 - std::numeric_limits<double>::digits));
+  //   } else {
+  //     result_signbit = reverse_offset_signbit;
+  //     result_uint64_t = (offset_cast->values[0] >> (64 - std::numeric_limits<double>::digits))
+  //                       - (values[0] >> (64 - std::numeric_limits<double>::digits));
+  //   }
+  // }
+  uint64_t result_uint64_t = values[0] >> (64 - std::numeric_limits<double>::digits);
+  bool result_signbit = this->signbit;
+  
   double mantissa = result_uint64_t;
   mantissa /= uint64_t(1) << std::numeric_limits<double>::digits;
   // Add the implicit leading 1 (normalized numbers)

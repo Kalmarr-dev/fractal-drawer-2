@@ -139,7 +139,14 @@ void OpenGLRenderer<T>::render_to_screen() {
       T rescaled_point_x = (scaled_point_x - T(0.5)) * T(2.0);
       // std::cout << rescaled_point_x.get_double(offset_0, 0) << '\n';
       positions[i * floats_per_vertex * 2 + j * floats_per_vertex] = (float)(rescaled_point_x).get_double(offset_0, 0);
-      positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 1] = (float)(((point.y - *offset_y) / height - T(0.5)) * T(2.0)).get_double(offset_0, 0);
+      // std::cout << point.y.get_double(offset_0, 0) << '\n';
+      T offset_point_y = (point.y - *offset_y);
+      // std::cout << offset_point_y.get_double(offset_0, 0) << " " << height.get_double(offset_0, 0) << '\n';
+      T scaled_point_y = offset_point_y / height;
+      // std::cout << scaled_point_y.get_double(offset_0, 0) << '\n';
+      T rescaled_point_y = (scaled_point_y - T(0.5)) * T(2.0);
+      // std::cout << rescaled_point_y.get_double(offset_0, 0) << '\n';
+      positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 1] = (float)(rescaled_point_y).get_double(offset_0, 0);
       positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 2] = (float)r;
       positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 3] = (float)g;
       positions[i * floats_per_vertex * 2 + j * floats_per_vertex + 4] = (float)b;
