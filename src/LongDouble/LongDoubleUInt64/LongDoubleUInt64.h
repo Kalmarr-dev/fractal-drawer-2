@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <stdint.h>
 #include "../ILongDouble.h"
 
 template<int LENGTH>

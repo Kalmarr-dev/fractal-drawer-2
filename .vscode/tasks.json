@@ -4,8 +4,65 @@
       "label": "build with script",
       "type": "shell",
       "command": "./build.sh",
-      "problemMatcher": ["$gcc"]
-    }
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "C/C++: g++.exe build active file",
+      "type": "cppbuild",
+      "command": "C:\\Program Files\\gcc\\bin\\g++.exe",
+      "args": [
+        "-std=c++17",
+        "-Wall",
+        "-g",
+        "${workspaceFolder}\\dependencies\\glad.c",
+        "${workspaceFolder}\\src\\Camera\\BasicCamera\\BasicCamera.impl.cpp",
+        "${workspaceFolder}\\src\\Configuration\\Configuration.cpp",
+        "${workspaceFolder}\\src\\DataStructure2D\\QuadTree2D\\QuadTree2D.impl.cpp",
+        "${workspaceFolder}\\src\\DataStructure2D\\QuadTree2D\\QuadTree2D.impl.cpp",
+        "${workspaceFolder}\\src\\GLBuffers\\IndexBuffer.cpp",
+        "${workspaceFolder}\\src\\GLBuffers\\VertexArray.cpp",
+        "${workspaceFolder}\\src\\GLBuffers\\VertexBuffer.cpp",
+        "${workspaceFolder}\\src\\GLShaders\\Shader.cpp",
+        "${workspaceFolder}\\src\\helpers\\glErrorHandling.cpp",
+        "${workspaceFolder}\\src\\helpers\\ScaleRotationMatrix.impl.cpp",
+        "${workspaceFolder}\\src\\Input\\GLFWInput\\GLFWInput.impl.cpp",
+        "${workspaceFolder}\\src\\Input\\InputSubject.impl.cpp",
+        "${workspaceFolder}\\src\\LongDouble\\BasicLongDouble\\BasicLongDouble.cpp",
+        "${workspaceFolder}\\src\\LongDouble\\LongDoubleBitset\\LongDoubleBitset.impl.cpp",
+        "${workspaceFolder}\\src\\LongDouble\\LongDoubleUInt64\\LongDoubleUInt64.impl.cpp",
+        "${workspaceFolder}\\src\\OnScreenButton\\BasicSquareOnScreenButton\\BasicSquareOnScreenButton.cpp",
+        "${workspaceFolder}\\src\\OnScreenButton\\OnScreenButton.cpp",
+        "${workspaceFolder}\\src\\RecursiveRenderer\\BasicRecursiveRenderer\\BasicRecursiveRenderer.impl.cpp",
+        "${workspaceFolder}\\src\\Renderer\\OpenGLRenderer\\OpenGLRenderer.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\Fractal\\Fractal.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\Fractal\\FractalPart.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\Fractal\\FractalStub.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\FractalDataStructure.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\FractalDataStructure.impl.cpp",
+        "${workspaceFolder}\\src\\Viewport\\GLFWViewport\\GLFWViewport.cpp",
+        "${workspaceFolder}\\main.cpp",
+        "-I",
+        "${workspaceFolder}\\include\\",
+        "-I",
+        "${workspaceFolder}\\dependencies\\",
+        "-fopenmp",
+        "${workspaceFolder}\\glfw3.dll",
+        "-O2",
+        "-mwindows",
+        "-o",
+        "${workspaceFolder}\\fractal-drawer-2.exe"
+      ],
+      "options": {
+        "cwd": "C:\\Program Files\\gcc\\bin"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build",
+      "detail": "compiler: C:\\Program Files\\gcc\\bin\\g++.exe"
+    },
   ],
   "version": "2.0.0"
 }

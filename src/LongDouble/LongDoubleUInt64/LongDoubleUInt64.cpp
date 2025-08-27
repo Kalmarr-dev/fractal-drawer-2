@@ -1,6 +1,7 @@
 #include "LongDoubleUInt64.h"
 
 #include <math.h>
+#include <cmath>
 #include <stdexcept>
 
 template<int LENGTH>
@@ -20,7 +21,7 @@ LongDoubleUInt64<LENGTH>::LongDoubleUInt64(double value) {
     this->is_zero = false;
     mantissa *= 2;
     mantissa -= 1.0;
-    mantissa = scalb(mantissa, std::numeric_limits<double>::digits);
+    mantissa = std::scalbln(mantissa, std::numeric_limits<double>::digits);
     this->values[0] = mantissa;
     this->values[0] <<= 64 - std::numeric_limits<double>::digits;
   } else {
