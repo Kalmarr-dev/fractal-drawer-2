@@ -12,6 +12,7 @@
 #include "IPointerObserver.h"
 #include "IConfirmObserver.h"
 #include "IZoomResetObserver.h"
+#include "IPointerUpObserver.h"
 
 template<typename T>
 class InputSubject
@@ -26,6 +27,7 @@ private:
   std::list<IRecursiveRendererObserver<T>*> clear_observers;
   std::list<IWindowResizeObserver*> window_resize_observers;
   std::list<IConfirmObserver*> confirm_observers;
+  std::list<IPointerUpObserver*> pointer_up_observers;
 
 public:
   InputSubject() = default;
@@ -67,4 +69,8 @@ public:
   void subscribe_to_confirm(IConfirmObserver* p_observer);
   void unsubscribe_from_confirm(IConfirmObserver* p_observer);
   void notify_confirm();
+
+  void subscribe_to_pointer_up(IPointerUpObserver* p_observer);
+  void unsubscribe_from_pointer_up(IPointerUpObserver* p_observer);
+  void notify_pointer_up();
 };

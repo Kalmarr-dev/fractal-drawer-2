@@ -65,17 +65,17 @@ public:
   }
 
   inline Rectangle* scale(double scale_x, double scale_y) const {
-    return new Rectangle({lower.x * scale_x, lower.y * scale_y}, {higher.x * scale_x, higher.y * scale_y});
+    return new Rectangle({lower.x * T(scale_x), lower.y * T(scale_y)}, {higher.x * T(scale_x), higher.y * T(scale_y)});
   }
 
   inline Rectangle* add_one_to_negative_coordinates() const {
     return new Rectangle(
       {
-        lower.x < 0 ? lower.x + 1 : lower.x,
-        lower.y < 0 ? lower.y + 1 : lower.y
+        lower.x < T(0) ? lower.x + T(1) : lower.x,
+        lower.y < T(0) ? lower.y + T(1) : lower.y
       }, {
-        higher.x < 0 ? higher.x + 1 : higher.x,
-        higher.y < 0 ? higher.y + 1 : higher.y
+        higher.x < T(0) ? higher.x + T(1) : higher.x,
+        higher.y < T(0) ? higher.y + T(1) : higher.y
       }
     );
   }
