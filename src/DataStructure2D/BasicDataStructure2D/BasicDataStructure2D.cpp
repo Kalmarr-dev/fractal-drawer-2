@@ -22,3 +22,11 @@ template<typename T>
 void BasicDataStructure2D<T>::clear_shapes() {
   this->shapes_set.clear();
 }
+
+template<typename T>
+void BasicDataStructure2D<T>::clear_shapes(const Shapes<T>& shapes) {
+  for (auto &&i : shapes.get_shapes())
+  {
+    this->shapes_set.erase(i);
+  }
+}

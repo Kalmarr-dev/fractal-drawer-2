@@ -6,7 +6,7 @@
 
 template<typename T>
 Fractal<T>::Fractal(FractalPart<T>* root_fractal_part) : root_fractal_part(root_fractal_part) {
-  // all_fractal_parts.push_back(root_fractal_part);
+  all_fractal_parts.push_back(root_fractal_part);
   peripheral_fractal_parts.insert(root_fractal_part);
 }
 
@@ -109,6 +109,10 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
         {
           new_fractal_parts.push_back(p_new_fractal_part);
         }
+        #pragma omp critical(all_fractal_parts)
+        {
+          all_fractal_parts.push_back(p_new_fractal_part);
+        }
         #pragma omp critical(peripheral_fractal_parts)
         {
           peripheral_fractal_parts.insert(p_new_fractal_part);
@@ -136,4 +140,17 @@ std::vector<FractalPart<T>*> Fractal<T>::update_on_zoom(ICamera<T>* p_camera, in
 
   // std::cout << "this->all_fractal_parts.size() " << this->all_fractal_parts.size() << '\n';
   return new_fractal_parts;
+}
+
+template<typename T>
+std::list<FractalPart<T>*> Fractal<T>::get_all_fractal_parts() {
+  return all_fractal_parts;
+}
+
+template<typename T>
+void Fractal<T>::clear() {
+  for (auto &&i : all_fractal_parts)
+  {
+    delete i;
+  }
 }

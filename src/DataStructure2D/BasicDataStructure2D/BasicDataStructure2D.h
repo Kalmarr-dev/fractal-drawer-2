@@ -16,4 +16,5 @@ public:
   // TODO return by reference here
   Shapes<T> get_visible_shapes_in_area(Position<T> lower, Position<T> higher) override;
   void clear_shapes() override;
+  void clear_shapes(const Shapes<T>& shapes) override;
 };

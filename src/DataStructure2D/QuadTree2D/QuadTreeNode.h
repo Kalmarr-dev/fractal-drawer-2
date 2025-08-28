@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_set>
+#include <set>
 #include "../../Shapes/IShape.h"
 
 template<typename T>

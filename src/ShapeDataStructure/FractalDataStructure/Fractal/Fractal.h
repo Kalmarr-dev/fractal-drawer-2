@@ -10,7 +10,7 @@ class Fractal
 {
 private:
   FractalPart<T>* root_fractal_part;
-  // std::list<FractalPart<T>*> all_fractal_parts;
+  std::list<FractalPart<T>*> all_fractal_parts;
   std::set<FractalPart<T>*> peripheral_fractal_parts;
 
 public:
@@ -18,4 +18,6 @@ public:
   ~Fractal() = default;
 
   std::vector<FractalPart<T>*> update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH);
+  std::list<FractalPart<T>*> get_all_fractal_parts();
+  void clear();
 };

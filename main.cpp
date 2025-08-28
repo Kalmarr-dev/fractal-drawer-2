@@ -67,6 +67,7 @@ void initialize_loop(Configuration configuration) {
   p_input->subscribe_to_secondary_button_down(p_fractal_data_structure);
   p_input->subscribe_to_pointer_move(p_fractal_data_structure);
   p_input->subscribe_to_confirm(p_fractal_data_structure);
+  p_input->subscribe_to_clear(p_recursive_renderer);
 
 
   while (!p_viewport->window_should_close()) {   

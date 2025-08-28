@@ -12,13 +12,13 @@ FractalDataStructure<T>::FractalDataStructure(ICamera<T>* p_camera, Configuratio
 
 template<typename T>
 void FractalDataStructure<T>::draw_silly_line(Position<T> pointer) {
-  auto corners = p_camera->get_camera_corners();
-  T width = corners.second.x - corners.first.x;
-  T height = corners.second.y - corners.first.y;
-  T x = corners.first.x + width * pointer.x;
-  T y = corners.first.y + height * pointer.y;
-  all_shapes.add_shape(new Line<T>({x, y}, {x, y + T(0.5)}));
-  new_shapes.add_shape(new Line<T>({x, y}, {x, y + T(0.5)}));
+  // auto corners = p_camera->get_camera_corners();
+  // T width = corners.second.x - corners.first.x;
+  // T height = corners.second.y - corners.first.y;
+  // T x = corners.first.x + width * pointer.x;
+  // T y = corners.first.y + height * pointer.y;
+  // all_fractal_shapes[0].add_shape(new Line<T>({x, y}, {x, y + T(0.5)}));
+  // new_shapes.add_shape(new Line<T>({x, y}, {x, y + T(0.5)}));
 }
 
 template<typename T>
@@ -32,10 +32,28 @@ void FractalDataStructure<T>::update_temporary_shapes(const Shapes<T> shapes) {
 
 template<typename T>
 void FractalDataStructure<T>::clear_shapes() {
+  // TODO does this delete the IShape*'s?
   fractal_stub.clear();
   all_fractals.clear();
-  all_shapes.clear();
+  all_fractal_shapes.clear();
   new_shapes.clear();
+}
+
+template<typename T>
+Shapes<T> FractalDataStructure<T>::clear_last_shapes() {
+  if (all_fractals.size() > 0)
+  {
+    Fractal<T>* fractal = all_fractals.back();
+    all_fractals.pop_back();
+    fractal->clear();
+  }
+  if (all_fractal_shapes.size() > 0)
+  {
+    Shapes<T> shapes = all_fractal_shapes.back();
+    all_fractal_shapes.pop_back();
+    return shapes;
+  }
+  return Shapes<T>();
 }
 
 template<typename T>
@@ -46,15 +64,21 @@ void FractalDataStructure<T>::process_zoom(Position<T> pointer, T scale_value) {
     this->previous_camera_scale = p_camera->get_bigger_side();
     
     T minimum_visible_line_size = T(this->minimum_visible_screen_size) * p_camera->get_bigger_side();
-    for (auto &&fractal : all_fractals) // TODO heavy three loops
+    for (int i = 0; i < (int)all_fractals.size(); i++) // TODO heavy three loops
     {
+      auto all_fractals_pointer = all_fractals.begin();
+      std::advance(all_fractals_pointer, i);
+      auto&& fractal = *all_fractals_pointer;
+      auto all_fractal_shapes_pointer = all_fractal_shapes.begin();
+      std::advance(all_fractal_shapes_pointer, i);
+      auto&& fractal_shapes = *all_fractal_shapes_pointer;
       auto parts = fractal->update_on_zoom(this->p_camera, configuration.max_number_of_elements_in_memory, minimum_visible_line_size, 100);
       for (auto &&part : parts)
       {
         for (auto &&i : part->get_lines())
         {
           Line<T>* line = new Line<T>(i.a, i.b);
-          all_shapes.add_shape(line);
+          fractal_shapes.add_shape(line);
           new_shapes.add_shape(line);
         }
       }
@@ -126,11 +150,12 @@ void FractalDataStructure<T>::process_confirm() {
   update_temporary_shapes(shapes);
 
   auto lines = fractal_part->get_lines();
+  all_fractal_shapes.push_back(Shapes<T>());
 
   for (auto &&i : lines)
   {
     Line<T>* line = new Line<T>(i.a, i.b);
-    all_shapes.add_shape(line);
+    all_fractal_shapes.back().add_shape(line);
     new_shapes.add_shape(line);
   }
 }

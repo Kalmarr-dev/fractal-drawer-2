@@ -127,3 +127,55 @@ void QuadTree2D<T>::clear_shapes() {
   this->shapes_amount = 0;
 }
 
+template<typename T>
+void QuadTree2D<T>::clear_shapes(const Shapes<T>& shapes) {
+  this->shapes_amount -= shapes.get_shapes().size();
+  std::cout << this->shapes_amount << '\n';
+  #pragma omp parallel for schedule(dynamic)
+  for (auto &&shape : shapes.get_shapes())
+  {
+    QuadTreeNode<T>* node = root;
+    bool deleted = false;
+    if (shape->get_linear_size_squared() == T(0.0))
+    {
+      #pragma omp critical(node_shapes)
+      {
+        node->shapes_set.erase(shape);
+        deleted = true;
+      }
+    }
+
+    while (!deleted && node->shape_is_inside(shape))
+    {
+      bool nodes_created = node->create_children_if_not_exist();
+      if (!nodes_created)
+      {
+        #pragma omp critical(node_shapes)
+        {
+          node->shapes_set.erase(shape);
+          deleted = true;
+        }
+        continue;
+      }
+      if (node->bottom_left->shape_is_inside(shape))
+      {
+        node = node->bottom_left;
+      } else if (node->bottom_right->shape_is_inside(shape))
+      {
+        node = node->bottom_right;
+      } else if (node->top_left->shape_is_inside(shape))
+      {
+        node = node->top_left;
+      } else if (node->top_right->shape_is_inside(shape))
+      {
+        node = node->top_right;
+      } else {
+        #pragma omp critical(node_shapes)
+        {
+          node->shapes_set.erase(shape);
+          deleted = true;
+        }
+      }
+    }
+  }
+}

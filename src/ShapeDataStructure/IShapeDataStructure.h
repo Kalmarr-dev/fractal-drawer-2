@@ -13,6 +13,7 @@ public:
   virtual ~IShapeDataStructure() = default;
 
   virtual void clear_shapes() = 0;
+  virtual Shapes<T> clear_last_shapes() = 0;
   virtual Shapes<T> get_new_shapes() = 0;
   virtual Shapes<T> get_temporary_shapes() = 0;
 };

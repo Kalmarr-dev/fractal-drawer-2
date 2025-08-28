@@ -40,8 +40,10 @@ void BasicRecursiveRenderer<T>::zoom_reset() {
 
 template<typename T>
 void BasicRecursiveRenderer<T>::clear_shapes() {
-  this->p_data_structure_2d->clear_shapes();
-  this->p_shape_data_structure->clear_shapes();
+  // this->p_data_structure_2d->clear_shapes();
+  // this->p_shape_data_structure->clear_shapes();
+  Shapes<T> shapes_to_delete = this->p_shape_data_structure->clear_last_shapes();
+  this->p_data_structure_2d->clear_shapes(shapes_to_delete);
 }
 
 // template<typename T>

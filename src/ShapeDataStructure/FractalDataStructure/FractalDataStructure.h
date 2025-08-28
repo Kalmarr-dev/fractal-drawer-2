@@ -17,7 +17,7 @@ class FractalDataStructure : public IShapeDataStructure<T>, public IConfirmObser
 private:
   FractalStub<T> fractal_stub;
   std::list<Fractal<T>*> all_fractals;
-  Shapes<T> all_shapes;
+  std::list<Shapes<T>> all_fractal_shapes;
   Shapes<T> new_shapes;
   Shapes<T> temporary_shapes;
   ICamera<T>* p_camera;
@@ -33,6 +33,7 @@ public:
   ~FractalDataStructure() = default;
 
   void clear_shapes() override;
+  Shapes<T> clear_last_shapes() override;
   Shapes<T> get_new_shapes() override;
   Shapes<T> get_temporary_shapes() override;
   void process_pointer_move(Position<T> pointer) override;
