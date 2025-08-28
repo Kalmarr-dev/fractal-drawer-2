@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <string>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include "../IViewport.h"
@@ -11,13 +12,14 @@ class GLFWViewport : public IViewport, public IViewportObserver
 private:
   GLFWwindow* p_window;
   std::list<IInputObserver*> input_observers;
+  std::string window_name;
   bool is_fullscreen;
   bool fullscreen_should_be_toggled = false;
 
   GLFWwindow* create_windowed_window(int width, int height);
   GLFWwindow* create_fullscreen_window(int width, int height);
 public:
-  GLFWViewport(bool is_fullscreen = false);
+  GLFWViewport(std::string window_name, bool is_fullscreen = false);
   ~GLFWViewport() override;
 
   std::pair<int, int> get_size() override;

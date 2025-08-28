@@ -41,7 +41,7 @@ void initialize_loop(Configuration configuration) {
 
   BasicRecursiveRenderer<T>* p_recursive_renderer = new BasicRecursiveRenderer<T>(p_data_structure, p_camera, p_fractal_data_structure, configuration);
 
-  GLFWViewport* p_viewport = new GLFWViewport(true);
+  GLFWViewport* p_viewport = new GLFWViewport("Fractal Drawer 2.0", true);
   
   std::list<IOnScreenButton*> on_screen_buttons;
   IOnScreenButton* button_zoom_in = get_predefined_basic_on_screen_button_zoom_in();

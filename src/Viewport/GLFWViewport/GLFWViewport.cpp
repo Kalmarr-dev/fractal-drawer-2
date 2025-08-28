@@ -7,7 +7,7 @@ void error_callback(int error, const char* description) {
     fprintf(stderr, "GLFW Error (%d): %s\n", error, description);
 }
 
-GLFWViewport::GLFWViewport(bool fullscreen) {
+GLFWViewport::GLFWViewport(std::string window_name, bool fullscreen) : window_name(window_name) {
   glfwInit();
 
   glfwSetErrorCallback(error_callback);
@@ -58,20 +58,14 @@ std::pair<int, int> GLFWViewport::get_size() {
 
 GLFWwindow* GLFWViewport::create_windowed_window(int width, int height) {
   glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-  GLFWwindow* window = glfwCreateWindow(width, height, "Fractal Drawer 2.0", NULL, this->p_window);
+  GLFWwindow* window = glfwCreateWindow(width, height, this->window_name.c_str(), NULL, this->p_window);
   glfwMakeContextCurrent(window);
-  // glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
-  // glfwSetKeyCallback(window, Input::KeyCallback);
-  // glfwSetWindowSizeCallback(window, WindowResizeCallback);
   return window;
 }
 GLFWwindow* GLFWViewport::create_fullscreen_window(int width, int height) {
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-  GLFWwindow* window = glfwCreateWindow(width, height, "Fractal Drawer 2.0", glfwGetPrimaryMonitor(), this->p_window);
+  GLFWwindow* window = glfwCreateWindow(width, height, this->window_name.c_str(), glfwGetPrimaryMonitor(), this->p_window);
   glfwMakeContextCurrent(window);
-  // glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
-  // glfwSetKeyCallback(window, Input::KeyCallback);
-  // glfwSetWindowSizeCallback(window, WindowResizeCallback);
   return window;
 }
 
