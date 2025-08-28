@@ -198,6 +198,89 @@ void OpenGLRenderer<T>::render_to_screen() {
 }
 
 template <typename T>
+void OpenGLRenderer<T>::render_rectangles_to_screen() {
+  auto camera_corners = p_camera->get_camera_corners();
+  T* offset_0 = new T(0);
+  T* offset_x = new T(camera_corners.first.x);
+  T* offset_y = new T(camera_corners.first.y);
+  T width = camera_corners.second.x - camera_corners.first.x;
+  T height = camera_corners.second.y - camera_corners.first.y;
+
+  Shapes<T> shapes = p_recursive_renderer->get_shapes_on_camera();
+  // vector sizes are subject to change
+  const int floats_per_vertex = 5;
+  vector<float> positions(shapes.get_shapes().size() * 4 * floats_per_vertex);
+  vector<unsigned int> indexes(shapes.get_shapes().size() * 6);
+  
+  
+  const auto& shapes_collection = shapes.get_shapes();
+
+  #ifdef _DEBUG
+    std::cout << shapes_collection.size() << '\n';
+  #endif
+
+  size_t shapes_collection_size = shapes_collection.size();
+  #pragma omp parallel for schedule(static) if(10000 < shapes_collection_size)
+  for (int i = 0; i < (int)shapes_collection.size(); i++)
+  {
+    auto shape = shapes_collection[i];
+    auto shape_points = shape->get_points();
+    auto shape_indexes = shape->get_indexes();
+    double length_squared_log = std::log2(shape->get_linear_size_squared().get_double(offset_0, 0));
+    double r = std::cos(length_squared_log * 0.15) * 0.5 + 0.5;
+    double g = std::cos(length_squared_log * 0.1 + + 3.1415 * 0.5) * 0.5 + 0.5;
+    double b = std::cos(length_squared_log * 0.25 + 3.1415) * 0.5 + 0.5;
+    for (int j = 0; j < (int)shape_points.size(); j++)
+    {
+      auto point = shape_points[j];
+      T offset_point_x = (point.x - *offset_x);
+      T scaled_point_x = offset_point_x / width;
+      T rescaled_point_x = (scaled_point_x - T(0.5)) * T(2.0);
+      T offset_point_y = (point.y - *offset_y);
+      T scaled_point_y = offset_point_y / height;
+      T rescaled_point_y = (scaled_point_y - T(0.5)) * T(2.0);
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex] = (float)(rescaled_point_x).get_double(offset_0, 0);
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 1] = (float)(rescaled_point_y).get_double(offset_0, 0);
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 2] = (float)r;
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 3] = (float)g;
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 4] = (float)b;
+    }
+    for (int j = 0; j < (int)shape_indexes.size(); j++)
+    {
+      indexes[i * 6 + j] = i * 4 + shape_indexes[j];
+    }
+  }
+
+  VertexBuffer vb(&positions[0], positions.size() * sizeof(float));
+  IndexBuffer ib(&indexes[0], (unsigned int)indexes.size());
+
+  VertexBufferLayout layout;
+  layout.Push<float>(2);
+  layout.Push<float>(3);
+
+  VertexArray va;
+  va.AddBuffer(vb, layout);
+
+  // TODO not doing this every render removes colors somehow
+  // TODO can't delete shader??
+  // delete this->colored_shader;
+  this->colored_shader = new Shader("res/shaders/colored.shader");
+  colored_shader->Bind();
+
+  colored_shader->SetUniform4f
+  ( 
+    "u_camera", -1.0, -1.0, 2.0, 2.0
+  );
+
+  va.Bind();
+  ib.Bind();
+  // glLineWidth(5);
+  glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
+
+  render_buttons();
+}
+
+template <typename T>
 void OpenGLRenderer<T>::clear_screen() {
   glClear(GL_COLOR_BUFFER_BIT);
 }

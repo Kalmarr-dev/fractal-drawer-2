@@ -20,6 +20,7 @@
 #include "src/LongDouble/LongDoubleBitset/LongDoubleBitset.h"
 #include "src/DataStructure2D/QuadTree2D/QuadTree2D.h"
 #include "src/LongDouble/LongDoubleUInt64/LongDoubleUInt64.h"
+#include "src/ShapeDataStructure/StampPaintDataStructure/StampPaintDataStructure.h"
 
 // #define LongDouble _LongDoubleBitset
 // #define LongDouble BasicLongDouble
@@ -37,11 +38,11 @@ void initialize_loop(Configuration configuration) {
     )
   );
 
-  FractalDataStructure<T>* p_fractal_data_structure = new FractalDataStructure<T>(p_camera, configuration);
+  StampPaintDataStructure<T>* p_stamp_data_structure = new StampPaintDataStructure<T>(p_camera, configuration);
 
-  BasicRecursiveRenderer<T>* p_recursive_renderer = new BasicRecursiveRenderer<T>(p_data_structure, p_camera, p_fractal_data_structure, configuration);
+  BasicRecursiveRenderer<T>* p_recursive_renderer = new BasicRecursiveRenderer<T>(p_data_structure, p_camera, p_stamp_data_structure, configuration);
 
-  GLFWViewport* p_viewport = new GLFWViewport("Fractal Drawer 2.0", true);
+  GLFWViewport* p_viewport = new GLFWViewport("Infinite Stamp", true);
   
   std::list<IOnScreenButton*> on_screen_buttons;
   IOnScreenButton* button_zoom_in = get_predefined_basic_on_screen_button_zoom_in();
@@ -56,17 +57,17 @@ void initialize_loop(Configuration configuration) {
   p_input->process_window_reconstruction(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
   p_input->subscribe_to_zoom(p_camera);
-  p_input->subscribe_to_zoom(p_fractal_data_structure); // after subscribing camers to zoom
+  p_input->subscribe_to_zoom(p_stamp_data_structure); // after subscribing camers to zoom
   p_input->subscribe_to_zoom(p_recursive_renderer); // after subscribing camera and shape_ds to zoom
   p_input->subscribe_to_zoom_reset(p_camera);
   p_input->subscribe_to_window_resize(p_camera);
   p_input->subscribe_to_window_resize(p_renderer);
   p_viewport->subscribe_to_window_reconstruction(p_input);
   p_viewport->subscribe_to_window_reconstruction(p_renderer);
-  p_input->subscribe_to_primary_button_down(p_fractal_data_structure);
-  p_input->subscribe_to_secondary_button_down(p_fractal_data_structure);
-  p_input->subscribe_to_pointer_move(p_fractal_data_structure);
-  p_input->subscribe_to_confirm(p_fractal_data_structure);
+  p_input->subscribe_to_primary_button_down(p_stamp_data_structure);
+  p_input->subscribe_to_secondary_button_down(p_stamp_data_structure);
+  p_input->subscribe_to_pointer_move(p_stamp_data_structure);
+  p_input->subscribe_to_pointer_up(p_stamp_data_structure);
   p_input->subscribe_to_clear(p_recursive_renderer);
 
 
@@ -76,7 +77,8 @@ void initialize_loop(Configuration configuration) {
     p_input->send_recurring_events();
     
     p_renderer->clear_screen();
-    p_renderer->render_to_screen();
+    // p_renderer->render_to_screen();
+    p_renderer->render_rectangles_to_screen();
 
  
     glfwSwapBuffers(p_viewport->getWindowPointer());

@@ -49,12 +49,19 @@ public:
 
   inline std::vector<unsigned int> get_indexes() const {
     std::vector<unsigned int> indexes;
+    // indexes.push_back(0);
+    // indexes.push_back(1);
+    // indexes.push_back(1);
+    // indexes.push_back(2);
+    // indexes.push_back(2);
+    // indexes.push_back(3);
+    // indexes.push_back(3);
+    // indexes.push_back(0);
+
     indexes.push_back(0);
     indexes.push_back(1);
-    indexes.push_back(1);
     indexes.push_back(2);
     indexes.push_back(2);
-    indexes.push_back(3);
     indexes.push_back(3);
     indexes.push_back(0);
     return indexes;
