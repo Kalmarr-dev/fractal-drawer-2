@@ -69,6 +69,7 @@ void initialize_loop(Configuration configuration) {
   p_input->subscribe_to_pointer_move(p_stamp_data_structure);
   p_input->subscribe_to_pointer_up(p_stamp_data_structure);
   p_input->subscribe_to_clear(p_recursive_renderer);
+  p_input->subscribe_to_pointer_up(p_recursive_renderer);
 
 
   while (!p_viewport->window_should_close()) {   

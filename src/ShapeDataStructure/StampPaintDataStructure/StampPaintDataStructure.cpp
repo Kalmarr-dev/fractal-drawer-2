@@ -111,7 +111,7 @@ void StampPaintDataStructure<T>::process_pointer_up() {
     current_screen_coordinate_squares = nullptr;
   }
   // TODO delete current stamp too
-  // update_temporary_shapes(Shapes<T>());
+  update_temporary_shapes(Shapes<T>());
 }
 
 template<typename T>

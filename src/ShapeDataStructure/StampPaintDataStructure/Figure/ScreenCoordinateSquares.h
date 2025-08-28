@@ -17,16 +17,21 @@ public:
   ~ScreenCoordinateSquares() = default;
   void add_circle_of_squares(const Position<T> position, const T circle_radius) {
     T raduis_in_screen_coordinates = circle_radius / square_size;
-    T shift_x = position.x - origin.x;
-    T shift_y = position.y - origin.y;
+    T shift_x = (position.x - origin.x) / square_size;
+    T shift_y = (position.y - origin.y) / square_size;
     T* offset_zero = new T(0);
-    for (int i = (int)(shift_x - raduis_in_screen_coordinates).get_double(offset_zero, 0); i < (shift_x + raduis_in_screen_coordinates).get_double(offset_zero, 0); i++)
+    for (int i = (int)(T(0) - raduis_in_screen_coordinates).get_double(offset_zero, 0); i < (raduis_in_screen_coordinates).get_double(offset_zero, 0); i++)
     {
-      for (int j = (int)(shift_y - raduis_in_screen_coordinates).get_double(offset_zero, 0); j < (shift_y + raduis_in_screen_coordinates).get_double(offset_zero, 0); j++)
+      for (int j = (int)(T(0) - raduis_in_screen_coordinates).get_double(offset_zero, 0); j < (raduis_in_screen_coordinates).get_double(offset_zero, 0); j++)
       {
         if (i * i + j * j < (raduis_in_screen_coordinates * raduis_in_screen_coordinates).get_double(offset_zero, 0))
         {
-          square_coordinates.insert(std::make_pair(i, j));
+          square_coordinates.insert(
+            std::make_pair(
+              i + (int)shift_x.get_double(offset_zero, 0),
+              j + (int)shift_y.get_double(offset_zero, 0)
+            )
+          );
         }        
       }
     }
