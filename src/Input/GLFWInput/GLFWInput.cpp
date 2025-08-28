@@ -61,6 +61,7 @@ void GLFWInput<T>::on_click_callback(GLFWwindow* window, int button, int action,
   if (action == GLFW_RELEASE) {
     this->button_zoom_in->set_not_clicked();
     this->button_zoom_out->set_not_clicked();
+    this->notify_pointer_up();
   }
 }
 
