@@ -53,7 +53,7 @@ void initialize_loop(Configuration configuration) {
 
   GLFWInput<T>* p_input = new GLFWInput<T>(p_viewport, button_zoom_in, button_zoom_out, GLFW_KEY_F, GLFW_KEY_ESCAPE, GLFW_KEY_X, GLFW_KEY_Z, GLFW_KEY_BACKSPACE, GLFW_KEY_CAPS_LOCK, GLFW_KEY_ENTER);
   
-  p_input->subscribe_viewport_to_callbacks(p_viewport);
+  p_input->process_window_reconstruction(p_viewport);
   p_input->subscribe_to_toggle_fullscreen(p_viewport);
   p_input->subscribe_to_zoom(p_camera);
   p_input->subscribe_to_zoom(p_fractal_data_structure); // after subscribing camers to zoom
@@ -62,6 +62,7 @@ void initialize_loop(Configuration configuration) {
   p_input->subscribe_to_window_resize(p_camera);
   p_input->subscribe_to_window_resize(p_renderer);
   p_viewport->subscribe_to_window_reconstruction(p_input);
+  p_viewport->subscribe_to_window_reconstruction(p_renderer);
   p_input->subscribe_to_primary_button_down(p_fractal_data_structure);
   p_input->subscribe_to_secondary_button_down(p_fractal_data_structure);
   p_input->subscribe_to_pointer_move(p_fractal_data_structure);

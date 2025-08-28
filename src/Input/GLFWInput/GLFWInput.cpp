@@ -117,7 +117,7 @@ void GLFWInput<T>::on_window_resize_callback(GLFWwindow* window, int width, int 
 }
 
 template<typename T>
-void GLFWInput<T>::subscribe_viewport_to_callbacks(IViewport* p_viewport)
+void GLFWInput<T>::process_window_reconstruction(IViewport* p_viewport)
 {
   GLFWViewport* p_viewport_cast = dynamic_cast<GLFWViewport*>(p_viewport);
   glfwSetInputMode(p_viewport_cast->getWindowPointer(), GLFW_LOCK_KEY_MODS, GLFW_TRUE);

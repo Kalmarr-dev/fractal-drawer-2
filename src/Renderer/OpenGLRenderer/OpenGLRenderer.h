@@ -11,9 +11,10 @@
 #include "../../GLBuffers/IndexBuffer.h"
 #include "../../GLShaders/Shader.h"
 #include "../../OnScreenButton/IOnScreenButton.h"
+#include "../../Viewport/IWindowReconstructionObserver.h"
 
 template<typename T>
-class OpenGLRenderer : public IRenderer
+class OpenGLRenderer : public IRenderer, public IWindowReconstructionObserver
 {
 private:
   IRecursiveRenderer<T>* p_recursive_renderer;
@@ -36,4 +37,6 @@ public:
   void render_to_screen() override;
   void clear_screen() override;
   void process_window_resize(int width, int height) override;
+  void process_window_reconstruction(IViewport* p_viewport) override;
+  
 };

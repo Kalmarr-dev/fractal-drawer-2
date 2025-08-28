@@ -4,6 +4,7 @@
 #include <math.h>
 #include "../../helpers/Color.h"
 #include "../../Shapes/IShape.h"
+#include "../../Viewport/IViewport.h"
 
 // #define _DEBUG
 
@@ -206,4 +207,10 @@ void OpenGLRenderer<T>::process_window_resize(int window_width, int window_heigh
   glViewport(0, 0, window_width, window_height);
   this->window_width = window_width;
   this->window_height = window_height;
+}
+
+template <typename T>
+void OpenGLRenderer<T>::process_window_reconstruction(IViewport* p_viewport) {
+  std::pair<int, int> size = p_viewport->get_size();
+  process_window_resize(size.first, size.second);
 }

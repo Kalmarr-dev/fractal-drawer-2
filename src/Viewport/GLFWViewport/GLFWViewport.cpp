@@ -69,19 +69,19 @@ GLFWwindow* GLFWViewport::create_fullscreen_window(int width, int height) {
   return window;
 }
 
-void GLFWViewport::subscribe_to_window_reconstruction(IInputObserver* observer) {
+void GLFWViewport::subscribe_to_window_reconstruction(IWindowReconstructionObserver* observer) {
   input_observers.remove(observer);
   input_observers.push_back(observer);
 }
 
-void GLFWViewport::unsubscribe_from_window_reconstruction(IInputObserver* observer) {
+void GLFWViewport::unsubscribe_from_window_reconstruction(IWindowReconstructionObserver* observer) {
   input_observers.remove(observer);
 }
 
 void GLFWViewport::notify_window_reconstruction() {
   for (auto &&observer : input_observers)
   {
-    observer->subscribe_viewport_to_callbacks(this);
+    observer->process_window_reconstruction(this);
   }
 }
 

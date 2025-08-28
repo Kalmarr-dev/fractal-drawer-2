@@ -11,7 +11,7 @@ class GLFWViewport : public IViewport, public IViewportObserver
 {
 private:
   GLFWwindow* p_window;
-  std::list<IInputObserver*> input_observers;
+  std::list<IWindowReconstructionObserver*> input_observers;
   std::string window_name;
   bool is_fullscreen;
   bool fullscreen_should_be_toggled = false;
@@ -23,8 +23,8 @@ public:
   ~GLFWViewport() override;
 
   std::pair<int, int> get_size() override;
-  void subscribe_to_window_reconstruction(IInputObserver* observer) override;
-  void unsubscribe_from_window_reconstruction(IInputObserver* observer) override;
+  void subscribe_to_window_reconstruction(IWindowReconstructionObserver* observer) override;
+  void unsubscribe_from_window_reconstruction(IWindowReconstructionObserver* observer) override;
   void notify_window_reconstruction() override;
   bool window_should_close() override;
   void toggle_fullscreen() override;
