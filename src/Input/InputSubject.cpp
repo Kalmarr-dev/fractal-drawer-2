@@ -149,3 +149,19 @@ void InputSubject<T>::notify_confirm() {
     observer->process_confirm();
   }
 }
+
+template<typename T>
+void InputSubject<T>::subscribe_to_pointer_up(IPointerUpObserver* p_observer) {
+  pointer_up_observers.push_back(p_observer);
+}
+template<typename T>
+void InputSubject<T>::unsubscribe_from_pointer_up(IPointerUpObserver* p_observer) {
+  pointer_up_observers.remove(p_observer);
+}
+template<typename T>
+void InputSubject<T>::notify_pointer_up() {
+  for (auto &&observer : pointer_up_observers)
+  {
+    observer->process_pointer_up();
+  }
+}
