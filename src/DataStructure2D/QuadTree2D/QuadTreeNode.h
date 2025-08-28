@@ -1,10 +1,11 @@
 #pragma once
 
-#include "../../Shapes/Shapes.h"
+#include <unordered_set>
+#include "../../Shapes/IShape.h"
 
 template<typename T>
 struct QuadTreeNode {
-  Shapes<T> shapes;
+  std::unordered_set<IShape<T>*> shapes_set;
   Position<T> lower;
   Position<T> higher;
   QuadTreeNode<T>* bottom_left;
@@ -71,7 +72,7 @@ struct QuadTreeNode {
     
     if (this->intersects_with({this->lower, this->higher}, {lower, higher}))
     {
-      for (auto &&shape : this->shapes.get_shapes())
+      for (auto &&shape : this->shapes_set)
       {
         result.add_shape(shape);
       }

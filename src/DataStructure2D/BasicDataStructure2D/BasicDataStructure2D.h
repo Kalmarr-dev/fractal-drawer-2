@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_set>
 #include "../IDataStructure2D.h"
 #include "../../Shapes/Shapes.h"
 
@@ -7,7 +8,7 @@ template<typename T>
 class BasicDataStructure2D : public IDataStructure2D<T>
 {
 private:
-  Shapes<T> shapes;
+  std::unordered_set<IShape<T>*> shapes_set;
 public:
   ~BasicDataStructure2D() = default;
 

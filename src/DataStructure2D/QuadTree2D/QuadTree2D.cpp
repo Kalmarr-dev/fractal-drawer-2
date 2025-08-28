@@ -41,7 +41,7 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
     {
       #pragma omp critical(node_shapes)
       {
-        node->shapes.add_shape(shape);
+        node->shapes_set.insert(shape);
         inserted = true;
       }
     }
@@ -70,7 +70,7 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
         {
           #pragma omp critical(node_shapes)
           {
-            node->shapes.add_shape(shape);
+            node->shapes_set.insert(shape);
             inserted = true;
           }
           continue;
@@ -90,7 +90,7 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
         } else {
           #pragma omp critical(node_shapes)
           {
-            node->shapes.add_shape(shape);
+            node->shapes_set.insert(shape);
             inserted = true;
           }
         }
@@ -104,7 +104,7 @@ Shapes<T> QuadTree2D<T>::get_visible_shapes_in_area(Position<T> lower, Position<
   QuadTreeNode<T>* node = root;
   Shapes<T> result;
   
-  for (auto &&shape : node->shapes.get_shapes())
+  for (auto &&shape : node->shapes_set)
   {
     result.add_shape(shape);
   }
@@ -123,7 +123,7 @@ void QuadTree2D<T>::clear_shapes() {
   {
     this->root->delete_children();
   }
-  this->root->shapes.clear();
+  this->root->shapes_set.clear();
   this->shapes_amount = 0;
 }
 
