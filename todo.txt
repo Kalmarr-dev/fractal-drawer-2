@@ -1,8 +1,3 @@
-Object for global settings (amount of lines, other preferences) - taken from command line arguments or config
-ACCEPTS: CLI arguments or a file
-
-Draw space is a 1,1 square
-
 Implement color schemes, somehow
 
 Ensure Shapes and others are passed by reference
@@ -16,7 +11,5 @@ Find out why when no fractal is drawn and moving cursor all cores are loaded 60%
 Add text
 
 License and Readme
-
-Check if my exe & appimage are x64
 
 Sign exe & appimage
