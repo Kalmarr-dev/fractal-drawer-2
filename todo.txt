@@ -10,8 +10,4 @@ Find out why when no fractal is drawn and moving cursor all cores are loaded 60%
 
 Add text
 
-License and Readme
-
 Sign exe & appimage
-
-Support delition in DataStructure2D
