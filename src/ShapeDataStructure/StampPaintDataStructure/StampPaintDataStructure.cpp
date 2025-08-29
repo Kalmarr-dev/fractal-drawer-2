@@ -10,6 +10,10 @@ StampPaintDataStructure<T>::StampPaintDataStructure(ICamera<T>* p_camera, Config
   
 template<typename T>
 void StampPaintDataStructure<T>::update_temporary_shapes() {
+  for (auto &&shape : temporary_shapes.get_shapes())
+  {
+    delete shape;
+  }
   temporary_shapes.clear();
   if (this->current_screen_coordinate_squares != nullptr)
   {
@@ -24,6 +28,10 @@ void StampPaintDataStructure<T>::update_temporary_shapes() {
 
 template<typename T>
 void StampPaintDataStructure<T>::update_temporary_shapes(const Shapes<T> shapes) {
+  for (auto &&shape : temporary_shapes.get_shapes())
+  {
+    delete shape;
+  }
   temporary_shapes.clear();
   for (auto &&i : shapes.get_shapes())
   {
