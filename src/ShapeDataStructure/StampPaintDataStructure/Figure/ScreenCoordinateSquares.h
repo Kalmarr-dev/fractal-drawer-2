@@ -35,5 +35,6 @@ public:
         }        
       }
     }
+    delete offset_zero;
   }
 };

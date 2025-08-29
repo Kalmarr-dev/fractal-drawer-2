@@ -22,6 +22,7 @@ void StampPaintDataStructure<T>::update_temporary_shapes() {
     {
       temporary_shapes.add_shape(i);
     }
+    delete figure;
   }
   // TODO add current stamp
 }

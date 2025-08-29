@@ -278,6 +278,10 @@ void OpenGLRenderer<T>::render_rectangles_to_screen() {
   glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
 
   render_buttons();
+
+  delete offset_0;
+  delete offset_x;
+  delete offset_y;
 }
 
 template <typename T>
