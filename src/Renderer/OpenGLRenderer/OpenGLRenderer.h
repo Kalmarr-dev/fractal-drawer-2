@@ -35,7 +35,7 @@ public:
   OpenGLRenderer(IRecursiveRenderer<T>* p_recursive_renderer, ICamera<T>* p_camera, Configuration configuration, std::list<IOnScreenButton*> on_screen_buttons);
   ~OpenGLRenderer();
   void render_to_screen() override;
-  void render_rectangles_to_screen() override;
+  void render_shapes_to_screen() override;
   void clear_screen() override;
   void process_window_resize(int width, int height) override;
   void process_window_reconstruction(IViewport* p_viewport) override;

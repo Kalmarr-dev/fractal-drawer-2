@@ -61,3 +61,7 @@ void BasicRecursiveRenderer<T>::process_pointer_up() {
   update_data_structure_2d_with_new_shapes();
 }
 
+template<typename T>
+void BasicRecursiveRenderer<T>::process_confirm() {
+  update_data_structure_2d_with_new_shapes();
+}

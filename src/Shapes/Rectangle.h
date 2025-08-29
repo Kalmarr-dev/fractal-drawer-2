@@ -105,5 +105,9 @@ public:
   inline T get_depth() const {
     return depth;
   }
+
+  inline void set_depth(T depth) {
+    this->depth = depth;
+  }
 };
 

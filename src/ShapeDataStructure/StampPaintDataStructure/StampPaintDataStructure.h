@@ -7,23 +7,25 @@
 #include "../../Input/IPointerMoveObserver.h"
 #include "../../Input/IPointerUpObserver.h"
 #include "../../Input/IZoomObserver.h"
+#include "../../Input/IConfirmObserver.h"
 #include "Figure/Figure.h"
 #include "Figure/ScreenCoordinateSquares.h"
+#include "Stamp/Stamp.h"
 
 template<typename T>
-class StampPaintDataStructure : public IShapeDataStructure<T>, public IPointerMoveObserver<T>, public IPointerUpObserver
+class StampPaintDataStructure : public IShapeDataStructure<T>, public IPointerMoveObserver<T>, public IPointerUpObserver, public IConfirmObserver
 {
 private:
-  // Stamp<T>* current_stamp;
+  Stamp<T>* current_stamp;
   ScreenCoordinateSquares<T>* current_screen_coordinate_squares;
-  // std::list<Stamp<T>*> all_stamps;
+  std::vector<Stamp<T>*> all_stamps = std::vector<Stamp<T>*>(10, nullptr);
   std::list<Figure<T>*> all_figures;
   std::list<bool> figure_was_drawn;
   Shapes<T> new_shapes;
   Shapes<T> temporary_shapes;
   ICamera<T>* p_camera;
   Configuration configuration;
-  double minimum_visible_screen_size;
+  // double minimum_visible_screen_size; // replaced by config
   T camera_scale_change_to_recalculate_stamps;
   T previous_camera_scale;
   double brush_radius = 0.025;
@@ -46,4 +48,5 @@ public:
   void process_secondary_click(Position<T> pointer) override;
   void process_zoom(Position<T> pointer, T scale_value) override;
   void process_pointer_up() override;
+  void process_confirm() override;
 };

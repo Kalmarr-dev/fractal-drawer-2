@@ -27,7 +27,13 @@ void StampPaintDataStructure<T>::update_temporary_shapes() {
     }
     delete figure;
   }
-  // TODO add current stamp
+  if (this->current_stamp != nullptr) {
+    Shapes<T> lines = this->current_stamp->get_lines_recursive();
+    for (auto &&i : lines.get_shapes())
+    {
+      temporary_shapes.add_shape(i);
+    }
+  }
 }
 
 template<typename T>
@@ -60,6 +66,7 @@ Shapes<T> StampPaintDataStructure<T>::clear_last_shapes() {
       shapes = figure->get_shapes();
       figure->clear();
     } else {
+      // TODO
       // Stamp<T>* stamp = all_stamps.back();
       // all_stamps.pop_back();
       // shapes = stamp->get_shapes();
@@ -93,6 +100,24 @@ void StampPaintDataStructure<T>::process_pointer_move(Position<T> pointer) {
     T x = corners.first.x + width * pointer.x;
     T y = corners.first.y + height * pointer.y;
     current_screen_coordinate_squares->add_circle_of_squares({x, y}, T(this->brush_radius) * camera_size);
+  }
+  if (current_stamp != nullptr)
+  {
+    T camera_size = p_camera->get_bigger_side();
+    auto corners = p_camera->get_camera_corners();
+    T width = corners.second.x - corners.first.x;
+    T height = corners.second.y - corners.first.y;
+    T x = corners.first.x + width * pointer.x;
+    T y = corners.first.y + height * pointer.y;
+    auto first_corner = this->current_stamp->get_root_line().a;
+    this->current_stamp = new Stamp<T>(Line<T>(first_corner, Position<T>(first_corner.x, y)), x - first_corner.x, Shapes<T>());
+    this->current_stamp->set_depth(0.0);
+    // this->current_stamp->add_child_stamp(
+    //   Line<T>(Position<T>(first_corner.x, y), Position<T>(first_corner.x, y - (y - first_corner.y) * T(0.8))),
+    //   (x - first_corner.x) * T(0.8)
+    // );
+    // T minimum_visible_line_size = T(this->configuration.minimum_shape_size) * p_camera->get_bigger_side();
+    // this->current_stamp->update_on_zoom(p_camera, configuration.max_number_of_elements_in_memory, minimum_visible_line_size, 10);
   }
   update_temporary_shapes();
 }
@@ -129,13 +154,23 @@ void StampPaintDataStructure<T>::process_pointer_up() {
     delete current_screen_coordinate_squares;
     current_screen_coordinate_squares = nullptr;
   }
-  // TODO delete current stamp too
-  update_temporary_shapes(Shapes<T>());
+  // TODO update current_stamp readiness
+  update_temporary_shapes();
 }
 
 template<typename T>
 void StampPaintDataStructure<T>::process_secondary_click(Position<T> pointer) {
-
+  T camera_size = p_camera->get_bigger_side();
+  auto corners = p_camera->get_camera_corners();
+  T width = corners.second.x - corners.first.x;
+  T height = corners.second.y - corners.first.y;
+  T x = corners.first.x + width * pointer.x;
+  T y = corners.first.y + height * pointer.y;
+  this->current_stamp = new Stamp<T>(Line<T>({x, y}, Position<T>(x, y + T(0.001))), 0.001, Shapes<T>());
+  this->current_stamp->set_depth(0.0);
+  T minimum_visible_line_size = T(this->configuration.minimum_shape_size) * p_camera->get_bigger_side();
+  this->current_stamp->update_on_zoom(p_camera, configuration.max_number_of_elements_in_memory, minimum_visible_line_size, 10);
+  update_temporary_shapes();
 }
 
 template<typename T>
@@ -144,5 +179,57 @@ void StampPaintDataStructure<T>::process_zoom(Position<T> pointer, T scale_value
   || this->previous_camera_scale * this->camera_scale_change_to_recalculate_stamps < p_camera->get_bigger_side())
   {
     this->previous_camera_scale = p_camera->get_bigger_side();
+    T minimum_visible_line_size = T(this->configuration.minimum_shape_size) * p_camera->get_bigger_side();
+
+    for (auto &&stamp : this->all_stamps)
+    {
+      if (stamp != nullptr)
+      {
+        Shapes<T> shapes = stamp->update_on_zoom(
+          p_camera, configuration.max_number_of_elements_in_memory,
+          minimum_visible_line_size, 100
+        );
+        for (auto &&shape : shapes.get_shapes())
+        {
+          new_shapes.add_shape(shape);
+        }
+      }
+    }
+  }
+}
+
+template<typename T>
+void StampPaintDataStructure<T>::process_confirm() {
+  int current_stamp_number = 0;
+  if (this->current_stamp != nullptr)
+  {
+    if (this->all_stamps[current_stamp_number] == nullptr)
+    {
+      this->all_stamps[current_stamp_number] = current_stamp;
+      Shapes<T> shapes = this->all_stamps[current_stamp_number]->get_lines_recursive();
+      for (auto &&shape : shapes.get_shapes())
+      {
+        new_shapes.add_shape(shape);
+      }
+    } else {
+      Shapes<T> shapes = this->current_stamp->get_lines_recursive();
+      for (auto &&shape : shapes.get_shapes())
+      {
+        new_shapes.add_shape(shape);
+      }
+      this->all_stamps[current_stamp_number]->add_child_stamp(this->current_stamp);
+      T minimum_visible_line_size = T(this->configuration.minimum_shape_size) * p_camera->get_bigger_side();
+      shapes = this->all_stamps[current_stamp_number]->update_on_zoom(
+        p_camera, configuration.max_number_of_elements_in_memory,
+        minimum_visible_line_size, 100
+      );
+      for (auto &&shape : shapes.get_shapes())
+      {
+        new_shapes.add_shape(shape);
+      }
+      
+    }
+    current_stamp = nullptr;
+    update_temporary_shapes();
   }
 }

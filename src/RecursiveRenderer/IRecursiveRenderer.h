@@ -5,9 +5,10 @@
 #include "IRecursiveRendererObserver.h"
 #include "../Input/IZoomObserver.h"
 #include "../Input/IPointerUpObserver.h"
+#include "../Input/IConfirmObserver.h"
 
 template<typename T>
-class IRecursiveRenderer : public IRecursiveRendererObserver<T>, public IZoomObserver<T>, public IPointerUpObserver
+class IRecursiveRenderer : public IRecursiveRendererObserver<T>, public IZoomObserver<T>, public IPointerUpObserver, public IConfirmObserver
 {
 public:
   virtual ~IRecursiveRenderer() = default;

@@ -198,7 +198,7 @@ void OpenGLRenderer<T>::render_to_screen() {
 }
 
 template <typename T>
-void OpenGLRenderer<T>::render_rectangles_to_screen() {
+void OpenGLRenderer<T>::render_shapes_to_screen() {
   auto camera_corners = p_camera->get_camera_corners();
   T* offset_0 = new T(0);
   T* offset_x = new T(camera_corners.first.x);
@@ -208,22 +208,38 @@ void OpenGLRenderer<T>::render_rectangles_to_screen() {
 
   Shapes<T> shapes = p_recursive_renderer->get_shapes_on_camera();
   // vector sizes are subject to change
-  const int floats_per_vertex = 6;
-  vector<float> positions(shapes.get_shapes().size() * 4 * floats_per_vertex);
-  vector<unsigned int> indexes(shapes.get_shapes().size() * 6);
-  
+  const int floats_per_rectangle_vertex = 6;
+  const int floats_per_line_vertex = 6;
   
   const auto& shapes_collection = shapes.get_shapes();
+  std::vector<IShape<T>*> rectangles;
+  rectangles.reserve(shapes_collection.size());
+  std::vector<IShape<T>*> lines;
+  for (auto &&shape : shapes_collection)
+  {
+    if (shape->get_type() == ShapeType::RECTANGLE)
+    {
+      rectangles.push_back(shape);
+    } else if (shape->get_type() == ShapeType::LINE) {
+      lines.push_back(shape);
+    }
+  }
+  
+  vector<float> rectangle_positions(rectangles.size() * 4 * floats_per_rectangle_vertex);
+  vector<unsigned int> rectangle_indexes(rectangles.size() * 6);
+  vector<float> line_positions(lines.size() * 2 * floats_per_line_vertex);
+  vector<unsigned int> line_indexes(lines.size() * 2);
+  
 
   #ifdef _DEBUG
     std::cout << shapes_collection.size() << '\n';
   #endif
 
-  size_t shapes_collection_size = shapes_collection.size();
-  #pragma omp parallel for schedule(static) if(10000 < shapes_collection_size)
-  for (int i = 0; i < (int)shapes_collection.size(); i++)
+  size_t rectangles_size = rectangles.size();
+  #pragma omp parallel for schedule(static) if(10000 < rectangles_size)
+  for (int i = 0; i < (int)rectangles.size(); i++)
   {
-    auto shape = shapes_collection[i];
+    auto shape = rectangles[i];
     auto shape_points = shape->get_points();
     auto shape_indexes = shape->get_indexes();
     double length_squared_log = std::log2(shape->get_linear_size_squared().get_double(offset_0, 0));
@@ -239,50 +255,96 @@ void OpenGLRenderer<T>::render_rectangles_to_screen() {
       T offset_point_y = (point.y - *offset_y);
       T scaled_point_y = offset_point_y / height;
       T rescaled_point_y = (scaled_point_y - T(0.5)) * T(2.0);
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex] = (float)(rescaled_point_x).get_double(offset_0, 0);
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 1] = (float)(rescaled_point_y).get_double(offset_0, 0);
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 2] = (float)shape->get_depth().get_double(offset_0, 0);
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 3] = (float)r;
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 4] = (float)g;
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 5] = (float)b;
+      rectangle_positions[i * floats_per_rectangle_vertex * 4 + j * floats_per_rectangle_vertex] = (float)(rescaled_point_x).get_double(offset_0, 0);
+      rectangle_positions[i * floats_per_rectangle_vertex * 4 + j * floats_per_rectangle_vertex + 1] = (float)(rescaled_point_y).get_double(offset_0, 0);
+      rectangle_positions[i * floats_per_rectangle_vertex * 4 + j * floats_per_rectangle_vertex + 2] = (float)shape->get_depth().get_double(offset_0, 0);
+      rectangle_positions[i * floats_per_rectangle_vertex * 4 + j * floats_per_rectangle_vertex + 3] = (float)r;
+      rectangle_positions[i * floats_per_rectangle_vertex * 4 + j * floats_per_rectangle_vertex + 4] = (float)g;
+      rectangle_positions[i * floats_per_rectangle_vertex * 4 + j * floats_per_rectangle_vertex + 5] = (float)b;
     }
     for (int j = 0; j < (int)shape_indexes.size(); j++)
     {
-      indexes[i * 6 + j] = i * 4 + shape_indexes[j];
+      rectangle_indexes[i * 6 + j] = i * 4 + shape_indexes[j];
+    }
+  }
+  size_t lines_size = lines.size();
+  #pragma omp parallel for schedule(static) if(10000 < lines_size)
+  for (int i = 0; i < (int)lines.size(); i++)
+  {
+    auto shape = lines[i];
+    auto shape_points = shape->get_points();
+    auto shape_indexes = shape->get_indexes();
+    double length_squared_log = std::log2(shape->get_linear_size_squared().get_double(offset_0, 0));
+    double r = std::cos(length_squared_log * 0.25) * 0.5 + 0.5;
+    double g = std::cos(length_squared_log * 0.1 + + 3.1415) * 0.5 + 0.5;
+    double b = std::cos(length_squared_log * 0.15 + 3.1415 * 0.5) * 0.5 + 0.5;
+    for (int j = 0; j < (int)shape_points.size(); j++)
+    {
+      auto point = shape_points[j];
+      T offset_point_x = (point.x - *offset_x);
+      T scaled_point_x = offset_point_x / width;
+      T rescaled_point_x = (scaled_point_x - T(0.5)) * T(2.0);
+      T offset_point_y = (point.y - *offset_y);
+      T scaled_point_y = offset_point_y / height;
+      T rescaled_point_y = (scaled_point_y - T(0.5)) * T(2.0);
+      line_positions[i * floats_per_line_vertex * 2 + j * floats_per_line_vertex] = (float)(rescaled_point_x).get_double(offset_0, 0);
+      line_positions[i * floats_per_line_vertex * 2 + j * floats_per_line_vertex + 1] = (float)(rescaled_point_y).get_double(offset_0, 0);
+      line_positions[i * floats_per_line_vertex * 2 + j * floats_per_line_vertex + 2] = (float)shape->get_depth().get_double(offset_0, 0);
+      line_positions[i * floats_per_line_vertex * 2 + j * floats_per_line_vertex + 3] = (float)r;
+      line_positions[i * floats_per_line_vertex * 2 + j * floats_per_line_vertex + 4] = (float)g;
+      line_positions[i * floats_per_line_vertex * 2 + j * floats_per_line_vertex + 5] = (float)b;
+    }
+    for (int j = 0; j < (int)shape_indexes.size(); j++)
+    {
+      line_indexes[i * 2 + j] = i * 2 + shape_indexes[j];
     }
   }
 
-  VertexBuffer vb(&positions[0], positions.size() * sizeof(float));
-  IndexBuffer ib(&indexes[0], (unsigned int)indexes.size());
+  VertexBuffer vb_rectangles(&rectangle_positions[0], rectangle_positions.size() * sizeof(float));
+  IndexBuffer ib_rectangles(&rectangle_indexes[0], (unsigned int)rectangle_indexes.size());
+  VertexBufferLayout layout_rectangles;
+  layout_rectangles.Push<float>(3);
+  layout_rectangles.Push<float>(3);
+  VertexArray va_rectangles;
+  va_rectangles.AddBuffer(vb_rectangles, layout_rectangles);
 
-  VertexBufferLayout layout;
-  layout.Push<float>(3);
-  layout.Push<float>(3);
-
-  VertexArray va;
-  va.AddBuffer(vb, layout);
-
-  // TODO not doing this every render removes colors somehow
-  // TODO can't delete shader??
-  // delete this->colored_shader;
   this->colored_shader = new Shader("res/shaders/colored_depth.shader");
   colored_shader->Bind();
-
   colored_shader->SetUniform4f
   ( 
     "u_camera", -1.0, -1.0, 2.0, 2.0
   );
 
-  va.Bind();
-  ib.Bind();
+  va_rectangles.Bind();
+  ib_rectangles.Bind();
   // glLineWidth(5);
-  glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
+  glDrawElements(GL_TRIANGLES, ib_rectangles.GetCount(), GL_UNSIGNED_INT, nullptr);
+
+  VertexBuffer vb_lines(&line_positions[0], line_positions.size() * sizeof(float));
+  IndexBuffer ib_lines(&line_indexes[0], (unsigned int)line_indexes.size());
+  VertexBufferLayout layout_lines;
+  layout_lines.Push<float>(3);
+  layout_lines.Push<float>(3);
+  VertexArray va_lines;
+  va_lines.AddBuffer(vb_lines, layout_lines);
+
+  colored_shader->Bind();
+  colored_shader->SetUniform4f
+  ( 
+    "u_camera", -1.0, -1.0, 2.0, 2.0
+  );
+
+  va_lines.Bind();
+  ib_lines.Bind();
+  glLineWidth(3);
+  glDrawElements(GL_LINES, ib_lines.GetCount(), GL_UNSIGNED_INT, nullptr);
 
   render_buttons();
 
   delete offset_0;
   delete offset_x;
   delete offset_y;
+  delete colored_shader;
 }
 
 template <typename T>

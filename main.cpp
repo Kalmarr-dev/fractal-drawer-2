@@ -68,8 +68,10 @@ void initialize_loop(Configuration configuration) {
   p_input->subscribe_to_secondary_button_down(p_stamp_data_structure);
   p_input->subscribe_to_pointer_move(p_stamp_data_structure);
   p_input->subscribe_to_pointer_up(p_stamp_data_structure);
+  p_input->subscribe_to_confirm(p_stamp_data_structure);
   p_input->subscribe_to_clear(p_recursive_renderer);
   p_input->subscribe_to_pointer_up(p_recursive_renderer);
+  p_input->subscribe_to_confirm(p_recursive_renderer);
 
 
   while (!p_viewport->window_should_close()) {   
@@ -79,7 +81,7 @@ void initialize_loop(Configuration configuration) {
     
     p_renderer->clear_screen();
     // p_renderer->render_to_screen();
-    p_renderer->render_rectangles_to_screen();
+    p_renderer->render_shapes_to_screen();
 
  
     glfwSwapBuffers(p_viewport->getWindowPointer());

@@ -16,8 +16,8 @@ Drawing (space is divided into rectangles with size based on current camera zoom
 
 Stamps (rerender on drawing, rerender on zoom, On^2 rendering of shapes)
 
-Eraser delition works explusively on DataStructure2D, Backspace - on both DataStructures
-
-StampShape - pointer to IShape, when the pointer is zero - delete StampShape from collection
+Eraser delition, Backspace deletion
 
 Find memory leak each frame
+
+Rotate stamps, mirror stamps
