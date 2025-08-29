@@ -14,6 +14,7 @@ private:
   Position<T> lower;
   Position<T> higher;
   ShapeType type = ShapeType::RECTANGLE;
+  T depth = 1.0;
 public:
   Rectangle(Position<T> a, Position<T> b) {
     if (b.x < a.x)
@@ -26,6 +27,20 @@ public:
     }
     this->lower = a;
     this->higher = b;
+  }
+
+  Rectangle(Position<T> a, Position<T> b, T depth) {
+    if (b.x < a.x)
+    {
+      std::swap(a.x, b.x);
+    }
+    if (b.y < a.y)
+    {
+      std::swap(a.y, b.y);
+    }
+    this->lower = a;
+    this->higher = b;
+    this->depth = depth;
   }
 
   ~Rectangle() = default;
@@ -85,6 +100,10 @@ public:
         higher.y < T(0) ? higher.y + T(1) : higher.y
       }
     );
+  }
+
+  inline T get_depth() const {
+    return depth;
   }
 };
 

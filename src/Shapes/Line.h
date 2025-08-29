@@ -10,7 +10,7 @@ class Line : public IShape<T>
 {
 private:
   ShapeType type = ShapeType::LINE;
-
+  T depth = T(1.0);
 public:
   Position<T> a;
   Position<T> b;
@@ -18,11 +18,13 @@ public:
   Line() {
     this->a = Position<T>((0), T(0));
     this->b = Position<T>((0), T(0));
+    this->depth = T(1.0);
   }
 
   Line(Position<T> a, Position<T> b) {
     this->a = a;
     this->b = b;
+    this->depth = T(1.0);
   }
 
   ~Line() = default;
@@ -67,6 +69,10 @@ public:
         b.y < T(0.0) ? b.y + T(1.0) : b.y
       }
     );
+  }
+
+  inline T get_depth() const {
+    return depth;
   }
 };
 

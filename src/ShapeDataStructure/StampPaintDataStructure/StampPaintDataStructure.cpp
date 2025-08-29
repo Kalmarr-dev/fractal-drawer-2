@@ -1,5 +1,8 @@
 #include "StampPaintDataStructure.h"
 
+#include <math.h>
+#include <iostream>
+
 template<typename T>
 StampPaintDataStructure<T>::StampPaintDataStructure(ICamera<T>* p_camera, Configuration configuration)
   : p_camera(p_camera), configuration(configuration) 
@@ -17,7 +20,7 @@ void StampPaintDataStructure<T>::update_temporary_shapes() {
   temporary_shapes.clear();
   if (this->current_screen_coordinate_squares != nullptr)
   {
-    Figure<T>* figure = new Figure<T>(this->current_screen_coordinate_squares);
+    Figure<T>* figure = new Figure<T>(this->current_screen_coordinate_squares, T(0.0));
     for (auto &&i : figure->get_shapes().get_shapes())
     {
       temporary_shapes.add_shape(i);
@@ -111,7 +114,14 @@ template<typename T>
 void StampPaintDataStructure<T>::process_pointer_up() {
   if (current_screen_coordinate_squares)
   {
-    all_figures.push_back(new Figure<T>(current_screen_coordinate_squares));
+    all_figures.push_back(
+      new Figure<T>(
+        current_screen_coordinate_squares,
+        T(std::pow(0.5, last_depth_exponent_numerator / depth_exponent_denominator + 1))
+      )
+    );
+    figure_was_drawn.push_back(true);
+    last_depth_exponent_numerator++;
     for (auto &&shape : all_figures.back()->get_shapes().get_shapes())
     {
       new_shapes.add_shape(shape);

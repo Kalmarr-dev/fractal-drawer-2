@@ -20,8 +20,4 @@ Eraser delition works explusively on DataStructure2D, Backspace - on both DataSt
 
 StampShape - pointer to IShape, when the pointer is zero - delete StampShape from collection
 
-Find memory leak on pointer move
-
-Find out why QuadTree is not storing every square
-
-Do something about triangle overlap causing issues
+Find memory leak each frame

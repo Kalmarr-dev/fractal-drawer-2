@@ -28,6 +28,8 @@ private:
   T previous_camera_scale;
   double brush_radius = 0.025;
   double square_size = 0.004;
+  double last_depth_exponent_numerator = 0;
+  double depth_exponent_denominator = 1024.0 * 64.0;
 
   void update_temporary_shapes();
   void update_temporary_shapes(const Shapes<T>);

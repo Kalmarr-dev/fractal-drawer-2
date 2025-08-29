@@ -208,7 +208,7 @@ void OpenGLRenderer<T>::render_rectangles_to_screen() {
 
   Shapes<T> shapes = p_recursive_renderer->get_shapes_on_camera();
   // vector sizes are subject to change
-  const int floats_per_vertex = 5;
+  const int floats_per_vertex = 6;
   vector<float> positions(shapes.get_shapes().size() * 4 * floats_per_vertex);
   vector<unsigned int> indexes(shapes.get_shapes().size() * 6);
   
@@ -241,9 +241,10 @@ void OpenGLRenderer<T>::render_rectangles_to_screen() {
       T rescaled_point_y = (scaled_point_y - T(0.5)) * T(2.0);
       positions[i * floats_per_vertex * 4 + j * floats_per_vertex] = (float)(rescaled_point_x).get_double(offset_0, 0);
       positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 1] = (float)(rescaled_point_y).get_double(offset_0, 0);
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 2] = (float)r;
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 3] = (float)g;
-      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 4] = (float)b;
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 2] = (float)shape->get_depth().get_double(offset_0, 0);
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 3] = (float)r;
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 4] = (float)g;
+      positions[i * floats_per_vertex * 4 + j * floats_per_vertex + 5] = (float)b;
     }
     for (int j = 0; j < (int)shape_indexes.size(); j++)
     {
@@ -255,7 +256,7 @@ void OpenGLRenderer<T>::render_rectangles_to_screen() {
   IndexBuffer ib(&indexes[0], (unsigned int)indexes.size());
 
   VertexBufferLayout layout;
-  layout.Push<float>(2);
+  layout.Push<float>(3);
   layout.Push<float>(3);
 
   VertexArray va;
@@ -264,7 +265,7 @@ void OpenGLRenderer<T>::render_rectangles_to_screen() {
   // TODO not doing this every render removes colors somehow
   // TODO can't delete shader??
   // delete this->colored_shader;
-  this->colored_shader = new Shader("res/shaders/colored.shader");
+  this->colored_shader = new Shader("res/shaders/colored_depth.shader");
   colored_shader->Bind();
 
   colored_shader->SetUniform4f
@@ -286,7 +287,7 @@ void OpenGLRenderer<T>::render_rectangles_to_screen() {
 
 template <typename T>
 void OpenGLRenderer<T>::clear_screen() {
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 template <typename T>
@@ -294,6 +295,9 @@ void OpenGLRenderer<T>::process_window_resize(int window_width, int window_heigh
   glViewport(0, 0, window_width, window_height);
   this->window_width = window_width;
   this->window_height = window_height;
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glDepthRange(0.0, 1.0);
 }
 
 template <typename T>
