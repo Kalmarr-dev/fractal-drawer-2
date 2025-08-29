@@ -45,7 +45,10 @@ Shapes<T> Stamp<T>::create_children_recursive
   Stamp<T>* parent_stamp, ICamera<T>* p_camera,
   int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH
 ) {
-  if (this->root_line.get_linear_size_squared() < MIN_LINE_SIZE * MIN_LINE_SIZE)
+  if (
+    this->root_line.get_linear_size_squared() < MIN_LINE_SIZE * MIN_LINE_SIZE
+    ||  width < MIN_LINE_SIZE
+  )
   {
     return Shapes<T>();
   }
@@ -66,25 +69,22 @@ Shapes<T> Stamp<T>::create_children_recursive
     }
     if (child == nullptr)
     {
+      T start_to_start_x = (sibling_stamp->root_line.a.x - parent_stamp->root_line.a.x) / parent_stamp->width * this->width;
       Line<T> start_to_start_vector = root_start_to_start_srms[i].MultiplyByVector(this->root_line);
+      T start_to_start_y = start_to_start_vector.b.y;
       Line<T> child_root_vector = start_to_end_srms[i].MultiplyByVector(this->root_line);
       T x0, y0, x1, y1;
-      x0 = this->root_line.a.x + start_to_start_vector.b.x;
-      y0 = this->root_line.a.y + start_to_start_vector.b.y;
+      x0 = this->root_line.a.x + start_to_start_x;
+      y0 = this->root_line.a.y + start_to_start_y;
       x1 = x0 + child_root_vector.b.x;
       y1 = y0 + child_root_vector.b.y;
-      T* offset_zero = new T(0);
-      if (std::isnan(x0.get_double(offset_zero, 0)))
-      {
-        std::isnan(x0.get_double(offset_zero, 0));
-      }
+      T new_width = sibling_stamp->width * this->width / parent_stamp->width;
       Line<T> new_root_line(Position<T>(x0, y0), Position<T>(x1, y1));
       if (this->root_line.get_linear_size_squared() < new_root_line.get_linear_size_squared())
       {
         i++;
         continue;
       }
-      T new_width = sibling_stamp->width * this->width / parent_stamp->width;
       Stamp<T>* new_stamp = new Stamp<T>(new_root_line, new_width, Shapes<T>());
       new_stamp->reflection_id = sibling_stamp->reflection_id;
       this->inside_child_stamps.push_back(new_stamp);

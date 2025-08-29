@@ -26,7 +26,7 @@ private:
   ICamera<T>* p_camera;
   Configuration configuration;
   // double minimum_visible_screen_size; // replaced by config
-  T camera_scale_change_to_recalculate_stamps;
+  // T camera_scale_change_to_recalculate_stamps;
   T previous_camera_scale;
   double brush_radius = 0.025;
   double square_size = 0.004;
