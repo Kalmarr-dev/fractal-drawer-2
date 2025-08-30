@@ -142,17 +142,27 @@ void StampPaintDataStructure<T>::process_pointer_up() {
     all_figures.push_back(
       new Figure<T>(
         current_screen_coordinate_squares,
-        T(std::pow(0.5, last_depth_exponent_numerator / depth_exponent_denominator + 1))
+        T(std::pow(0.5, (*last_depth_exponent_numerator) / depth_exponent_denominator + 1))
       )
     );
     figure_was_drawn.push_back(true);
-    last_depth_exponent_numerator++;
+    (*last_depth_exponent_numerator)++;
     for (auto &&shape : all_figures.back()->get_shapes().get_shapes())
     {
       new_shapes.add_shape(shape);
     }
     delete current_screen_coordinate_squares;
     current_screen_coordinate_squares = nullptr;
+    for (auto &&stamp : this->all_stamps)
+    {
+      if (stamp != nullptr)
+      {
+        for (auto &&shape : stamp->update_on_new_shapes(new_shapes).get_shapes())
+        {
+          new_shapes.add_shape(shape);
+        }
+      }
+    }
   }
   // TODO update current_stamp readiness
   update_temporary_shapes();
@@ -168,8 +178,8 @@ void StampPaintDataStructure<T>::process_secondary_click(Position<T> pointer) {
   T y = corners.first.y + height * pointer.y;
   this->current_stamp = new Stamp<T>(Line<T>({x, y}, Position<T>(x, y + T(0.001))), 0.001, Shapes<T>());
   this->current_stamp->set_depth(0.0);
-  T minimum_visible_line_size = T(this->configuration.minimum_shape_size) * p_camera->get_bigger_side();
-  this->current_stamp->update_on_zoom(p_camera, configuration.max_number_of_elements_in_memory, minimum_visible_line_size, 10);
+  // T minimum_visible_line_size = T(this->configuration.minimum_shape_size) * p_camera->get_bigger_side();
+  // this->current_stamp->update_on_zoom(p_camera, configuration.max_number_of_elements_in_memory, minimum_visible_line_size, 10);
   update_temporary_shapes();
 }
 
@@ -187,7 +197,7 @@ void StampPaintDataStructure<T>::process_zoom(Position<T> pointer, T scale_value
       {
         Shapes<T> shapes = stamp->update_on_zoom(
           p_camera, configuration.max_number_of_elements_in_memory,
-          minimum_visible_line_size, 1000
+          minimum_visible_line_size, 1000, last_depth_exponent_numerator
         );
         for (auto &&shape : shapes.get_shapes())
         {
@@ -221,7 +231,7 @@ void StampPaintDataStructure<T>::process_confirm() {
       T minimum_visible_line_size = T(this->configuration.minimum_shape_size) * p_camera->get_bigger_side();
       shapes = this->all_stamps[current_stamp_number]->update_on_zoom(
         p_camera, configuration.max_number_of_elements_in_memory,
-        minimum_visible_line_size, 1000
+        minimum_visible_line_size, 1000, last_depth_exponent_numerator
       );
       for (auto &&shape : shapes.get_shapes())
       {

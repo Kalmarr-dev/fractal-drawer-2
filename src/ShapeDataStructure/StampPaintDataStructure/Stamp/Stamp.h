@@ -33,8 +33,12 @@ private:
     const std::vector<ScaleRotationMatrix<T>>& root_start_to_start_srms,
     const std::vector<ScaleRotationMatrix<T>>& start_to_end_srms,
     Stamp<T>* parent_stamp, ICamera<T>* p_camera,
-    int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH
+    int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH,
+    double* last_depth_exponent_numerator
   );
+  std::vector<Stamp<T>*> get_deepest_stamps_containing_shape(IShape<T>* shape);
+  IShape<T>* transform_shape_into_new_stamp_coordinates(Rectangle<T>* rectangle, Stamp<T>* stamp);
+  Shapes<T> propagate_new_shapes_recursive(Shapes<T> new_shapes);
 public:
   Stamp(Line<T> root_line, T width, Shapes<T> shapes_inside);
   ~Stamp() = default;
@@ -45,8 +49,10 @@ public:
   }
   // creates new stamps recursively
   // then adds new shapes in a loop until no new shapes are added
-  Shapes<T> update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH);
-  // Shapes<T> update_on_new_shapes(Shapes<T> shapes_to_add);
+  // use only on root
+  Shapes<T> update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH, double* last_depth_exponent_numerator);
+  // use only on root
+  Shapes<T> update_on_new_shapes(Shapes<T>& shapes_to_add);
   // Shapes<T> update_on_shapes_clear(Shapes<T> shapes_to_clear);
   bool stamp_is_inside(Stamp<T>* stamp);
   bool shape_is_inside(IShape<T>* shape);

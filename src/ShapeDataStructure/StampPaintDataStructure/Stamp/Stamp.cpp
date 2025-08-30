@@ -43,7 +43,8 @@ Shapes<T> Stamp<T>::create_children_recursive
   const std::vector<ScaleRotationMatrix<T>>& root_start_to_start_srms,
   const std::vector<ScaleRotationMatrix<T>>& start_to_end_srms,
   Stamp<T>* parent_stamp, ICamera<T>* p_camera,
-  int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH
+  int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH,
+  double* last_depth_exponent_numerator
 ) {
   if (
     this->root_line.get_linear_size_squared() < MIN_LINE_SIZE * MIN_LINE_SIZE
@@ -88,11 +89,12 @@ Shapes<T> Stamp<T>::create_children_recursive
       }
       Stamp<T>* new_stamp = new Stamp<T>(new_root_line, new_width, Shapes<T>());
       new_stamp->reflection_id = sibling_stamp->reflection_id;
+      new_stamp->set_depth(++*last_depth_exponent_numerator);
       this->inside_child_stamps.push_back(new_stamp);
       for (auto &&line : new_stamp->get_lines())
       {
         Line<T>* p_line = new Line(line);
-        // TODO set depth
+        p_line->set_depth(new_stamp->depth);
         new_stamp_lines.add_shape(p_line);
       }
       child = new_stamp;
@@ -103,7 +105,8 @@ Shapes<T> Stamp<T>::create_children_recursive
   {
     Shapes<T> deeper_shapes = child->create_children_recursive(
       root_start_to_start_srms, start_to_end_srms, this,
-      p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH
+      p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH,
+      last_depth_exponent_numerator
     );
     for (auto &&line : deeper_shapes.get_shapes())
     {
@@ -112,6 +115,71 @@ Shapes<T> Stamp<T>::create_children_recursive
   }
   
   return new_stamp_lines;
+}
+
+template<typename T>
+std::vector<Stamp<T>*> Stamp<T>::get_deepest_stamps_containing_shape(IShape<T>* shape) {
+  if (!this->shape_is_inside(shape))
+  {
+    return std::vector<Stamp<T>*>();
+  }
+  std::vector<Stamp<T>*> deepest_stamps;
+  bool child_contains_this_shape = false;
+  for (auto &&child : this->inside_child_stamps) {
+    std::vector<Stamp<T>*> deepest_stamps_to_add = child->get_deepest_stamps_containing_shape(shape);
+    for (auto &&stamp : deepest_stamps_to_add)
+    {
+      child_contains_this_shape = true;
+      deepest_stamps.push_back(stamp);
+    }
+  }
+  for (auto &&child : this->outside_child_stamps) {
+    std::vector<Stamp<T>*> deepest_stamps_to_add = child->get_deepest_stamps_containing_shape(shape);
+    for (auto &&stamp : deepest_stamps_to_add)
+    {
+      child_contains_this_shape = true;
+      deepest_stamps.push_back(stamp);
+    }
+  }
+  if (!child_contains_this_shape)
+  {
+    deepest_stamps.push_back(this);
+  }
+  return deepest_stamps;
+}
+
+template<typename T>
+IShape<T>* Stamp<T>::transform_shape_into_new_stamp_coordinates(Rectangle<T>* rectangle, Stamp<T>* stamp) {
+  // TODO support rotation
+  auto point = rectangle->get_points()[0];
+  T start_to_point_x = (point.x - this->root_line.a.x) / this->width * stamp->width;
+  T start_to_point_y = (point.y - this->root_line.a.y) / (this->root_line.b.y - this->root_line.a.y) * (stamp->root_line.b.y - stamp->root_line.a.y);
+  T x = stamp->root_line.a.x + start_to_point_x;
+  T y = stamp->root_line.a.y + start_to_point_y;
+  T min_x = x;
+  T max_x = x;
+  T min_y = y;
+  T max_y = y;
+  if (max_x == T(0))
+  {
+    max_x = max_x;
+  }
+  for (auto &&point : rectangle->get_points())
+  {
+    T start_to_point_x = (point.x - this->root_line.a.x) / this->width * stamp->width;
+    T start_to_point_y = (point.y - this->root_line.a.y) / (this->root_line.b.y - this->root_line.a.y) * (stamp->root_line.b.y - stamp->root_line.a.y);
+    T x = stamp->root_line.a.x + start_to_point_x;
+    T y = stamp->root_line.a.y + start_to_point_y;
+    min_x = std::min(min_x, x);
+    max_x = std::max(max_x, x);
+    min_y = std::min(min_y, y);
+    max_y = std::max(max_y, y);
+    if (max_x == T(0))
+    {
+      max_x = max_x;
+    }
+  }
+  return new Rectangle<T>(Position<T>(min_x, min_y), Position<T>(max_x, max_y));
 }
 
 template<typename T>
@@ -143,7 +211,7 @@ Shapes<T> Stamp<T>::get_lines_recursive() {
 }
 
 template<typename T>
-Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH) {
+Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH, double* last_depth_exponent_numerator) {
   // Create stamps that on camera, not too small and are reflections of inside_child_stamps
   std::vector<ScaleRotationMatrix<T>> root_start_to_start_srms;
   std::vector<ScaleRotationMatrix<T>> start_to_end_srms;
@@ -157,7 +225,7 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
   for (auto &&stamp : inside_child_stamps)
   {
     Shapes<T> stamp_shapes = stamp->create_children_recursive(
-      root_start_to_start_srms, start_to_end_srms, this, p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH
+      root_start_to_start_srms, start_to_end_srms, this, p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH, last_depth_exponent_numerator
     );
     for (auto &&shape : stamp_shapes.get_shapes())
     {
@@ -168,7 +236,7 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
   for (auto &&stamp : outside_child_stamps)
   {
     Shapes<T> stamp_shapes = stamp->create_children_recursive(
-      root_start_to_start_srms, start_to_end_srms, this, p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH
+      root_start_to_start_srms, start_to_end_srms, this, p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH, last_depth_exponent_numerator
     );
     for (auto &&shape : stamp_shapes.get_shapes())
     {
@@ -176,9 +244,45 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
       new_shapes.add_shape(shape);
     }
   }
-  // Add new shapes bottom-to-top
+  // Add shapes from root in new Stamps
   // TODO
 
+  return new_shapes;
+}
+
+template<typename T>
+Shapes<T> Stamp<T>::update_on_new_shapes(Shapes<T>& shapes_to_add) {
+  Shapes<T> new_shapes;
+  // TODO pragma omp parallel for, critical region
+  for (auto &&shape : shapes_to_add.get_shapes())
+  {
+    // find out in which deepest stamps these new shapes are
+    std::vector<Stamp<T>*> deepest_stamps(this->get_deepest_stamps_containing_shape(shape));
+    // update root stamp with all the shapes transformed from the shapes in stamps
+    Shapes<T> new_root_shapes;
+    for (auto &&stamp : deepest_stamps)
+    {
+      if (shape->get_type() == ShapeType::RECTANGLE)
+      {
+        Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(shape);
+        rectangle = dynamic_cast<Rectangle<T>*>(stamp->transform_shape_into_new_stamp_coordinates(rectangle, this));
+        new_root_shapes.add_shape(rectangle);
+      } else {
+        throw std::runtime_error("Not rectangle in Stamp::update_on_new_shapes");
+      }
+    }
+    // propagate updated shapes down, assigning depth from the stamps
+    // for (auto &&shape : this->propagate_new_shapes_recursive(new_root_shapes))
+    // {
+    //   new_shapes.add_shape(shape);
+    // }
+    // TODO this is for testing
+    for (auto &&shape : new_root_shapes.get_shapes())
+    {
+      shape->set_depth(this->depth);
+      new_shapes.add_shape(shape);
+    }
+  }
   return new_shapes;
 }
 
