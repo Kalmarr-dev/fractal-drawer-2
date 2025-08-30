@@ -11,7 +11,7 @@ Stamp<T>::Stamp(Line<T> root_line, T width, Shapes<T> shapes_inside)
   for (auto &&shape : shapes_inside.get_shapes())
   {
     this->shapes_map[shape] = shape;
-    this->shapes_map_reverse.insert(std::make_pair(shape, shape));
+    // this->shapes_map_reverse.insert(std::make_pair(shape, shape));
   }
 }
 
@@ -183,7 +183,7 @@ Shapes<T> Stamp<T>::propagate_new_shape_recursive(IShape<T>* root_shape, Stamp<T
     transformed_shape = root->transform_shape_into_new_stamp_coordinates(rectangle, this);
     transformed_shape->set_depth(root_shape->get_depth());
     this->shapes_map[transformed_shape] = root_shape;
-    this->shapes_map_reverse.insert(std::make_pair(root_shape, transformed_shape));
+    // this->shapes_map_reverse.insert(std::make_pair(root_shape, transformed_shape));
     new_shapes.add_shape(transformed_shape);
   } else {
     throw std::runtime_error("Not rectangle in Stamp::propagate_new_shape_recursive");
@@ -286,7 +286,7 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
         rectangle = dynamic_cast<Rectangle<T>*>(this->transform_shape_into_new_stamp_coordinates(rectangle, new_stamp));
         rectangle->set_depth(shape->get_depth());
         new_stamp->shapes_map[rectangle] = shape;
-        new_stamp->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
+        // new_stamp->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
         new_shapes.add_shape(rectangle);
       } else {
         throw std::runtime_error("Not rectangle in Stamp::update_on_zoom");
@@ -410,7 +410,7 @@ Shapes<T> Stamp<T>::add_child_stamp(Stamp<T>* child) {
       rectangle = dynamic_cast<Rectangle<T>*>(this->transform_shape_into_new_stamp_coordinates(rectangle, child));
       rectangle->set_depth(shape->get_depth());
       child->shapes_map[rectangle] = shape;
-      child->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
+      // child->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
       new_shapes.add_shape(rectangle);
     } else {
       throw std::runtime_error("Not rectangle in Stamp::add_child_stamp");

@@ -15,7 +15,7 @@ private:
   Line<T> root_line;
   T width;
   std::map<IShape<T>*, IShape<T>*> shapes_map;
-  std::multimap<IShape<T>*, IShape<T>*> shapes_map_reverse;
+  // std::multimap<IShape<T>*, IShape<T>*> shapes_map_reverse;
   Shapes<T> new_shapes;
   int amount_of_shapes = 0;
   std::list<Stamp<T>*> inside_child_stamps;
