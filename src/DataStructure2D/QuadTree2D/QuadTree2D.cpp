@@ -152,16 +152,6 @@ void QuadTree2D<T>::clear_shapes(const Shapes<T>& shapes) {
 
     while (!deleted && node->shape_is_inside(shape))
     {
-      bool nodes_created = node->create_children_if_not_exist();
-      if (!nodes_created)
-      {
-        #pragma omp critical(node_shapes)
-        {
-          node->shapes_set.erase(shape);
-          deleted = true;
-        }
-        continue;
-      }
       if (node->bottom_left->shape_is_inside(shape))
       {
         node = node->bottom_left;

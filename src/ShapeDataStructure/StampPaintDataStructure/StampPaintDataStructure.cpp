@@ -31,7 +31,8 @@ void StampPaintDataStructure<T>::update_temporary_shapes() {
     Shapes<T> lines = this->current_stamp->get_lines_recursive();
     for (auto &&i : lines.get_shapes())
     {
-      temporary_shapes.add_shape(i);
+      auto p_line = new Line<T>(*dynamic_cast<Line<T>*>(i));
+      temporary_shapes.add_shape(p_line);
     }
   }
 }
@@ -64,13 +65,16 @@ Shapes<T> StampPaintDataStructure<T>::clear_last_shapes() {
       Figure<T>* figure = all_figures.back();
       all_figures.pop_back();
       shapes = figure->get_shapes();
-      figure->clear();
+      // figure->clear();
+      delete figure;
     } else {
-      // TODO
-      // Stamp<T>* stamp = all_stamps.back();
-      // all_stamps.pop_back();
-      // shapes = stamp->get_shapes();
-      // stamp->clear();
+      Stamp<T>* stamp = all_stamps[0];
+      if (stamp != nullptr)
+      {
+        all_stamps[0] = nullptr;
+        shapes = stamp->clear_children();
+        delete stamp;
+      }
     }
     figure_was_drawn.pop_back();
   }
@@ -241,8 +245,8 @@ void StampPaintDataStructure<T>::process_confirm() {
       {
         new_shapes.add_shape(shape);
       }
-      
     }
+    figure_was_drawn.push_back(false);
     current_stamp = nullptr;
     update_temporary_shapes();
   }

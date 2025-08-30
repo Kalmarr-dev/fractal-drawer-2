@@ -13,6 +13,7 @@ class Stamp
 {
 private:
   Line<T> root_line;
+  std::vector<Line<T>*> lines;
   T width;
   std::map<IShape<T>*, IShape<T>*> shapes_map;
   // std::multimap<IShape<T>*, IShape<T>*> shapes_map_reverse;
@@ -26,7 +27,7 @@ private:
   T depth = 0.0;
 
   std::vector<Position<T>> get_corners();
-  std::vector<Line<T>> get_lines();
+  std::vector<Line<T>*> get_lines();
   // bool is_fully_inside(Stamp<T>* stamp);
   std::list<Stamp<T>*> create_children_recursive
   (
@@ -40,6 +41,7 @@ private:
   IShape<T>* transform_shape_into_new_stamp_coordinates(Rectangle<T>* rectangle, Stamp<T>* stamp);
   Shapes<T> propagate_new_shape_recursive(IShape<T>* shape, Stamp<T>* root);
 public:
+  Stamp() = delete;
   Stamp(Line<T> root_line, T width, Shapes<T> shapes_inside);
   ~Stamp() = default;
   Shapes<T> get_new_shapes();
@@ -56,7 +58,7 @@ public:
   // Shapes<T> update_on_shapes_clear(Shapes<T> shapes_to_clear);
   bool stamp_is_inside(Stamp<T>* stamp);
   bool shape_is_inside(IShape<T>* shape);
-  void clear();
+  Shapes<T> clear_children();
   Stamp<T>* add_child_stamp(Line<T> root_line, T width) = delete;
   Shapes<T> add_child_stamp(Stamp<T>* stamp);
   // void remove_child_stamp(Stamp<T>* p_stamp);

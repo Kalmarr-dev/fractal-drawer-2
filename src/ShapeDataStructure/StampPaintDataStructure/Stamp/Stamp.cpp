@@ -13,6 +13,14 @@ Stamp<T>::Stamp(Line<T> root_line, T width, Shapes<T> shapes_inside)
     this->shapes_map[shape] = shape;
     // this->shapes_map_reverse.insert(std::make_pair(shape, shape));
   }
+  auto corners = this->get_corners();
+  for (int i = 1; i < (int)corners.size(); i++)
+  {
+    auto p_line = new Line<T>(corners[i - 1], corners[i]);
+    this->lines.push_back(p_line);
+  }
+  auto p_line = new Line<T>(corners[corners.size() - 1], corners[0]);
+  this->lines.push_back(p_line);
 }
 
 template<typename T>
@@ -27,15 +35,8 @@ std::vector<Position<T>> Stamp<T>::get_corners() {
 }
 
 template<typename T>
-std::vector<Line<T>> Stamp<T>::get_lines() {
-  auto corners = this->get_corners();
-  std::vector<Line<T>> lines;
-  for (int i = 1; i < (int)corners.size(); i++)
-  {
-    lines.emplace_back(corners[i - 1], corners[i]);
-  }
-  lines.emplace_back(corners[corners.size() - 1], corners[0]);
-  return lines;
+std::vector<Line<T>*> Stamp<T>::get_lines() {
+  return this->lines;
 }
 
 template<typename T>
@@ -208,9 +209,8 @@ Shapes<T> Stamp<T>::get_lines_recursive() {
   Shapes<T> shapes;
   for (auto &&line : this->get_lines())
   {
-    auto p_line = new Line<T>(line);
-    p_line->set_depth(this->depth);
-    shapes.add_shape(p_line);
+    line->set_depth(this->depth);
+    shapes.add_shape(line);
   }
   for (auto &&stamp : inside_child_stamps)
   {
@@ -269,9 +269,8 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
   {
     for (auto &&line : new_stamp->get_lines())
     {
-      Line<T>* p_line = new Line(line);
-      p_line->set_depth(new_stamp->depth);
-      new_shapes.add_shape(p_line);
+      line->set_depth(new_stamp->depth);
+      new_shapes.add_shape(line);
     }
   }
   // Add shapes from root in new Stamps
@@ -397,6 +396,37 @@ bool Stamp<T>::shape_is_inside(IShape<T>* shape) {
   }
   return true;
 }
+
+template<typename T>
+Shapes<T> Stamp<T>::clear_children() {
+  Shapes<T> to_delete;
+  for (auto &&stamp : this->inside_child_stamps)
+  {
+    for (auto &&i : stamp->clear_children().get_shapes())
+    {
+      to_delete.add_shape(i);
+    }
+    delete stamp;
+  }
+  for (auto &&stamp : this->outside_child_stamps)
+  {
+    for (auto &&i : stamp->clear_children().get_shapes())
+    {
+      to_delete.add_shape(i);
+    }
+    delete stamp;
+  }
+  for (auto &&key_value : this->shapes_map)
+  {
+    to_delete.add_shape(key_value.first);
+  }
+  for (auto &&line : this->lines)
+  {
+    to_delete.add_shape(line);
+  }
+  return to_delete;
+}
+
 
 template<typename T>
 Shapes<T> Stamp<T>::add_child_stamp(Stamp<T>* child) {
