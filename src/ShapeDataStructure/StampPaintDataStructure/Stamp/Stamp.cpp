@@ -175,33 +175,25 @@ IShape<T>* Stamp<T>::transform_shape_into_new_stamp_coordinates(Rectangle<T>* re
 }
 
 template<typename T>
-Shapes<T> Stamp<T>::propagate_new_shape_recursive(IShape<T>* root_shape, Stamp<T>* root) {
-  Shapes<T> new_shapes;
+void Stamp<T>::propagate_new_shape_recursive(IShape<T>* root_shape, Stamp<T>* root, Shapes<T>* new_shapes) {
   IShape<T>* transformed_shape = nullptr;
   if (root_shape->get_type() == ShapeType::RECTANGLE)
   {
-    Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(root_shape);
+    Rectangle<T>* rectangle = static_cast<Rectangle<T>*>(root_shape);
     transformed_shape = root->transform_shape_into_new_stamp_coordinates(rectangle, this);
     transformed_shape->set_depth(root_shape->get_depth());
     this->shapes_map[transformed_shape] = root_shape;
     // this->shapes_map_reverse.insert(std::make_pair(root_shape, transformed_shape));
-    new_shapes.add_shape(transformed_shape);
+    new_shapes->add_shape(transformed_shape);
   } else {
     throw std::runtime_error("Not rectangle in Stamp::propagate_new_shape_recursive");
   }
   for (auto &&child : this->inside_child_stamps) {
-    for (auto &&shape : child->propagate_new_shape_recursive(root_shape, root).get_shapes())
-    {
-      new_shapes.add_shape(shape);
-    }
+    child->propagate_new_shape_recursive(root_shape, root, new_shapes);
   }
   for (auto &&child : this->outside_child_stamps) {
-    for (auto &&shape : child->propagate_new_shape_recursive(root_shape, root).get_shapes())
-    {
-      new_shapes.add_shape(shape);
-    }
+    child->propagate_new_shape_recursive(root_shape, root, new_shapes);
   }
-  return new_shapes;
 }
 
 template<typename T>
@@ -281,8 +273,8 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
       auto shape = key_value.second;
       if (shape->get_type() == ShapeType::RECTANGLE)
       {
-        Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(shape);
-        rectangle = dynamic_cast<Rectangle<T>*>(this->transform_shape_into_new_stamp_coordinates(rectangle, new_stamp));
+        Rectangle<T>* rectangle = static_cast<Rectangle<T>*>(shape);
+        rectangle = static_cast<Rectangle<T>*>(this->transform_shape_into_new_stamp_coordinates(rectangle, new_stamp));
         rectangle->set_depth(shape->get_depth());
         new_stamp->shapes_map[rectangle] = shape;
         // new_stamp->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
@@ -316,8 +308,8 @@ Shapes<T> Stamp<T>::update_on_new_shapes(Shapes<T>& shapes_to_add, int MAXLINES)
     {
       if (shape->get_type() == ShapeType::RECTANGLE)
       {
-        Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(shape);
-        rectangle = dynamic_cast<Rectangle<T>*>(stamp->transform_shape_into_new_stamp_coordinates(rectangle, this));
+        Rectangle<T>* rectangle = static_cast<Rectangle<T>*>(shape);
+        rectangle = static_cast<Rectangle<T>*>(stamp->transform_shape_into_new_stamp_coordinates(rectangle, this));
         rectangle->set_depth(shape->get_depth());
         new_root_shapes.add_shape(rectangle);
       } else {
@@ -332,13 +324,7 @@ Shapes<T> Stamp<T>::update_on_new_shapes(Shapes<T>& shapes_to_add, int MAXLINES)
         if ((int)new_shapes.get_shapes().size() > MAXLINES) {
           break;
         }
-        for (auto &&shape : this->propagate_new_shape_recursive(root_shape, this).get_shapes())
-        {
-          if ((int)new_shapes.get_shapes().size() > MAXLINES) {
-            break;
-          }
-          new_shapes.add_shape(shape);
-        }
+        this->propagate_new_shape_recursive(root_shape, this, &new_shapes);
       }
     }
   }
@@ -436,8 +422,8 @@ Shapes<T> Stamp<T>::add_child_stamp(Stamp<T>* child) {
     auto shape = key_value.second;
     if (shape->get_type() == ShapeType::RECTANGLE)
     {
-      Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(shape);
-      rectangle = dynamic_cast<Rectangle<T>*>(this->transform_shape_into_new_stamp_coordinates(rectangle, child));
+      Rectangle<T>* rectangle = static_cast<Rectangle<T>*>(shape);
+      rectangle = static_cast<Rectangle<T>*>(this->transform_shape_into_new_stamp_coordinates(rectangle, child));
       rectangle->set_depth(shape->get_depth());
       child->shapes_map[rectangle] = shape;
       // child->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
