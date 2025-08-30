@@ -47,7 +47,7 @@ Shapes<T> Stamp<T>::create_children_recursive
 ) {
   if (
     this->root_line.get_linear_size_squared() < MIN_LINE_SIZE * MIN_LINE_SIZE
-    ||  width < MIN_LINE_SIZE
+    ||  width * width < MIN_LINE_SIZE * MIN_LINE_SIZE
   )
   {
     return Shapes<T>();
@@ -55,6 +55,7 @@ Shapes<T> Stamp<T>::create_children_recursive
   Shapes<T> new_stamp_lines;
   // TODO return if not on camera
   // TODO consider max_depth
+  // TODO consider maxlines
   int i = 0;
   for (auto &&sibling_stamp : parent_stamp->inside_child_stamps)
   {
@@ -95,7 +96,11 @@ Shapes<T> Stamp<T>::create_children_recursive
         new_stamp_lines.add_shape(p_line);
       }
       child = new_stamp;
-    }    
+    }
+    i++;
+  }
+  for (auto &&child : this->inside_child_stamps)
+  {
     Shapes<T> deeper_shapes = child->create_children_recursive(
       root_start_to_start_srms, start_to_end_srms, this,
       p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH
@@ -104,8 +109,8 @@ Shapes<T> Stamp<T>::create_children_recursive
     {
       new_stamp_lines.add_shape(line);
     }
-    i++;
   }
+  
   return new_stamp_lines;
 }
 
