@@ -49,7 +49,7 @@ void OpenGLRenderer<T>::render_buttons() {
   vector<float> positions;
   vector<unsigned int> indexes;
 
-  const int floats_per_vertex = 5;
+  const int floats_per_vertex = 6;
   
   for (auto &&p_button : on_screen_buttons)
   {
@@ -62,6 +62,7 @@ void OpenGLRenderer<T>::render_buttons() {
       {
         positions.push_back((float)(i.x - 0.5) * 2);
         positions.push_back((float)(i.y - 0.5) * 2);
+        positions.push_back(0.0);
         positions.push_back(color.r);
         positions.push_back(color.g);
         positions.push_back(color.b);
@@ -77,13 +78,13 @@ void OpenGLRenderer<T>::render_buttons() {
   IndexBuffer ib(&indexes[0], (unsigned int)indexes.size());
 
   VertexBufferLayout layout;
-  layout.Push<float>(2);
+  layout.Push<float>(3);
   layout.Push<float>(3);
 
   VertexArray va;
   va.AddBuffer(vb, layout);
 
-  this->colored_shader = new Shader("res/shaders/colored.shader");
+  this->colored_shader = new Shader("res/shaders/colored_depth.shader");
   colored_shader->Bind();
 
   colored_shader->SetUniform4f
