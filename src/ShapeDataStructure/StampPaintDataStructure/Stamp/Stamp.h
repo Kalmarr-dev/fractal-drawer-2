@@ -52,7 +52,7 @@ public:
   // use only on root
   Shapes<T> update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH, double* last_depth_exponent_numerator);
   // use only on root
-  Shapes<T> update_on_new_shapes(Shapes<T>& shapes_to_add);
+  Shapes<T> update_on_new_shapes(Shapes<T>& shapes_to_add, int MAXLINES);
   // Shapes<T> update_on_shapes_clear(Shapes<T> shapes_to_clear);
   bool stamp_is_inside(Stamp<T>* stamp);
   bool shape_is_inside(IShape<T>* shape);
@@ -61,4 +61,5 @@ public:
   Shapes<T> add_child_stamp(Stamp<T>* stamp);
   // void remove_child_stamp(Stamp<T>* p_stamp);
   void set_depth(T depth);
+  bool intersects_with_camera(ICamera<T>* camera);
 };

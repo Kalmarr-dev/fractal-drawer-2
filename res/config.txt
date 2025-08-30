@@ -6,7 +6,7 @@
 64
 # smallest shape size as porportion of screen size (so 0.001 is rougly 2 pixels).
 # Note that after zooming for a bit the actual line size will grow, until next "fractal zoom"
-0.001
+0.002
 # camera size change for "zooming in fractal" (calculating smaller parts). Smaller means more updates
 4.0
 # underlying model type: 0 is a fast model, 1 is a model supporting deeper zoom levels

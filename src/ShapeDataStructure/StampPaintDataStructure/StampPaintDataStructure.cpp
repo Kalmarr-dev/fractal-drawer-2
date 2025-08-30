@@ -157,7 +157,7 @@ void StampPaintDataStructure<T>::process_pointer_up() {
     {
       if (stamp != nullptr)
       {
-        for (auto &&shape : stamp->update_on_new_shapes(new_shapes).get_shapes())
+        for (auto &&shape : stamp->update_on_new_shapes(new_shapes, configuration.max_number_of_elements_rendered).get_shapes())
         {
           new_shapes.add_shape(shape);
         }

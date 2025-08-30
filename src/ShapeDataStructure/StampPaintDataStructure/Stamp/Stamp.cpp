@@ -55,7 +55,10 @@ std::list<Stamp<T>*> Stamp<T>::create_children_recursive
     return std::list<Stamp<T>*>();
   }
   std::list<Stamp<T>*> new_stamps;
-  // TODO return if not on camera
+  if (!this->intersects_with_camera(p_camera))
+  {
+    return std::list<Stamp<T>*>();
+  }
   // TODO consider max_depth
   // TODO consider maxlines
   int i = 0;
@@ -288,6 +291,12 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
       } else {
         throw std::runtime_error("Not rectangle in Stamp::update_on_zoom");
       }
+      if ((int)new_shapes.get_shapes().size() > MAXLINES) {
+        break;
+      }
+    }
+    if ((int)new_shapes.get_shapes().size() > MAXLINES) {
+      break;
     }
   }
 
@@ -295,9 +304,9 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
 }
 
 template<typename T>
-Shapes<T> Stamp<T>::update_on_new_shapes(Shapes<T>& shapes_to_add) {
+Shapes<T> Stamp<T>::update_on_new_shapes(Shapes<T>& shapes_to_add, int MAXLINES) {
   Shapes<T> new_shapes;
-  // TODO pragma omp parallel for, critical region
+  #pragma omp parallel for schedule(dynamic)
   for (auto &&shape : shapes_to_add.get_shapes())
   {
     // find out in which deepest stamps these new shapes are
@@ -317,11 +326,20 @@ Shapes<T> Stamp<T>::update_on_new_shapes(Shapes<T>& shapes_to_add) {
       }
     }
     // propagate updated shapes down, assigning depth from the stamps
-    for (auto &&root_shape : new_root_shapes.get_shapes())
+    #pragma omp critical(new_shapes)
     {
-      for (auto &&shape : this->propagate_new_shape_recursive(root_shape, this).get_shapes())
+      for (auto &&root_shape : new_root_shapes.get_shapes())
       {
-        new_shapes.add_shape(shape);
+        if ((int)new_shapes.get_shapes().size() > MAXLINES) {
+          break;
+        }
+        for (auto &&shape : this->propagate_new_shape_recursive(root_shape, this).get_shapes())
+        {
+          if ((int)new_shapes.get_shapes().size() > MAXLINES) {
+            break;
+          }
+          new_shapes.add_shape(shape);
+        }
       }
     }
   }
@@ -412,3 +430,24 @@ template<typename T>
 void Stamp<T>::set_depth(T depth) {
   this->depth = depth;
 }
+
+template<typename T>
+bool Stamp<T>::intersects_with_camera(ICamera<T>* camera) {
+  auto sorted_corners = camera->get_camera_corners();
+  T min_x = sorted_corners.first.x;
+  T max_x = sorted_corners.second.x;
+  T min_y = sorted_corners.first.y;
+  T max_y = sorted_corners.second.y;
+  auto corners = std::make_pair(root_line.a, Position<T>(root_line.b.x + width, root_line.b.y));
+  if (
+    max_x < std::min(corners.first.x, corners.second.x)
+    || std::max(corners.first.x, corners.second.x) < min_x
+    || max_y < std::min(corners.first.y, corners.second.y)
+    || std::max(corners.first.y, corners.second.y) < min_y
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
