@@ -1,6 +1,7 @@
 #include "Stamp.h"
 
 #include <cmath>
+#include "../StampPaintDataStructure.h"
 
 template<typename T>
 Stamp<T>::Stamp(Line<T> root_line, T width, Shapes<T> shapes_inside) 
@@ -38,7 +39,7 @@ std::vector<Line<T>> Stamp<T>::get_lines() {
 }
 
 template<typename T>
-Shapes<T> Stamp<T>::create_children_recursive
+std::list<Stamp<T>*> Stamp<T>::create_children_recursive
 (
   const std::vector<ScaleRotationMatrix<T>>& root_start_to_start_srms,
   const std::vector<ScaleRotationMatrix<T>>& start_to_end_srms,
@@ -51,9 +52,9 @@ Shapes<T> Stamp<T>::create_children_recursive
     ||  width * width < MIN_LINE_SIZE * MIN_LINE_SIZE
   )
   {
-    return Shapes<T>();
+    return std::list<Stamp<T>*>();
   }
-  Shapes<T> new_stamp_lines;
+  std::list<Stamp<T>*> new_stamps;
   // TODO return if not on camera
   // TODO consider max_depth
   // TODO consider maxlines
@@ -89,32 +90,27 @@ Shapes<T> Stamp<T>::create_children_recursive
       }
       Stamp<T>* new_stamp = new Stamp<T>(new_root_line, new_width, Shapes<T>());
       new_stamp->reflection_id = sibling_stamp->reflection_id;
-      new_stamp->set_depth(++*last_depth_exponent_numerator);
+      new_stamp->set_depth(std::pow(0.5, (*last_depth_exponent_numerator) / StampPaintDataStructure<T>::depth_exponent_denominator + 1));
       this->inside_child_stamps.push_back(new_stamp);
-      for (auto &&line : new_stamp->get_lines())
-      {
-        Line<T>* p_line = new Line(line);
-        p_line->set_depth(new_stamp->depth);
-        new_stamp_lines.add_shape(p_line);
-      }
       child = new_stamp;
+      new_stamps.push_back(child);
     }
     i++;
   }
   for (auto &&child : this->inside_child_stamps)
   {
-    Shapes<T> deeper_shapes = child->create_children_recursive(
+    std::list<Stamp<T>*> deeper_stamps = child->create_children_recursive(
       root_start_to_start_srms, start_to_end_srms, this,
       p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH,
       last_depth_exponent_numerator
     );
-    for (auto &&line : deeper_shapes.get_shapes())
+    for (auto &&stamp : deeper_stamps)
     {
-      new_stamp_lines.add_shape(line);
+      new_stamps.push_back(stamp);
     }
   }
   
-  return new_stamp_lines;
+  return new_stamps;
 }
 
 template<typename T>
@@ -237,7 +233,7 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
   // Create stamps that on camera, not too small and are reflections of inside_child_stamps
   std::vector<ScaleRotationMatrix<T>> root_start_to_start_srms;
   std::vector<ScaleRotationMatrix<T>> start_to_end_srms;
-  Shapes<T> new_shapes;
+  std::list<Stamp<T>*> new_stamps;
   for (auto &&stamp : inside_child_stamps)
   {
     Line<T> start_to_stamp_start_line = Line<T>(this->root_line.a, stamp->root_line.a);
@@ -246,28 +242,54 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
   }
   for (auto &&stamp : inside_child_stamps)
   {
-    Shapes<T> stamp_shapes = stamp->create_children_recursive(
+    std::list<Stamp<T>*> created_stamps = stamp->create_children_recursive(
       root_start_to_start_srms, start_to_end_srms, this, p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH, last_depth_exponent_numerator
     );
-    for (auto &&shape : stamp_shapes.get_shapes())
+    for (auto &&stamp : created_stamps)
     {
-      shape->set_depth(this->depth);
-      new_shapes.add_shape(shape);
+      new_stamps.push_back(stamp);
     }
   }
   for (auto &&stamp : outside_child_stamps)
   {
-    Shapes<T> stamp_shapes = stamp->create_children_recursive(
+    std::list<Stamp<T>*> created_stamps = stamp->create_children_recursive(
       root_start_to_start_srms, start_to_end_srms, this, p_camera, MAXLINES, MIN_LINE_SIZE, MAX_DEPTH, last_depth_exponent_numerator
     );
-    for (auto &&shape : stamp_shapes.get_shapes())
+    for (auto &&stamp : created_stamps)
     {
-      shape->set_depth(this->depth);
-      new_shapes.add_shape(shape);
+      new_stamps.push_back(stamp);
+    }
+  }
+
+  Shapes<T> new_shapes;
+  for (auto &&new_stamp : new_stamps)
+  {
+    for (auto &&line : new_stamp->get_lines())
+    {
+      Line<T>* p_line = new Line(line);
+      p_line->set_depth(new_stamp->depth);
+      new_shapes.add_shape(p_line);
     }
   }
   // Add shapes from root in new Stamps
-  // TODO
+  for (auto &&new_stamp : new_stamps)
+  {
+    for (auto &&key_value : this->shapes_map)
+    {
+      auto shape = key_value.second;
+      if (shape->get_type() == ShapeType::RECTANGLE)
+      {
+        Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(shape);
+        rectangle = dynamic_cast<Rectangle<T>*>(this->transform_shape_into_new_stamp_coordinates(rectangle, new_stamp));
+        rectangle->set_depth(shape->get_depth());
+        new_stamp->shapes_map[rectangle] = shape;
+        new_stamp->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
+        new_shapes.add_shape(rectangle);
+      } else {
+        throw std::runtime_error("Not rectangle in Stamp::update_on_zoom");
+      }
+    }
+  }
 
   return new_shapes;
 }
@@ -359,14 +381,23 @@ bool Stamp<T>::shape_is_inside(IShape<T>* shape) {
 }
 
 template<typename T>
-Stamp<T>* Stamp<T>::add_child_stamp(Line<T> root_line, T width) {
-  Stamp<T>* child = new Stamp<T>(root_line, width, Shapes<T>());
-  add_child_stamp(child);
-  return child;
-}
-
-template<typename T>
-void Stamp<T>::add_child_stamp(Stamp<T>* child) {
+Shapes<T> Stamp<T>::add_child_stamp(Stamp<T>* child) {
+  Shapes<T> new_shapes;
+  for (auto &&key_value : this->shapes_map)
+  {
+    auto shape = key_value.second;
+    if (shape->get_type() == ShapeType::RECTANGLE)
+    {
+      Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(shape);
+      rectangle = dynamic_cast<Rectangle<T>*>(this->transform_shape_into_new_stamp_coordinates(rectangle, child));
+      rectangle->set_depth(shape->get_depth());
+      child->shapes_map[rectangle] = shape;
+      child->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
+      new_shapes.add_shape(rectangle);
+    } else {
+      throw std::runtime_error("Not rectangle in Stamp::add_child_stamp");
+    }
+  }
   if (stamp_is_inside(child))
   {
     inside_child_stamps.push_back(child);
@@ -374,6 +405,7 @@ void Stamp<T>::add_child_stamp(Stamp<T>* child) {
   } else {
     outside_child_stamps.push_back(child);
   }
+  return new_shapes;
 }
 
 template<typename T>

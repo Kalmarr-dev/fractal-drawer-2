@@ -31,14 +31,14 @@ private:
   double brush_radius = 0.025;
   double square_size = 0.004;
   double* last_depth_exponent_numerator = new double(0);
-  double depth_exponent_denominator = 1024.0 * 64.0;
-
+  
   void update_temporary_shapes();
   void update_temporary_shapes(const Shapes<T>);
-public:
+  public:
   StampPaintDataStructure(ICamera<T>* p_camera, Configuration configuration);
   ~StampPaintDataStructure() = default;
-
+  static constexpr const double depth_exponent_denominator = (1024.0 * 64.0);
+  
   void clear_shapes() override;
   Shapes<T> clear_last_shapes() override;
   Shapes<T> get_new_shapes() override;

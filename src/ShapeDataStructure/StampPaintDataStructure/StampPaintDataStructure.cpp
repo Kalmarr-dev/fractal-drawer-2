@@ -142,7 +142,7 @@ void StampPaintDataStructure<T>::process_pointer_up() {
     all_figures.push_back(
       new Figure<T>(
         current_screen_coordinate_squares,
-        T(std::pow(0.5, (*last_depth_exponent_numerator) / depth_exponent_denominator + 1))
+        T(std::pow(0.5, (*last_depth_exponent_numerator) / StampPaintDataStructure<T>::depth_exponent_denominator + 1))
       )
     );
     figure_was_drawn.push_back(true);
@@ -227,7 +227,11 @@ void StampPaintDataStructure<T>::process_confirm() {
       {
         new_shapes.add_shape(shape);
       }
-      this->all_stamps[current_stamp_number]->add_child_stamp(this->current_stamp);
+      Shapes<T> child_reflected_shapes = this->all_stamps[current_stamp_number]->add_child_stamp(this->current_stamp);
+      for (auto &&shape : child_reflected_shapes.get_shapes())
+      {
+        new_shapes.add_shape(shape);
+      }
       T minimum_visible_line_size = T(this->configuration.minimum_shape_size) * p_camera->get_bigger_side();
       shapes = this->all_stamps[current_stamp_number]->update_on_zoom(
         p_camera, configuration.max_number_of_elements_in_memory,

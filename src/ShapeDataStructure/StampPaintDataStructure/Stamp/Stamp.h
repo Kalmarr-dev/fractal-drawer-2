@@ -28,7 +28,7 @@ private:
   std::vector<Position<T>> get_corners();
   std::vector<Line<T>> get_lines();
   // bool is_fully_inside(Stamp<T>* stamp);
-  Shapes<T> create_children_recursive
+  std::list<Stamp<T>*> create_children_recursive
   (
     const std::vector<ScaleRotationMatrix<T>>& root_start_to_start_srms,
     const std::vector<ScaleRotationMatrix<T>>& start_to_end_srms,
@@ -57,8 +57,8 @@ public:
   bool stamp_is_inside(Stamp<T>* stamp);
   bool shape_is_inside(IShape<T>* shape);
   void clear();
-  Stamp<T>* add_child_stamp(Line<T> root_line, T width);
-  void add_child_stamp(Stamp<T>* stamp);
+  Stamp<T>* add_child_stamp(Line<T> root_line, T width) = delete;
+  Shapes<T> add_child_stamp(Stamp<T>* stamp);
   // void remove_child_stamp(Stamp<T>* p_stamp);
   void set_depth(T depth);
 };
