@@ -38,7 +38,7 @@ private:
   );
   std::vector<Stamp<T>*> get_deepest_stamps_containing_shape(IShape<T>* shape);
   IShape<T>* transform_shape_into_new_stamp_coordinates(Rectangle<T>* rectangle, Stamp<T>* stamp);
-  Shapes<T> propagate_new_shapes_recursive(Shapes<T> new_shapes);
+  Shapes<T> propagate_new_shape_recursive(IShape<T>* shape, Stamp<T>* root);
 public:
   Stamp(Line<T> root_line, T width, Shapes<T> shapes_inside);
   ~Stamp() = default;

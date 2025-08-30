@@ -160,10 +160,6 @@ IShape<T>* Stamp<T>::transform_shape_into_new_stamp_coordinates(Rectangle<T>* re
   T max_x = x;
   T min_y = y;
   T max_y = y;
-  if (max_x == T(0))
-  {
-    max_x = max_x;
-  }
   for (auto &&point : rectangle->get_points())
   {
     T start_to_point_x = (point.x - this->root_line.a.x) / this->width * stamp->width;
@@ -174,12 +170,38 @@ IShape<T>* Stamp<T>::transform_shape_into_new_stamp_coordinates(Rectangle<T>* re
     max_x = std::max(max_x, x);
     min_y = std::min(min_y, y);
     max_y = std::max(max_y, y);
-    if (max_x == T(0))
-    {
-      max_x = max_x;
-    }
   }
   return new Rectangle<T>(Position<T>(min_x, min_y), Position<T>(max_x, max_y));
+}
+
+template<typename T>
+Shapes<T> Stamp<T>::propagate_new_shape_recursive(IShape<T>* root_shape, Stamp<T>* root) {
+  Shapes<T> new_shapes;
+  IShape<T>* transformed_shape = nullptr;
+  if (root_shape->get_type() == ShapeType::RECTANGLE)
+  {
+    Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(root_shape);
+    transformed_shape = root->transform_shape_into_new_stamp_coordinates(rectangle, this);
+    transformed_shape->set_depth(root_shape->get_depth());
+    this->shapes_map[transformed_shape] = root_shape;
+    this->shapes_map_reverse.insert(std::make_pair(root_shape, transformed_shape));
+    new_shapes.add_shape(transformed_shape);
+  } else {
+    throw std::runtime_error("Not rectangle in Stamp::propagate_new_shape_recursive");
+  }
+  for (auto &&child : this->inside_child_stamps) {
+    for (auto &&shape : child->propagate_new_shape_recursive(root_shape, root).get_shapes())
+    {
+      new_shapes.add_shape(shape);
+    }
+  }
+  for (auto &&child : this->outside_child_stamps) {
+    for (auto &&shape : child->propagate_new_shape_recursive(root_shape, root).get_shapes())
+    {
+      new_shapes.add_shape(shape);
+    }
+  }
+  return new_shapes;
 }
 
 template<typename T>
@@ -266,21 +288,19 @@ Shapes<T> Stamp<T>::update_on_new_shapes(Shapes<T>& shapes_to_add) {
       {
         Rectangle<T>* rectangle = dynamic_cast<Rectangle<T>*>(shape);
         rectangle = dynamic_cast<Rectangle<T>*>(stamp->transform_shape_into_new_stamp_coordinates(rectangle, this));
+        rectangle->set_depth(shape->get_depth());
         new_root_shapes.add_shape(rectangle);
       } else {
         throw std::runtime_error("Not rectangle in Stamp::update_on_new_shapes");
       }
     }
     // propagate updated shapes down, assigning depth from the stamps
-    // for (auto &&shape : this->propagate_new_shapes_recursive(new_root_shapes))
-    // {
-    //   new_shapes.add_shape(shape);
-    // }
-    // TODO this is for testing
-    for (auto &&shape : new_root_shapes.get_shapes())
+    for (auto &&root_shape : new_root_shapes.get_shapes())
     {
-      shape->set_depth(this->depth);
-      new_shapes.add_shape(shape);
+      for (auto &&shape : this->propagate_new_shape_recursive(root_shape, this).get_shapes())
+      {
+        new_shapes.add_shape(shape);
+      }
     }
   }
   return new_shapes;
