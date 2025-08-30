@@ -228,7 +228,7 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
   // Create stamps that on camera, not too small and are reflections of inside_child_stamps
   std::vector<ScaleRotationMatrix<T>> root_start_to_start_srms;
   std::vector<ScaleRotationMatrix<T>> start_to_end_srms;
-  std::list<Stamp<T>*> new_stamps;
+  std::vector<Stamp<T>*> new_stamps;
   for (auto &&stamp : inside_child_stamps)
   {
     Line<T> start_to_stamp_start_line = Line<T>(this->root_line.a, stamp->root_line.a);
@@ -266,8 +266,12 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
     }
   }
   // Add shapes from root in new Stamps
+  #pragma omp parallel for schedule(static)
   for (auto &&new_stamp : new_stamps)
   {
+    if ((int)new_shapes.size() > MAXLINES) {
+      continue;
+    }
     for (auto &&key_value : this->shapes_map)
     {
       auto shape = key_value.second;
@@ -278,16 +282,16 @@ Shapes<T> Stamp<T>::update_on_zoom(ICamera<T>* p_camera, int MAXLINES, T MIN_LIN
         rectangle->set_depth(shape->get_depth());
         new_stamp->shapes_map[rectangle] = shape;
         // new_stamp->shapes_map_reverse.insert(std::make_pair(shape, rectangle));
-        new_shapes.add_shape(rectangle);
+        #pragma omp critical(new_shapes)
+        {
+          new_shapes.add_shape(rectangle);
+        }
       } else {
         throw std::runtime_error("Not rectangle in Stamp::update_on_zoom");
       }
-      if ((int)new_shapes.get_shapes().size() > MAXLINES) {
+      if ((int)new_shapes.size() > MAXLINES) {
         break;
       }
-    }
-    if ((int)new_shapes.get_shapes().size() > MAXLINES) {
-      break;
     }
   }
 

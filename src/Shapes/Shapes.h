@@ -26,6 +26,10 @@ public:
     return shapes;
   }
 
+  size_t size() {
+    return shapes.size();
+  }
+
   void clear() {
     shapes.clear();
   }
