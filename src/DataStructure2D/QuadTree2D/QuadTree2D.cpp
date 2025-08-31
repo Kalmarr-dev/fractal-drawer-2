@@ -33,6 +33,7 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
   this->shapes_amount += shapes.get_shapes().size();
   std::cout << this->shapes_amount << '\n';
   #pragma omp parallel for schedule(dynamic)
+  // TODO use per-node locks instead of critical regions
   for (auto &&shape : shapes.get_shapes())
   {
     QuadTreeNode<T>* node = root;
@@ -65,7 +66,11 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
       // }
       if (!inserted)
       {
-        bool nodes_created = node->create_children_if_not_exist();
+        bool nodes_created;
+        #pragma omp critical(node_create_children)
+        {
+          nodes_created = node->create_children_if_not_exist();
+        }
         if (!nodes_created)
         {
           #pragma omp critical(node_shapes)
