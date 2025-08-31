@@ -52,8 +52,8 @@
         "${workspaceFolder}\\dependencies\\",
         "-fopenmp",
         "${workspaceFolder}\\glfw3.dll",
-        // "-O2",
-        // "-mwindows",
+        "-O2",
+        "-mwindows",
         "-o",
         "${workspaceFolder}\\infinite-stamp.exe"
       ],
