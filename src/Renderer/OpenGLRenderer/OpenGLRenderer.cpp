@@ -237,6 +237,7 @@ void OpenGLRenderer<T>::render_shapes_to_screen() {
   #endif
 
   size_t rectangles_size = rectangles.size();
+  // std::cout << rectangles_size << std::endl;
   #pragma omp parallel for schedule(static) if(10000 < rectangles_size)
   for (int i = 0; i < (int)rectangles.size(); i++)
   {

@@ -34,7 +34,7 @@
     "name": "(gdb) Launch WINDOWS",
     "type": "cppdbg",
     "request": "launch",
-    "program": "${workspaceFolder}/infinite-stamp",
+    "program": "${workspaceFolder}/infinite-stamp.exe",
     "args": [],
     // "args": ["5000000", "500000"],
     "stopAtEntry": false,

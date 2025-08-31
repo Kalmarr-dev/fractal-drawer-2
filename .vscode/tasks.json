@@ -40,7 +40,10 @@
         "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\Fractal\\FractalPart.impl.cpp",
         "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\Fractal\\FractalStub.impl.cpp",
         "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\FractalDataStructure.impl.cpp",
-        "${workspaceFolder}\\src\\ShapeDataStructure\\FractalDataStructure\\FractalDataStructure.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\StampPaintDataStructure\\StampPaintDataStructure.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\StampPaintDataStructure\\Figure\\Figure.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\StampPaintDataStructure\\Stamp\\Stamp.impl.cpp",
+        "${workspaceFolder}\\src\\ShapeDataStructure\\StampPaintDataStructure\\StampPaintDataStructure.impl.cpp",
         "${workspaceFolder}\\src\\Viewport\\GLFWViewport\\GLFWViewport.cpp",
         "${workspaceFolder}\\main.cpp",
         "-I",
@@ -49,10 +52,10 @@
         "${workspaceFolder}\\dependencies\\",
         "-fopenmp",
         "${workspaceFolder}\\glfw3.dll",
-        "-O2",
-        "-mwindows",
+        // "-O2",
+        // "-mwindows",
         "-o",
-        "${workspaceFolder}\\fractal-drawer-2.exe"
+        "${workspaceFolder}\\infinite-stamp.exe"
       ],
       "options": {
         "cwd": "C:\\Program Files\\gcc\\bin"

@@ -9,6 +9,7 @@ StampPaintDataStructure<T>::StampPaintDataStructure(ICamera<T>* p_camera, Config
 {
   this->previous_camera_scale = p_camera->get_bigger_side();
   this->current_screen_coordinate_squares = nullptr;
+  this->current_stamp = nullptr;
 }
   
 template<typename T>

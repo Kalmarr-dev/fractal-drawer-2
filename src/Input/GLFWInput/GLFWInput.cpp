@@ -114,7 +114,10 @@ void GLFWInput<T>::on_key_press_callback(GLFWwindow* window, int key, int scanco
 template<typename T>
 void GLFWInput<T>::on_window_resize_callback(GLFWwindow* window, int width, int height)
 {
-  this->notify_window_resize(width, height);
+  if (width != 0 && height != 0)
+  {
+    this->notify_window_resize(width, height);
+  }
 }
 
 template<typename T>
@@ -142,7 +145,7 @@ void GLFWInput<T>::process_window_reconstruction(IViewport* p_viewport)
   {
       static_cast<GLFWInput*>(glfwGetWindowUserPointer(w))->on_window_resize_callback(w, a, b);
   };
-  glfwSetWindowSizeCallback(p_viewport_cast->getWindowPointer(), on_window_resize_callback);
+  glfwSetFramebufferSizeCallback(p_viewport_cast->getWindowPointer(), on_window_resize_callback);
 }
 
 template<typename T>

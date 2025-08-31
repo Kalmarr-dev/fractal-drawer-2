@@ -97,12 +97,12 @@ void initialize_loop(Configuration configuration) {
 int main(int argc, char const *argv[])
 {
   Configuration configuration;
-  if (argc > 1)
-  {
-    configuration = Configuration(argc, argv);
-  } else {
+  // if (argc > 1)
+  // {
+  //   configuration = Configuration(argc, argv);
+  // } else {
     configuration = Configuration("res/config.txt");
-  }
+  // }
   
   omp_set_num_threads(configuration.threads);
   

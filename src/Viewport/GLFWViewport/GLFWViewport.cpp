@@ -51,14 +51,26 @@ GLFWViewport::~GLFWViewport() {
 }
 
 std::pair<int, int> GLFWViewport::get_size() {
-  int windowW, windowH;
-  glfwGetWindowSize(p_window, &windowW, &windowH);
-  return std::make_pair(windowW, windowH);
+  int bufferW, bufferH;
+  glfwGetFramebufferSize(p_window, &bufferW, &bufferH);
+  // const char* description;
+  // int code = glfwGetError(&description);
+  // if (description) {
+  //   std::cout << code << '\n';
+  //   std::cout << description << '\n';
+  // }
+  return std::make_pair(bufferW, bufferH);
 }
 
 GLFWwindow* GLFWViewport::create_windowed_window(int width, int height) {
   glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
   GLFWwindow* window = glfwCreateWindow(width, height, this->window_name.c_str(), NULL, this->p_window);
+  // const char* description;
+  // int code = glfwGetError(&description);
+  // if (description) {
+  //   std::cout << code << '\n';
+  //   std::cout << description << '\n';
+  // }
   glfwMakeContextCurrent(window);
   return window;
 }
@@ -91,13 +103,15 @@ bool GLFWViewport::window_should_close() {
 
 void GLFWViewport::toggle_fullscreen() {
   if (this->is_fullscreen) {
-    glfwDestroyWindow(this->p_window);
-    p_window = create_windowed_window(1280, 720);
+    auto previous_window = this->p_window;
+    this->p_window = create_windowed_window(1280, 720);
+    glfwDestroyWindow(previous_window);
     this->is_fullscreen = false;
   } else {
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    glfwDestroyWindow(this->p_window);
+    auto previous_window = this->p_window;
     p_window = create_fullscreen_window(mode->width, mode->height);
+    glfwDestroyWindow(previous_window);
     this->is_fullscreen = true;
   }
   if (!p_window) {
