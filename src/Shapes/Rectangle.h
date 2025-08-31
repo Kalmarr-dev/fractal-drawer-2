@@ -15,6 +15,15 @@ private:
   Position<T> higher;
   ShapeType type = ShapeType::RECTANGLE;
   T depth = 1.0;
+  std::vector<Position<T>> points;
+
+  inline void recalculate_points() {
+    points = std::vector<Position<T>>();
+    points.push_back(lower);
+    points.push_back({higher.x, lower.y});
+    points.push_back(higher);
+    points.push_back({lower.x, higher.y});
+  }
 public:
   Rectangle(Position<T> a, Position<T> b) {
     if (b.x < a.x)
@@ -27,6 +36,7 @@ public:
     }
     this->lower = a;
     this->higher = b;
+    recalculate_points();
   }
 
   Rectangle(Position<T> a, Position<T> b, T depth) {
@@ -41,6 +51,7 @@ public:
     this->lower = a;
     this->higher = b;
     this->depth = depth;
+    recalculate_points();
   }
 
   ~Rectangle() = default;
@@ -54,12 +65,7 @@ public:
   }
 
   inline std::vector<Position<T>> get_points() const {
-    std::vector<Position<T>> positions;
-    positions.push_back(lower);
-    positions.push_back({higher.x, lower.y});
-    positions.push_back(higher);
-    positions.push_back({lower.x, higher.y});
-    return positions;
+    return points;
   }
 
   inline std::vector<unsigned int> get_indexes() const {
