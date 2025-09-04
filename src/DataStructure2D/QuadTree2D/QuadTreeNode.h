@@ -22,15 +22,16 @@ struct QuadTreeNode {
   }
 
   bool create_children_if_not_exist() {
-    if (lower.x + (higher.x - lower.x) / T(2.0) == lower.x
-          || lower.y + (higher.y - lower.y) / T(2.0) == lower.y
-          || lower.x + (higher.x - lower.x) / T(2.0) == higher.x
-          || lower.y + (higher.y - lower.y) / T(2.0) == higher.y)
+    Position<T> center(lower.x + (higher.x - lower.x) / T(2.0), lower.y + (higher.y - lower.y) / T(2.0));
+
+    if (center.x == lower.x
+          || center.y == lower.y
+          || center.x == higher.x
+          || center.y == higher.y)
     {
       return false;
     }
     
-    Position<T> center(lower.x + (higher.x - lower.x) / T(2.0), lower.y + (higher.y - lower.y) / T(2.0));
     if (bottom_left == nullptr)
     {
       bottom_left = new QuadTreeNode<T>(lower, center);
