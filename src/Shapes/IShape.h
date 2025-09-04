@@ -16,7 +16,8 @@ public:
   virtual inline T get_linear_size_squared() const = 0;
   virtual inline void set_depth(T) = 0;
   virtual inline T get_depth() const = 0;
-  virtual inline std::vector<Position<T>> get_points() const = 0;
+  virtual inline const std::vector<Position<T>>& get_points() & = 0;
+  virtual inline std::vector<Position<T>> get_points() const&& = 0;
   virtual inline std::vector<unsigned int> get_indexes() const = 0;
   virtual inline ShapeType get_type() const = 0;
   virtual inline IShape* scale(double scale_x, double scale_y) const = 0;

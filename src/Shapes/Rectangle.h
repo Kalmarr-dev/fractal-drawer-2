@@ -63,8 +63,16 @@ public:
   inline T get_linear_size_squared() const {
     return (higher.x - lower.x) * (higher.x - lower.x) + (higher.y - lower.y) * (higher.y - lower.y);
   }
+  
+  inline const std::vector<Position<T>>& get_points() & {
+    return points;
+  }
+  
+  inline const std::vector<Position<T>>& get_points() const& {
+    return points;
+  }
 
-  inline std::vector<Position<T>> get_points() const {
+  inline std::vector<Position<T>> get_points() const&& {
     return points;
   }
 

@@ -11,6 +11,7 @@ class Line : public IShape<T>
 private:
   ShapeType type = ShapeType::LINE;
   T depth = T(1.0);
+  std::vector<Position<T>> points;
 public:
   Position<T> a;
   Position<T> b;
@@ -37,11 +38,19 @@ public:
     return (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y);
   }
 
-  inline std::vector<Position<T>> get_points() const {
-    std::vector<Position<T>> positions;
-    positions.push_back(a);
-    positions.push_back(b);
-    return positions;
+  inline const std::vector<Position<T>>& get_points() & {
+    std::vector<Position<T>> points;
+    points.push_back(a);
+    points.push_back(b);
+    this->points = std::move(points);
+    return this->points;
+  }
+
+  inline std::vector<Position<T>> get_points() const&& {
+    std::vector<Position<T>> points;
+    points.push_back(a);
+    points.push_back(b);
+    return points;
   }
 
   inline std::vector<unsigned int> get_indexes() const {

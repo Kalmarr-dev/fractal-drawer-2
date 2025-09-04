@@ -51,7 +51,7 @@ struct QuadTreeNode {
   }
   
   bool shape_is_inside(IShape<T>* shape) {
-    for (auto &&point : shape->get_points())
+    for (const auto &point : shape->get_points())
     {
       if (point.x < lower.x || higher.x < point.x
           || point.y < lower.y || higher.y < point.y)
