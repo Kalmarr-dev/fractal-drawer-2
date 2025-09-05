@@ -3,9 +3,12 @@
 #include <unordered_set>
 #include <set>
 #include "../../Shapes/IShape.h"
+#include <omp.h>
 
 template<typename T>
 struct QuadTreeNode {
+  omp_lock_t shapes_set_lock;
+  omp_lock_t create_children_lock;
   std::unordered_set<IShape<T>*> shapes_set;
   Position<T> lower;
   Position<T> higher;
@@ -19,6 +22,13 @@ struct QuadTreeNode {
     bottom_right = nullptr;
     top_left = nullptr;
     top_right = nullptr;
+    omp_init_lock(&shapes_set_lock);
+    omp_init_lock(&create_children_lock);
+  }
+
+  ~QuadTreeNode() {
+    omp_destroy_lock(&shapes_set_lock);
+    omp_destroy_lock(&create_children_lock);
   }
 
   bool create_children_if_not_exist() {

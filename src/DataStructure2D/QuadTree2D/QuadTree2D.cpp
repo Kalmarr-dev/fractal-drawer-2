@@ -33,30 +33,23 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
   this->shapes_amount += shapes.get_shapes().size();
   std::cout << this->shapes_amount << '\n';
   #pragma omp parallel for schedule(dynamic)
-  // TODO use per-node locks instead of critical regions
   for (auto &&shape : shapes.get_shapes())
   {
     QuadTreeNode<T>* node = root;
     bool inserted = false;
     if (shape->get_linear_size_squared() == T(0.0))
     {
-      #pragma omp critical(node_shapes)
+      // #pragma omp critical(node_shapes)
       {
+        omp_set_lock(&node->shapes_set_lock);
         node->shapes_set.insert(shape);
+        omp_unset_lock(&node->shapes_set_lock);
         inserted = true;
       }
     }
 
     while (!inserted && node->shape_is_inside(shape))
     {
-      // if (node->higher.x - node->lower.x == T(0.0) || node->higher.y - node->lower.y == T(0.0))
-      // {
-      //   #pragma omp critical(node_shapes)
-      //   {
-      //     node->shapes.add_shape(shape);
-      //     inserted = true;
-      //   }
-      // }
       // #pragma omp critical(node_shapes)
       // {
       //   if (node->shapes.get_shapes().size() < MIN_SHAPES_PER_NODE) {
@@ -67,15 +60,19 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
       if (!inserted)
       {
         bool nodes_created;
-        #pragma omp critical(node_create_children)
+        // #pragma omp critical(node_create_children)
         {
+          omp_set_lock(&node->create_children_lock);
           nodes_created = node->create_children_if_not_exist();
+          omp_unset_lock(&node->create_children_lock);
         }
         if (!nodes_created)
         {
-          #pragma omp critical(node_shapes)
+          // #pragma omp critical(node_shapes)
           {
+            omp_set_lock(&node->shapes_set_lock);
             node->shapes_set.insert(shape);
+            omp_unset_lock(&node->shapes_set_lock);
             inserted = true;
           }
           continue;
@@ -93,9 +90,11 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
         {
           node = node->top_right;
         } else {
-          #pragma omp critical(node_shapes)
+          // #pragma omp critical(node_shapes)
           {
+            omp_set_lock(&node->shapes_set_lock);
             node->shapes_set.insert(shape);
+            omp_unset_lock(&node->shapes_set_lock);
             inserted = true;
           }
         }
