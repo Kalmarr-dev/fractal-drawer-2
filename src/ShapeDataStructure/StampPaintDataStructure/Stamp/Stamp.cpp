@@ -325,7 +325,7 @@ Shapes<T> Stamp<T>::update_on_new_shapes(Shapes<T>& shapes_to_add, int MAXLINES)
     {
       for (auto &&root_shape : new_root_shapes.get_shapes())
       {
-        if ((int)new_shapes.get_shapes().size() > MAXLINES) {
+        if ((int)new_shapes.size() > MAXLINES) {
           break;
         }
         this->propagate_new_shape_recursive(root_shape, this, &new_shapes);
