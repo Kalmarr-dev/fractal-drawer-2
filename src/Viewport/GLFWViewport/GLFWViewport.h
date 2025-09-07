@@ -2,8 +2,13 @@
 
 #include <list>
 #include <string>
+#ifndef __EMSCRIPTEN__
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#else
+#define GLFW_INCLUDE_NONE
+#include "../../../include/emscripten/GLFW/glfw3.h"
+#endif
 #include "../IViewport.h"
 #include "../IViewportObserver.h"
 

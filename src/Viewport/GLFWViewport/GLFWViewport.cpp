@@ -12,6 +12,8 @@ void error_callback(int error, const char* description) {
 }
 
 GLFWViewport::GLFWViewport(std::string window_name, bool fullscreen) : window_name(window_name) {
+  // glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_EMSCRIPTEN);
+  
   glfwInit();
 
   glfwSetErrorCallback(error_callback);
@@ -52,6 +54,8 @@ GLFWViewport::GLFWViewport(std::string window_name, bool fullscreen) : window_na
   }
 #endif
 
+  printf("%s | WebGL: %s | %s\n", window_name.c_str(), glGetString(GL_VERSION), glGetString(GL_RENDERER));
+
   glfwSwapInterval(1);
 
 #ifndef __EMSCRIPTEN__
@@ -77,6 +81,8 @@ std::pair<int, int> GLFWViewport::get_size() {
 
 GLFWwindow* GLFWViewport::create_windowed_window(int width, int height) {
   glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   GLFWwindow* window = glfwCreateWindow(width, height, this->window_name.c_str(), NULL, this->p_window);
   // const char* description;
   // int code = glfwGetError(&description);
@@ -89,6 +95,8 @@ GLFWwindow* GLFWViewport::create_windowed_window(int width, int height) {
 }
 GLFWwindow* GLFWViewport::create_fullscreen_window(int width, int height) {
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   GLFWwindow* window = glfwCreateWindow(width, height, this->window_name.c_str(), glfwGetPrimaryMonitor(), this->p_window);
   glfwMakeContextCurrent(window);
   return window;

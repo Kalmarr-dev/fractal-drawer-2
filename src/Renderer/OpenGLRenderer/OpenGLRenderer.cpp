@@ -84,7 +84,11 @@ void OpenGLRenderer<T>::render_buttons() {
   VertexArray va;
   va.AddBuffer(vb, layout);
 
+#ifndef __EMSCRIPTEN__
   this->colored_shader = new Shader("res/shaders/colored_depth.shader");
+#else
+  this->colored_shader = new Shader("res/shaders/colored_depth_webgl2.shader");
+#endif
   colored_shader->Bind();
 
   colored_shader->SetUniform4f
@@ -310,7 +314,11 @@ void OpenGLRenderer<T>::render_shapes_to_screen() {
   VertexArray va_rectangles;
   va_rectangles.AddBuffer(vb_rectangles, layout_rectangles);
 
+#ifndef __EMSCRIPTEN__
   this->colored_shader = new Shader("res/shaders/colored_depth.shader");
+#else
+  this->colored_shader = new Shader("res/shaders/colored_depth_webgl2.shader");
+#endif
   colored_shader->Bind();
   colored_shader->SetUniform4f
   ( 

@@ -32,19 +32,20 @@
 template <typename T>
 void loop(GLFWInput<T>* p_input, OpenGLRenderer<T>* p_renderer, GLFWViewport* p_viewport) {
   // glfwWaitEvents();
+
   p_input->send_recurring_events();
   
-  // p_renderer->clear_screen();
-  // p_renderer->render_to_screen();
-  // p_renderer->render_shapes_to_screen();
+  p_renderer->clear_screen();
+  p_renderer->render_shapes_to_screen();
 
-
-  // glfwSwapBuffers(p_viewport->getWindowPointer());
+#ifndef __EMSCRIPTEN__
+  glfwSwapBuffers(p_viewport->getWindowPointer());
   
-  // if(p_viewport->get_fullscreen_should_be_toggled()) {
-  //   p_viewport->toggle_fullscreen();
-  // }
-
+  if(p_viewport->get_fullscreen_should_be_toggled()) {
+    p_viewport->toggle_fullscreen();
+  }
+#endif
+  
   glfwPollEvents();
 }
 
@@ -105,10 +106,17 @@ void initialize_loop(Configuration configuration) {
   p_input->subscribe_to_pointer_up(p_recursive_renderer);
   p_input->subscribe_to_confirm(p_recursive_renderer);
 
+  std::pair<int, int> size = p_viewport->get_size();
+  std::cout << size.first << " " << size.second << " - size\n";
+  p_camera->process_window_resize(size.first, size.second);
+  p_renderer->process_window_resize(size.first, size.second);
 
 #ifdef __EMSCRIPTEN__
-  auto args_tuple = {(void*)p_input, (void*)p_renderer, (void*)p_viewport};
-  emscripten_set_main_loop_arg(&emscripten_loop<T>, &args_tuple, -1, 1);
+  void** args_arr = new void*[3];
+  args_arr[0] = (void*)p_input;
+  args_arr[1] = (void*)p_renderer;
+  args_arr[2] = (void*)p_viewport;
+  emscripten_set_main_loop_arg(&emscripten_loop<T>, args_arr, -1, 1);
 #else
   while (!p_viewport->window_should_close()) {   
     loop<T>(p_input, p_renderer, p_viewport);

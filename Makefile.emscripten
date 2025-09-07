@@ -49,6 +49,7 @@ SOURCES += dependencies/glad_es/glad.c
 OBJS = $(addsuffix .o, $(basename $(SOURCES)))
 UNAME_S := $(shell uname -s)
 CPPFLAGS = -std=c++17 -O2 -DNO_OMP -DNO_STD_PARALLEL -D__EMSCRIPTEN__
+CPPFLAGS += -g -D_DEBUG
 LDFLAGS =
 EMS =
 
@@ -86,9 +87,8 @@ endif
 ##---------------------------------------------------------------------
 
 CCFLAGS = -Wall -Wformat $(EMS)
-CPPFLAGS += -g -D_DEBUG
 CPPFLAGS += -Wall -Wformat $(EMS)
-LDFLAGS += --shell-file ~/emsdk/upstream/emscripten/src/shell_minimal.html
+LDFLAGS += --shell-file my_shell.html
 LDFLAGS += -sMIN_WEBGL_VERSION=1 -sMAX_WEBGL_VERSION=2
 # LDFLAGS += -sFULL_ES2 -sFULL_ES3
 LDFLAGS += $(EMS)
