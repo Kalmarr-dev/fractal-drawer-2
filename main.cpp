@@ -3,8 +3,9 @@
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#ifndef NO_OMP
 #include <omp.h>
-
+#endif
 #include "src/Configuration/Configuration.h"
 #include "src/Camera/BasicCamera/BasicCamera.h"
 #include "src/DataStructure2D/BasicDataStructure2D/BasicDataStructure2D.h"
@@ -22,9 +23,40 @@
 #include "src/LongDouble/LongDoubleUInt64/LongDoubleUInt64.h"
 #include "src/ShapeDataStructure/StampPaintDataStructure/StampPaintDataStructure.h"
 
+#include "include/emscripten/emscripten.h"
+
 // #define LongDouble _LongDoubleBitset
 // #define LongDouble BasicLongDouble
 // #define LongDouble LongDoubleUInt64<8>
+
+template <typename T>
+void loop(GLFWInput<T>* p_input, OpenGLRenderer<T>* p_renderer, GLFWViewport* p_viewport) {
+  // glfwWaitEvents();
+  p_input->send_recurring_events();
+  
+  // p_renderer->clear_screen();
+  // p_renderer->render_to_screen();
+  // p_renderer->render_shapes_to_screen();
+
+
+  // glfwSwapBuffers(p_viewport->getWindowPointer());
+  
+  // if(p_viewport->get_fullscreen_should_be_toggled()) {
+  //   p_viewport->toggle_fullscreen();
+  // }
+
+  glfwPollEvents();
+}
+
+template <typename T>
+void emscripten_loop(void* arg) {
+  void** args = (void**)arg;
+  loop(
+    static_cast<GLFWInput<T>*>(args[0]),
+    static_cast<OpenGLRenderer<T>*>(args[1]),
+    static_cast<GLFWViewport*>(args[2])
+  );
+}
 
 template <typename T>
 void initialize_loop(Configuration configuration) {
@@ -42,7 +74,7 @@ void initialize_loop(Configuration configuration) {
 
   BasicRecursiveRenderer<T>* p_recursive_renderer = new BasicRecursiveRenderer<T>(p_data_structure, p_camera, p_stamp_data_structure, configuration);
 
-  GLFWViewport* p_viewport = new GLFWViewport("Infinite Stamp", true);
+  GLFWViewport* p_viewport = new GLFWViewport("Infinite Stamp", false);
   
   std::list<IOnScreenButton*> on_screen_buttons;
   IOnScreenButton* button_zoom_in = get_predefined_basic_on_screen_button_zoom_in();
@@ -74,24 +106,14 @@ void initialize_loop(Configuration configuration) {
   p_input->subscribe_to_confirm(p_recursive_renderer);
 
 
+#ifdef __EMSCRIPTEN__
+  auto args_tuple = {(void*)p_input, (void*)p_renderer, (void*)p_viewport};
+  emscripten_set_main_loop_arg(&emscripten_loop<T>, &args_tuple, -1, 1);
+#else
   while (!p_viewport->window_should_close()) {   
-    // glfwWaitEvents();
-
-    p_input->send_recurring_events();
-    
-    p_renderer->clear_screen();
-    // p_renderer->render_to_screen();
-    p_renderer->render_shapes_to_screen();
-
- 
-    glfwSwapBuffers(p_viewport->getWindowPointer());
-    
-    if(p_viewport->get_fullscreen_should_be_toggled()) {
-      p_viewport->toggle_fullscreen();
-    }
-
-    glfwPollEvents();
+    loop<T>(p_input, p_renderer, p_viewport);
   }
+#endif
 }
 
 int main(int argc, char const *argv[])
@@ -104,8 +126,10 @@ int main(int argc, char const *argv[])
     configuration = Configuration("res/config.txt");
   // }
   
+#ifndef NO_OMP
   omp_set_num_threads(configuration.threads);
-  
+#endif
+
   if (configuration.model_type == FAST)
   {
     initialize_loop<BasicLongDouble>(configuration);

@@ -1,7 +1,11 @@
 #include "GLFWViewport.h"
 
 #include <iostream>
+#ifndef __EMSCRIPTEN__
 #include "../../../include/glad/glad.h"
+#else
+#include "../../../include/glad_es/glad.h"
+#endif
 
 void error_callback(int error, const char* description) {
     fprintf(stderr, "GLFW Error (%d): %s\n", error, description);
@@ -26,11 +30,12 @@ GLFWViewport::GLFWViewport(std::string window_name, bool fullscreen) : window_na
   this->toggle_fullscreen();
   if (!this->p_window) {
     glfwTerminate();
-    throw "No GLFW window context, terminating";
+    throw std::runtime_error("No GLFW window context, terminating");
   }
 
   glfwMakeContextCurrent(this->p_window);
 
+#ifndef __EMSCRIPTEN__
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
   {
     std::cout << "Failed to initialize GLAD" << std::endl;
@@ -38,12 +43,20 @@ GLFWViewport::GLFWViewport(std::string window_name, bool fullscreen) : window_na
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
   {
-    throw "Failed to initialize GLAD";
+    throw std::runtime_error("Failed to initialize GLAD");
   }
+#else
+  if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))
+  {
+    throw std::runtime_error("Failed to initialize GLAD");
+  }
+#endif
 
   glfwSwapInterval(1);
 
+#ifndef __EMSCRIPTEN__
   glEnable(GL_POINT_SMOOTH);
+#endif
 }
 
 GLFWViewport::~GLFWViewport() {

@@ -1,7 +1,11 @@
 #pragma once
 
 #include <list>
+#ifndef __EMSCRIPTEN__
 #include "../../../include/glad/glad.h"
+#else
+#include "../../../include/glad_es/glad.h"
+#endif
 #include "../IRenderer.h"
 #include "../../Configuration/Configuration.h"
 #include "../../RecursiveRenderer/IRecursiveRenderer.h"

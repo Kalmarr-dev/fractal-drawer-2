@@ -46,6 +46,8 @@ void BasicCamera<T>::process_zoom(Position<T> pointer, T scale_value) {
   this->camera_corners.first.y = y;
   this->camera_corners.second.x = x + width;
   this->camera_corners.second.y = y + height;
+  T* offset = new T(0);
+  std::cout << x.get_double(offset, 0) << " " << y.get_double(offset, 0) << " " << width.get_double(offset, 0) << " " << height.get_double(offset, 0) << '\n';
 }
 
 template<typename T>

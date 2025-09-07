@@ -361,7 +361,11 @@ void OpenGLRenderer<T>::process_window_resize(int window_width, int window_heigh
   this->window_height = window_height;
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
+#ifndef __EMSCRIPTEN__
   glDepthRange(0.0, 1.0);
+#else
+  glDepthRangef(0.0, 1.0);
+#endif
 }
 
 template <typename T>

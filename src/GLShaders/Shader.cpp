@@ -20,7 +20,7 @@ ShaderProgramSource Shader::ParseShader(const std::string& filepath) {
   std::ifstream stream(filepath);
   if (!stream.good())
   {
-    throw "No such shader";
+    throw std::runtime_error("No such shader");
   }
   
 

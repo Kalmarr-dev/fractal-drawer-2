@@ -51,8 +51,12 @@ public:
     new_shapes.shapes.resize(std::min(n, (int)shapes.size()));
     auto end = shapes.begin();
     std::advance(end, std::min(n, (int)shapes.size()));
+#ifndef NO_STD_PARALLEL
     // std::copy(std::execution::par_unseq, this->shapes.begin(), end, new_shapes.get_shapes().begin());
     std::copy(std::execution::par_unseq, this->shapes.begin(), end, new_shapes.shapes.begin());
+#else
+    std::copy(this->shapes.begin(), end, new_shapes.shapes.begin());
+#endif
     return new_shapes;
   }
 };

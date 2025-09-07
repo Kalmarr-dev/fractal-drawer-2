@@ -1,6 +1,8 @@
 #include "QuadTree2D.h"
 
+#ifndef NO_OMP
 #include <omp.h>
+#endif
 #include <iostream>
 
 template<typename T>
@@ -41,9 +43,13 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
     {
       // #pragma omp critical(node_shapes)
       {
+#ifndef NO_OMP
         omp_set_lock(&node->shapes_set_lock);
+#endif
         node->shapes_set.insert(shape);
+#ifndef NO_OMP
         omp_unset_lock(&node->shapes_set_lock);
+#endif
         inserted = true;
       }
     }
@@ -62,17 +68,25 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
         bool nodes_created;
         // #pragma omp critical(node_create_children)
         {
+#ifndef NO_OMP
           omp_set_lock(&node->create_children_lock);
+#endif
           nodes_created = node->create_children_if_not_exist();
+#ifndef NO_OMP
           omp_unset_lock(&node->create_children_lock);
+#endif
         }
         if (!nodes_created)
         {
           // #pragma omp critical(node_shapes)
           {
+#ifndef NO_OMP
             omp_set_lock(&node->shapes_set_lock);
+#endif
             node->shapes_set.insert(shape);
+#ifndef NO_OMP
             omp_unset_lock(&node->shapes_set_lock);
+#endif
             inserted = true;
           }
           continue;
@@ -92,9 +106,13 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
         } else {
           // #pragma omp critical(node_shapes)
           {
+#ifndef NO_OMP
             omp_set_lock(&node->shapes_set_lock);
+#endif
             node->shapes_set.insert(shape);
+#ifndef NO_OMP
             omp_unset_lock(&node->shapes_set_lock);
+#endif
             inserted = true;
           }
         }
