@@ -4,20 +4,20 @@ Ensure Shapes and others are passed by reference
 
 Fractal-specific renderer
 
-Port to web with Emscripten
-
 Find out why when no fractal is drawn and moving cursor all cores are loaded 60%
 
 Add text
 
 Sign exe & appimage
 
-Drawing (space is divided into rectangles with size based on current camera zoom)
-
-Stamps (rerender on drawing, rerender on zoom, On^2 rendering of shapes)
-
 Eraser delition, Backspace deletion
 
 Find memory leak each frame
 
 Rotate stamps, mirror stamps
+
+Make Renderer depend on some DataStructure, into which RecursiveRenderer is connected
+
+Separate into Core and App
+
+Add UI module that holds buttons and uses ImGui dockable
