@@ -16,6 +16,10 @@ Find memory leak each frame
 
 Rotate stamps, mirror stamps
 
+Preview for Stamps
+
+User feedback when program is calculating stuff
+
 Make Renderer depend on some DataStructure, into which RecursiveRenderer is connected
 
 Separate into Core and App
