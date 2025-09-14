@@ -25,3 +25,5 @@ Make Renderer depend on some DataStructure, into which RecursiveRenderer is conn
 Separate into Core and App
 
 Add UI module that holds buttons and uses ImGui dockable
+
+Do shape adding and shape drawing on different threads
