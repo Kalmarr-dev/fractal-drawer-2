@@ -12,6 +12,11 @@ project "Core"
   includedirs { "../include" }
   files { "../dependencies/**.h", "../dependencies/**.cpp", "../dependencies/**.c" }
 
+  filter { "system:linux", "action:gmake" }
+    buildoptions { "-Wall", "-Wformat", "-std=c++17", "-fopenmp" }
+
+
+
   filter { "configurations:Debug" }
     defines { "_DEBUG" }
     symbols "On"
@@ -25,6 +30,6 @@ project "Core"
     defines { "NO_OMP", "NO_STD_PARALLEL", "__EMSCRIPTEN__" }
     optimize "Speed"
     removefiles { "../dependencies/glad/**.c" }
-
-  filter { "system:linux", "action:gmake" }
-    buildoptions { "-Wall", "-Wformat", "-std=c++17", "-fopenmp" }
+    toolset "emcc"
+    architecture "wasm64"
+    system "emscripten"

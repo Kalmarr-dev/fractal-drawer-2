@@ -15,6 +15,11 @@ project "RecursiveCore"
   includedirs { "src" }
   files { "../dependencies/**.h", "../dependencies/**.cpp", "../dependencies/**.c" }
 
+  filter { "system:linux", "action:gmake" }
+    buildoptions { "-Wall", "-Wformat", "-std=c++17", "-fopenmp" }
+
+
+
   filter { "configurations:Debug" }
     defines { "_DEBUG" }
     symbols "On"
@@ -31,6 +36,6 @@ project "RecursiveCore"
     optimize "Speed"
     links { "emscriptenrelease/libcore" }
     removefiles { "../dependencies/glad/**.c" }
-
-  filter { "system:linux", "action:gmake" }
-    buildoptions { "-Wall", "-Wformat", "-std=c++17", "-fopenmp" }
+    toolset "emcc"
+    architecture "wasm64"
+    system "emscripten"
