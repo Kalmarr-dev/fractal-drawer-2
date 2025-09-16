@@ -10,7 +10,7 @@ Add text
 
 Sign exe & appimage
 
-Eraser delition, Backspace deletion
+Eraser deletion, Backspace deletion
 
 Find memory leak each frame
 
