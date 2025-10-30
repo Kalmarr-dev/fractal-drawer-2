@@ -1,9 +1,9 @@
 #pragma once
 
 #include <set>
-#include "../../../LongDouble/ILongDouble.h"
-#include "../../../Shapes/Line.h"
-#include "../../../Camera/ICamera.h"
+#include <LongDouble/ILongDouble.h>
+#include <Shapes/Line.h>
+#include <Camera/ICamera.h>
 #include "FractalStub.h"
 
 template<typename T>

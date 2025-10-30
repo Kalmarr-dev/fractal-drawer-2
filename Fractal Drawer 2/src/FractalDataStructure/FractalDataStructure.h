@@ -1,15 +1,15 @@
 #pragma once
 
 #include <list>
-#include "../IShapeDataStructure.h"
-#include "../../Camera/ICamera.h"
-#include "../../Configuration/Configuration.h"
+#include <ShapeDataStructure/IShapeDataStructure.h>
+#include <Camera/ICamera.h>
+#include <Configuration/Configuration.h>
 #include "Fractal/Fractal.h"
 #include "Fractal/FractalPart.h"
 #include "Fractal/FractalStub.h"
-#include "../../Input/IPointerMoveObserver.h"
-#include "../../Input/IConfirmObserver.h"
-#include "../../Input/IZoomObserver.h"
+#include <Input/IPointerMoveObserver.h>
+#include <Input/IConfirmObserver.h>
+#include <Input/IZoomObserver.h>
 
 template<typename T>
 class FractalDataStructure : public IShapeDataStructure<T>, public IConfirmObserver, public IPointerMoveObserver<T>

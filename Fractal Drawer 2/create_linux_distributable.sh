@@ -1,0 +1,2 @@
+./linuxdeploy-x86_64.AppImage --appdir AppDir --executable fractal-drawer-2 --desktop-file=Fractal\ Drawer\ 2.0.desktop -i fd2.png --output appimage
+zip -r linux-distributable.zip res/ Fractal_Drawer_2.0-x86_64.AppImage

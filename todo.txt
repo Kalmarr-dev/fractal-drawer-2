@@ -20,10 +20,8 @@ Preview for Stamps
 
 User feedback when program is calculating stuff
 
-Make Renderer depend on some DataStructure, into which RecursiveRenderer is connected
-
-Separate into Core and App
-
 Add UI module that holds buttons and uses ImGui dockable
 
 Do shape adding and shape drawing on different threads
+
+Emscripten support for Fractal Drawer 2

@@ -1,6 +1,6 @@
 #include "FractalDataStructure.h"
 
-#include "../../Shapes/Line.h"
+#include <Shapes/Line.h>
 
 template<typename T>
 FractalDataStructure<T>::FractalDataStructure(ICamera<T>* p_camera, Configuration configuration) 

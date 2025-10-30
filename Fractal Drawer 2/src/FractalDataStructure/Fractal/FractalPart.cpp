@@ -1,6 +1,6 @@
 #include "FractalPart.h"
 
-#include "../../../helpers/ScaleRotationMatrix.h"
+#include <helpers/ScaleRotationMatrix.h>
 
 template<typename T>
 FractalPart<T>::FractalPart(FractalStub<T>* p_fractal_stub, int MAXLINES, T MIN_LINE_SIZE, int MAX_DEPTH) {

@@ -1,6 +1,6 @@
 #include "Fractal.h"
 
-#include "../../../helpers/ScaleRotationMatrix.h"
+#include <helpers/ScaleRotationMatrix.h>
 #include <queue>
 #include <iostream>
 

@@ -2,11 +2,11 @@
 
 #include <list>
 #include <vector>
-#include "../../../LongDouble/ILongDouble.h"
-#include "../../../Shapes/Line.h"
-#include "../../../Shapes/Shapes.h"
-#include "../../../Shapes/IShape.h"
-#include "../../../helpers/Position.h"
+#include <LongDouble/ILongDouble.h>
+#include <Shapes/Line.h>
+#include <Shapes/Shapes.h>
+#include <Shapes/IShape.h>
+#include <helpers/Position.h>
 
 enum LineType { NONE, ROOT_LINE, DIRECTION_LINE };
 

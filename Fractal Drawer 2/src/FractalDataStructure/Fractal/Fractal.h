@@ -2,7 +2,7 @@
 
 #include <list>
 #include <set>
-#include "../../../Camera/ICamera.h"
+#include <Camera/ICamera.h>
 #include "FractalPart.h"
 
 template<typename T>
