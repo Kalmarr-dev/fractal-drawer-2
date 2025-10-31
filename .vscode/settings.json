@@ -84,6 +84,18 @@
     "xutility": "cpp",
     "unordered_set": "cpp",
     "complex": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "__bit_reference": "cpp",
+    "__hash_table": "cpp",
+    "__locale": "cpp",
+    "__split_buffer": "cpp",
+    "__verbose_abort": "cpp",
+    "cfenv": "cpp",
+    "condition_variable": "cpp",
+    "numbers": "cpp",
+    "semaphore": "cpp",
+    "shared_mutex": "cpp",
+    "span": "cpp",
+    "coroutine": "cpp"
   }
 }

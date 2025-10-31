@@ -179,7 +179,11 @@ void OpenGLRenderer<T>::render_to_screen() {
   // TODO not doing this every render removes colors somehow
   // TODO can't delete shader??
   // delete this->colored_shader;
+#ifndef __EMSCRIPTEN__
   this->colored_shader = new Shader("res/shaders/colored.shader");
+#else
+  this->colored_shader = new Shader("res/shaders/colored_webgl2.shader");
+#endif
   colored_shader->Bind();
 
   // colored_shader->SetUniform4f

@@ -23,5 +23,3 @@ User feedback when program is calculating stuff
 Add UI module that holds buttons and uses ImGui dockable
 
 Do shape adding and shape drawing on different threads
-
-Emscripten support for Fractal Drawer 2
