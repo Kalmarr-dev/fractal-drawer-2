@@ -1,0 +1,2 @@
+./linuxdeploy-x86_64.AppImage --appdir AppDir --executable infinite-stamp --desktop-file=Infinite\ Stamp.desktop -i is.png --output appimage
+zip -r linux-distributable.zip res/ Infinite_Stamp-x86_64.AppImage

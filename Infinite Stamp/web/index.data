@@ -1,0 +1,199 @@
+# max number of shapes on screen
+5000000
+# max number of new shapes per "fractal zoom"
+500000
+# number of threads
+64
+# smallest shape size as porportion of screen size (so 0.001 is rougly 2 pixels).
+# Note that after zooming for a bit the actual line size will grow, until next "fractal zoom"
+0.002
+# camera size change for "zooming in fractal" (calculating smaller parts). Smaller means more updates
+4.0
+# underlying model type: 0 is a fast model, 1 is a model supporting deeper zoom levels
+0#shader vertex
+#version 330 core
+
+layout(location = 0) in vec4 position;
+
+uniform vec4 u_camera;
+
+void main() {
+  vec4 newPosition = position;
+  newPosition.xy -= u_camera.xy;
+  newPosition.xy /= u_camera.zw / vec2(2.0, 2.0);
+  newPosition.xy -= vec2(1.0, 1.0);
+  gl_Position = newPosition;
+}
+
+
+#shader fragment
+#version 330 core
+
+layout(location = 0) out vec4 color;
+
+// uniform vec4 u_MousePos;
+
+void main() {
+  vec2 resolution = vec2(960, 960);
+  vec2 vUV = gl_FragCoord.xy/resolution.xy;
+
+  color;
+  color.r = 0.0f;
+  color.g = 0.0f;
+  color.b = 0.0f;
+  color.b += ((0.5f + vUV.y) + (0.5f - vUV.x)) / 2;
+  color.r += 0.5 + (vUV.x - vUV.y) / 2;
+  color.g += 1 - ((vUV.x - 0.5f) * (vUV.x - 0.5f) * 2 + (vUV.y - 0.5f) * (vUV.y - 0.5f) * 2) / 1.5;
+}
+#shader vertex
+#version 330 core
+
+layout(location = 0) in vec2 position;
+layout(location = 1) in vec3 vColor;
+
+out vec4 fColor;
+
+uniform vec4 u_camera;
+
+void main() {
+  vec4 newPosition = vec4(position, 1.0, 1.0);
+  newPosition.xy -= u_camera.xy;
+  newPosition.xy /= u_camera.zw / vec2(2.0, 2.0);
+  newPosition.xy -= vec2(1.0, 1.0);
+  gl_Position = newPosition;
+  fColor = vec4(vColor, 1.0);
+}
+
+
+#shader fragment
+#version 330 core
+
+layout(location = 0) out vec4 color;
+
+in vec4 fColor;
+
+void main() {
+  color = fColor;
+}
+#shader vertex
+#version 330 core
+
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 vColor;
+
+out vec4 fColor;
+
+uniform vec4 u_camera;
+
+void main() {
+  vec4 newPosition = vec4(position.xy, position.z, 1.0);
+  newPosition.xy -= u_camera.xy;
+  newPosition.xy /= u_camera.zw / vec2(2.0, 2.0);
+  newPosition.xy -= vec2(1.0, 1.0);
+  gl_Position = newPosition;
+  fColor = vec4(vColor, 1.0);
+}
+
+
+#shader fragment
+#version 330 core
+
+layout(location = 0) out vec4 color;
+
+in vec4 fColor;
+
+void main() {
+  color = fColor;
+}
+#shader vertex
+#version 300 es
+
+precision highp float;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 vColor;
+
+out vec4 fColor;
+
+uniform vec4 u_camera;
+
+void main() {
+  vec4 newPosition = vec4(position.xy, position.z, 1.0);
+  newPosition.xy -= u_camera.xy;
+  newPosition.xy /= u_camera.zw / vec2(2.0, 2.0);
+  newPosition.xy -= vec2(1.0, 1.0);
+  gl_Position = newPosition;
+  fColor = vec4(vColor, 1.0);
+}
+
+
+#shader fragment
+#version 300 es
+
+precision mediump float;
+layout(location = 0) out vec4 color;
+
+in vec4 fColor;
+
+void main() {
+  color = fColor;
+}
+#shader vertex
+#version 330 core
+
+layout(location = 0) in vec4 position;
+
+uniform vec4 u_camera;
+
+
+void main() {
+  vec4 newPosition = position;
+  newPosition.xy -= u_camera.xy;
+  newPosition.xy /= u_camera.zw / vec2(2.0, 2.0);
+  newPosition.xy -= vec2(1.0, 1.0);
+  gl_Position = newPosition;
+}
+
+
+#shader fragment
+#version 330 core
+
+layout(location = 0) out vec4 color;
+
+uniform vec4 u_color;
+
+void main() {
+  color = u_color;
+}
+#shader vertex
+#version 330 core
+
+layout(location = 0) in vec4 position;
+
+uniform vec4 u_camera;
+uniform mat2 u_scaleRotationMatrix;
+uniform vec4 u_rotationOrigin;
+uniform vec4 u_mainLine;
+
+
+void main() {
+  vec2 pointFromOrigin = position.xy - u_rotationOrigin.xy;
+  vec2 modifiedPointFromOrigin = u_scaleRotationMatrix * pointFromOrigin;
+  vec4 newPosition = position;
+  newPosition.xy = modifiedPointFromOrigin + u_mainLine.xy;
+  newPosition.xy -= u_camera.xy;
+  newPosition.xy /= u_camera.zw / vec2(2.0, 2.0);
+  newPosition.xy -= vec2(1.0, 1.0);
+  gl_Position = newPosition;
+}
+
+
+#shader fragment
+#version 330 core
+
+layout(location = 0) out vec4 color;
+
+uniform vec4 u_color;
+
+void main() {
+  color = u_color;
+}

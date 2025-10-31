@@ -1,0 +1,120 @@
+#
+# Makefile to use with GLFW+emscripten
+# See https://emscripten.org/docs/getting_started/downloads.html
+# for installation instructions.
+#
+# This Makefile assumes you have loaded emscripten's environment.
+# (On Windows, you may need to execute emsdk_env.bat or encmdprompt.bat ahead)
+#
+# Running `make -f Makefile.emscripten` will produce three files:
+#  - web/index.html
+#  - web/index.js
+#  - web/index.wasm
+#
+# All three are needed to run the demo.
+
+CC = emcc
+CXX = em++
+WEB_DIR = web
+EXE = $(WEB_DIR)/index.html
+SOURCES = main.cpp
+SOURCES += src/Camera/BasicCamera/BasicCamera.impl.cpp
+SOURCES += src/Configuration/Configuration.cpp
+SOURCES += src/DataStructure2D/QuadTree2D/QuadTree2D.impl.cpp
+SOURCES += src/GLBuffers/IndexBuffer.cpp
+SOURCES += src/GLBuffers/VertexArray.cpp
+SOURCES += src/GLBuffers/VertexBuffer.cpp
+SOURCES += src/GLShaders/Shader.cpp
+SOURCES += src/helpers/glErrorHandling.cpp
+SOURCES += src/helpers/ScaleRotationMatrix.impl.cpp
+SOURCES += src/Input/GLFWInput/GLFWInput.impl.cpp
+SOURCES += src/Input/InputSubject.impl.cpp
+SOURCES += src/LongDouble/BasicLongDouble/BasicLongDouble.cpp
+SOURCES += src/LongDouble/LongDoubleBitset/LongDoubleBitset.impl.cpp
+SOURCES += src/LongDouble/LongDoubleUInt64/LongDoubleUInt64.impl.cpp
+SOURCES += src/OnScreenButton/BasicSquareOnScreenButton/BasicSquareOnScreenButton.cpp
+SOURCES += src/OnScreenButton/OnScreenButton.cpp
+SOURCES += src/RecursiveRenderer/BasicRecursiveRenderer/BasicRecursiveRenderer.impl.cpp
+SOURCES += src/Renderer/OpenGLRenderer/OpenGLRenderer.impl.cpp
+SOURCES += src/ShapeDataStructure/FractalDataStructure/Fractal/Fractal.impl.cpp
+SOURCES += src/ShapeDataStructure/FractalDataStructure/Fractal/FractalPart.impl.cpp
+SOURCES += src/ShapeDataStructure/FractalDataStructure/Fractal/FractalStub.impl.cpp
+SOURCES += src/ShapeDataStructure/FractalDataStructure/FractalDataStructure.impl.cpp
+SOURCES += src/ShapeDataStructure/StampPaintDataStructure/StampPaintDataStructure.impl.cpp
+SOURCES += src/ShapeDataStructure/StampPaintDataStructure/Figure/Figure.impl.cpp
+SOURCES += src/ShapeDataStructure/StampPaintDataStructure/Stamp/Stamp.impl.cpp
+SOURCES += src/ShapeDataStructure/StampPaintDataStructure/StampPaintDataStructure.impl.cpp
+SOURCES += src/Viewport/GLFWViewport/GLFWViewport.cpp
+SOURCES += dependencies/glad_es/glad.c
+OBJS = $(addsuffix .o, $(basename $(SOURCES)))
+UNAME_S := $(shell uname -s)
+CPPFLAGS = -std=c++17 -O2 -DNO_OMP -DNO_STD_PARALLEL -D__EMSCRIPTEN__
+CPPFLAGS += -g -D_DEBUG
+LDFLAGS =
+EMS =
+
+##---------------------------------------------------------------------
+## EMSCRIPTEN OPTIONS
+##---------------------------------------------------------------------
+
+# ("EMS" options gets added to both CPPFLAGS and LDFLAGS, whereas some options are for linker only)
+# Note: For glfw, we use emscripten-glfw port (contrib.glfw3) instead of ('-s USE_GLFW=3' in LDFLAGS) to get a better support for High DPI displays.
+EMS += -s NO_DISABLE_EXCEPTION_CATCHING=1 --use-port=contrib.glfw3
+LDFLAGS += -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
+
+# Build as single file (binary text encoded in .html file)
+#LDFLAGS += -sSINGLE_FILE
+
+# Uncomment next line to fix possible rendering bugs with Emscripten version older then 1.39.0 (https://github.com/ocornut/imgui/issues/2877)
+#EMS += -s BINARYEN_TRAP_MODE=clamp
+#EMS += -s SAFE_HEAP=1    ## Adds overhead
+
+# Emscripten allows preloading a file or folder to be accessible at runtime.
+# The Makefile for this example project suggests embedding the misc/fonts/ folder into our application, it will then be accessible as "/fonts"
+# See documentation for more details: https://emscripten.org/docs/porting/files/packaging_files.html
+# (Default value is 0. Set to 1 to enable file-system and include the misc/fonts/ folder as part of the build.)
+USE_FILE_SYSTEM ?= 1
+ifeq ($(USE_FILE_SYSTEM), 0)
+LDFLAGS += -s NO_FILESYSTEM=1
+CPPFLAGS += -DIMGUI_DISABLE_FILE_FUNCTIONS
+endif
+ifeq ($(USE_FILE_SYSTEM), 1)
+LDFLAGS += --no-heap-copy --preload-file res
+endif
+
+##---------------------------------------------------------------------
+## FINAL BUILD FLAGS
+##---------------------------------------------------------------------
+
+CCFLAGS = -Wall -Wformat $(EMS)
+CPPFLAGS += -Wall -Wformat $(EMS)
+LDFLAGS += --shell-file my_shell.html
+LDFLAGS += -sMIN_WEBGL_VERSION=1 -sMAX_WEBGL_VERSION=2
+# LDFLAGS += -sFULL_ES2 -sFULL_ES3
+LDFLAGS += $(EMS)
+
+##---------------------------------------------------------------------
+## BUILD RULES
+##---------------------------------------------------------------------
+
+%.o:%.c
+	$(CC) $(CCFLAGS) -c -o $@ $<
+
+%.o:%.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+
+
+all: $(EXE)
+	@echo Build complete for $(EXE)
+
+$(WEB_DIR):
+	mkdir $@
+
+serve: all
+	python3 -m http.server -d $(WEB_DIR)
+
+$(EXE): $(OBJS) $(WEB_DIR)
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
+
+clean:
+	rm -rf $(OBJS) $(WEB_DIR)

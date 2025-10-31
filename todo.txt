@@ -4,10 +4,22 @@ Ensure Shapes and others are passed by reference
 
 Fractal-specific renderer
 
-Port to web with Emscripten
-
 Find out why when no fractal is drawn and moving cursor all cores are loaded 60%
 
 Add text
 
 Sign exe & appimage
+
+Eraser deletion, Backspace deletion
+
+Find memory leak each frame
+
+Rotate stamps, mirror stamps
+
+Preview for Stamps
+
+User feedback when program is calculating stuff
+
+Add UI module that holds buttons and uses ImGui dockable
+
+Do shape adding and shape drawing on different threads

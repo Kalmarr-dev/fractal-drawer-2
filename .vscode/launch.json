@@ -8,7 +8,7 @@
     "name": "(gdb) Launch",
     "type": "cppdbg",
     "request": "launch",
-    "program": "${workspaceFolder}/fractal-drawer-2",
+    "program": "${workspaceFolder}/infinite-stamp",
     "args": [],
     // "args": ["5000000", "500000"],
     "stopAtEntry": false,
@@ -34,7 +34,7 @@
     "name": "(gdb) Launch WINDOWS",
     "type": "cppdbg",
     "request": "launch",
-    "program": "${workspaceFolder}/fractal-drawer-2",
+    "program": "${workspaceFolder}/infinite-stamp.exe",
     "args": [],
     // "args": ["5000000", "500000"],
     "stopAtEntry": false,
@@ -55,6 +55,31 @@
         }
     ],
     "preLaunchTask": "C/C++: g++.exe build active file"
-  }
+  },
+  {
+    "name": "(gdb) Launch fractal-drawer",
+    "type": "cppdbg",
+    "request": "launch",
+    "program": "${workspaceFolder}/Fractal Drawer 2/fractal-drawer-2",
+    "args": [],
+    // "args": ["5000000", "500000"],
+    "stopAtEntry": false,
+    "cwd": "${workspaceFolder}",
+    "environment": [],
+    "externalConsole": false,
+    "MIMode": "gdb",
+    "setupCommands": [
+        {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+        },
+        {
+            "description": "Set Disassembly Flavor to Intel",
+            "text": "-gdb-set disassembly-flavor intel",
+            "ignoreFailures": true
+        }
+    ],
+  },
   ]
 }

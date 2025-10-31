@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Icon=is
+Type=Application
+Name=Infinite Stamp
+Name[en_US]=Infinite Stamp
+Path=/usr/bin/
+Exec=infinite-stamp
+Terminal=false
+Categories=Math;Graphics;

@@ -6,3 +6,4 @@ glfw-3.2.2/
 linuxdeploy-x86_64.AppImage
 AppDir/
 linux-distributable.zip
+**/build/
