@@ -97,8 +97,8 @@ Shapes<T> ACODataProvider<T>::get_aco_history(std::vector< Color<T> >* colors) {
   {
     for (int i = 1; (size_t)i < current_history_item.best_permutation.size(); i++)
     {
-      Position<T> p1 = this->points[i - 1];
-      Position<T> p2 = this->points[i];
+      Position<T> p1 = this->points[current_history_item.best_permutation[i - 1]];
+      Position<T> p2 = this->points[current_history_item.best_permutation[i]];
       Line<T>* l = new Line<T>(
         Position<T>(T(p1.x), T(p1.y)), Position<T>(T(p2.x), T(p2.y))
       );
