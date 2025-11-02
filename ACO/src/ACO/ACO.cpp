@@ -110,8 +110,22 @@ std::vector<int> ACO::solve(int ants, int max_no_improvement_iterations, int max
       this->pheromone_matrix[best_permutation[i] + 1][best_permutation[i + 1] + 1] += 1;
     }
 
+    std::vector<int> job_tardiness;
+    int current_time = 0;
+    for (auto &&job_i : best_permutation)
+    {
+      auto job = this->ds.jobs[job_i];
+      current_time += job.duration;
+      job_tardiness.push_back(std::max(0, current_time - job.deadline));
+    }
+    this->history.add_iteration(this->pheromone_matrix, best_permutation, job_tardiness);
+
     iterations++;
   }
 
   return best_permutation;
+}
+
+ACOHistory ACO::get_history() {
+  return this->history;
 }
