@@ -96,6 +96,12 @@
     "semaphore": "cpp",
     "shared_mutex": "cpp",
     "span": "cpp",
-    "coroutine": "cpp"
+    "coroutine": "cpp",
+    "__node_handle": "cpp",
+    "__tree": "cpp",
+    "codecvt": "cpp",
+    "print": "cpp",
+    "stack": "cpp",
+    "ranges": "cpp"
   }
 }
