@@ -1,0 +1,1 @@
+g++ -std=c++17 -O2 -Wall -g $(find src/PSO -name "*.cpp") -Isrc console_main.cpp -static-libgcc -static-libstdc++ -fopenmp -lglfw -lGL -lX11 -lpthread -lXrandr -ldl -lOpenGL -ltbb -o pso
