@@ -42,15 +42,21 @@ std::pair<double, double> PSO::solve(int particle_amount, double inertia, double
       particles[i].position.first += particles[i].velocity.first;
       particles[i].position.second += particles[i].velocity.second;
       
-      if (target_function(particles[i].position.first, particles[i].position.second) 
-          < target_function(particles[i].personal_best.first, particles[i].personal_best.second))
+      if (lower_margin.first < particles[i].position.first
+          && particles[i].position.first < higher_margin.first
+          && lower_margin.second < particles[i].position.second
+          && particles[i].position.second < higher_margin.second)
       {
-        particles[i].personal_best = particles[i].position;
-      }
-      if (target_function(particles[i].position.first, particles[i].position.second) < global_best_value)
-      {
-        global_best_value = target_function(particles[i].position.first, particles[i].position.second);
-        global_best = particles[i].position;
+        if (target_function(particles[i].position.first, particles[i].position.second) 
+            < target_function(particles[i].personal_best.first, particles[i].personal_best.second))
+        {
+          particles[i].personal_best = particles[i].position;
+        }
+        if (target_function(particles[i].position.first, particles[i].position.second) < global_best_value)
+        {
+          global_best_value = target_function(particles[i].position.first, particles[i].position.second);
+          global_best = particles[i].position;
+        }
       }
     }
 
