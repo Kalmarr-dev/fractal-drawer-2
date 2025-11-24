@@ -4,6 +4,8 @@ PSO::PSO(const std::function<double(double, double)>& target_function, std::pair
   : target_function(target_function), lower_margin(lower_margin), higher_margin(higher_margin) {}
 
 std::pair<double, double> PSO::solve(int particle_amount, double inertia, double acceleration_coefficient, double v_max) {
+  history = PSOHistory();
+  
   std::vector<Particle> particles(particle_amount);
 
   std::pair<double, double> global_best;
@@ -24,7 +26,13 @@ std::pair<double, double> PSO::solve(int particle_amount, double inertia, double
   }
   
   double velocity_sum = __INT32_MAX__;
-  while (particle_amount / 10 < velocity_sum)
+  int iteration = 0;
+  double previous_global_best_value = global_best_value;
+  int no_improvement_iterations = 0;
+  
+  while (particle_amount / 100 < velocity_sum)
+  // while (iteration < 20)
+  // while (no_improvement_iterations < 4)
   {
     for (int i = 0; i < particle_amount; i++)
     {
@@ -38,6 +46,9 @@ std::pair<double, double> PSO::solve(int particle_amount, double inertia, double
       double to_p_best_y = particles[i].personal_best.second - particles[i].position.second;
       double to_g_best_y = global_best.second - particles[i].position.second;
       particles[i].velocity.second = inertia * particles[i].velocity.second + acceleration_coefficient * (r3 * to_p_best_y + r4 * to_g_best_y);
+
+      particles[i].velocity.first = std::clamp(particles[i].velocity.first, -v_max, v_max);
+      particles[i].velocity.second = std::clamp(particles[i].velocity.second, -v_max, v_max);
       
       particles[i].position.first += particles[i].velocity.first;
       particles[i].position.second += particles[i].velocity.second;
@@ -63,8 +74,18 @@ std::pair<double, double> PSO::solve(int particle_amount, double inertia, double
     velocity_sum = 0;
     for (int i = 0; i < particle_amount; i++)
     {
-      velocity_sum += particles[i].velocity.first + particles[i].velocity.second;
+      velocity_sum += abs(particles[i].velocity.first) + abs(particles[i].velocity.second);
     }
+    iteration++;
+    if (previous_global_best_value == global_best_value)
+    {
+      no_improvement_iterations++;
+    } else {
+      no_improvement_iterations = 0;
+      previous_global_best_value = global_best_value;
+    }
+    
+    history.add_iteration(particles, global_best);
   }
 
   return global_best;

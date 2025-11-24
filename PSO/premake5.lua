@@ -13,7 +13,6 @@ project "PSO"
   links { "glfw", "GL", "X11", "pthread", "Xrandr", "dl", "OpenGL", "tbb" }
   includedirs { "../include" }
   includedirs { "../Core/src" }
-  includedirs { "../Recursive Core/src" }
   includedirs { "src" }
   files { "../dependencies/**.h", "../dependencies/**.cpp", "../dependencies/**.c" }
 
@@ -27,17 +26,13 @@ project "PSO"
     defines { "_DEBUG" }
     symbols "On"
     libdirs { "../Core/build/bin/Debug" }
-    libdirs { "../Recursive Core/build/bin/Debug" }
-    links { "Debug/recursivecore" }
     links { "Debug/core" }
     removefiles { "../dependencies/glad_es/**.c" }
 
   filter { "configurations:Release" }
     optimize "Speed"
     libdirs { "../Core/build/bin/Release" }
-    libdirs { "../Recursive Core/build/bin/Release" }
     links { "Release/core" }
-    links { "Release/recursivecore" }
     removefiles { "../dependencies/glad_es/**.c" }
 
   filter { "configurations:EmscriptenRelease" }
@@ -45,9 +40,7 @@ project "PSO"
     optimize "Speed"
 
     libdirs { "../Core/build/bin/EmscriptenRelease" }
-    libdirs { "../Recursive Core/build/bin/EmscriptenRelease" }
     links { "EmscriptenRelease/core" }
-    links { "EmscriptenRelease/recursivecore" }
     removefiles { "../dependencies/glad/**.c" }
     removelinks { "Xrandr", "OpenGL", "tbb" }
     removelinkoptions { "-fopenmp" }
