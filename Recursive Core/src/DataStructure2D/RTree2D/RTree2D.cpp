@@ -31,7 +31,7 @@ void RTree2D<T>::add_shapes(Shapes<T> shapes) {
     bool inserted = false;
     if (root == nullptr)
     {
-      root = new RTreeNode(shape);
+      root = new RTreeNode<T>(shape);
       inserted = true;
     }
 
@@ -44,7 +44,10 @@ void RTree2D<T>::add_shapes(Shapes<T> shapes) {
         new_root->children.push_back(new_nodes.first);
         new_root->children.push_back(new_nodes.second);
         new_root->recalculate_boundary();
-        delete root;
+        if (new_nodes.first != root && new_nodes.second != root)
+        {
+          delete root;
+        }
         root = new_root;
       }
     }

@@ -28,7 +28,7 @@ struct RTreeNode {
 #endif
   }
 
-  RTreeNode(const IShape<T>* shape) : shape(shape) {
+  RTreeNode(IShape<T>* shape) : shape(shape) {
     auto points = shape->get_points();
     lower.x = points[0].x;
     higher.x = points[0].x;
@@ -127,7 +127,7 @@ struct RTreeNode {
     if (this->children.size() < 2)
     {
       throw "not enough children for split";
-    }    
+    }
 
     std::pair<RTreeNode<T>*, RTreeNode<T>*> principal_nodes;
     principal_nodes = {this->children[0], this->children[1]};

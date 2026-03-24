@@ -53,6 +53,13 @@ public:
     return points;
   }
 
+  inline std::vector<Position<T>> get_points() const& {
+    std::vector<Position<T>> points;
+    points.push_back(a);
+    points.push_back(b);
+    return points;
+  }
+
   inline std::vector<unsigned int> get_indexes() const {
     std::vector<unsigned int> indexes;
     indexes.push_back(0);
