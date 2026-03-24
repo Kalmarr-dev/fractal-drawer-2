@@ -23,3 +23,7 @@ User feedback when program is calculating stuff
 Add UI module that holds buttons and uses ImGui dockable
 
 Do shape adding and shape drawing on different threads
+
+Segfault on zoom (double free or corruption), no problems in emscripten (without parallelism)
+
+Reroot QuadTree when there is a line bigger then the root
