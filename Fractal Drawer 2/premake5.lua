@@ -38,6 +38,7 @@ project "FractalDrawer2"
     links { "Release/core" }
     links { "Release/recursivecore" }
     removefiles { "../dependencies/glad_es/**.c" }
+    links "tbb"
 
   filter { "configurations:EmscriptenRelease" }
     defines { "NO_OMP", "NO_STD_PARALLEL", "__EMSCRIPTEN__" }
