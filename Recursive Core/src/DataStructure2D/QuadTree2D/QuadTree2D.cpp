@@ -4,6 +4,7 @@
 #include <omp.h>
 #endif
 #include <iostream>
+#include <Logger/Logger.h>
 
 template<typename T>
 QuadTree2D<T>::QuadTree2D(Position<T> a, Position<T> b, Configuration configuration)
@@ -124,6 +125,8 @@ void QuadTree2D<T>::add_shapes(Shapes<T> shapes) {
 
 template<typename T>
 Shapes<T> QuadTree2D<T>::get_visible_shapes_in_area(Position<T> lower, Position<T> higher) {
+  auto start_time = std::chrono::steady_clock::now();
+
   QuadTreeNode<T>* node = root;
   Shapes<T> result;
   
@@ -136,6 +139,12 @@ Shapes<T> QuadTree2D<T>::get_visible_shapes_in_area(Position<T> lower, Position<
   {
     result.add_shape(shape);
   }
+
+  auto end_time = std::chrono::steady_clock::now();
+  auto duration = end_time - start_time;
+  int microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+
+  Logger::record_query_performance((int)result.size(), microseconds);
 
   return result;
 }
