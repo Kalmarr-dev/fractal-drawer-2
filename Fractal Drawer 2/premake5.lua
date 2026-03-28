@@ -1,5 +1,5 @@
 workspace "FractalDrawer2"
-  configurations { "Debug", "Release", "EmscriptenRelease" }
+  configurations { "Debug", "Release", "EmscriptenRelease", "SingleThreadedRelease" }
   toolset "gcc"
 
 project "FractalDrawer2"
@@ -67,3 +67,14 @@ project "FractalDrawer2"
     linkoptions (EMS)
     linkoptions { "-o ../" .. web_dir .. "/index.html" }
     
+  filter { "configurations:SingleThreadedRelease" }
+    defines { "NO_OMP", "NO_STD_PARALLEL" }
+    optimize "Speed"
+    libdirs { "../Core/build/bin/SingleThreadedRelease" }
+    libdirs { "../Recursive Core/build/bin/SingleThreadedRelease" }
+    links { "SingleThreadedRelease/core" }
+    links { "SingleThreadedRelease/recursivecore" }
+    removefiles { "../dependencies/glad_es/**.c" }
+    removelinks { "tbb" }
+    removelinkoptions { "-fopenmp" }
+    removebuildoptions { "-fopenmp" }

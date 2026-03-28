@@ -37,6 +37,8 @@ void loop(GLFWInput<T>* p_input, OpenGLRenderer<T>* p_renderer, GLFWViewport* p_
 
   p_input->send_recurring_events();
   
+  p_input->notify_zoom({0.5, 0.866}, 1 / 0.995);
+
   p_renderer->clear_screen();
   p_renderer->render_to_screen();
 
@@ -64,9 +66,9 @@ void emscripten_loop(void* arg) {
 template <typename T>
 void initialize_loop(Configuration configuration) {
   // BasicDataStructure2D<T>* p_data_structure = new BasicDataStructure2D<T>;
-  // QuadTree2D<T>* p_data_structure = new QuadTree2D<T>({-2, -2}, {2, 2}, configuration);
+  QuadTree2D<T>* p_data_structure = new QuadTree2D<T>({-2, -2}, {2, 2}, configuration);
   // QuadTree2D<T>* p_data_structure = new QuadTree2D<T>({__DBL_MIN__, __DBL_MIN__}, {__DBL_MAX__, __DBL_MAX__}, configuration);
-  RTree2D<T>* p_data_structure = new RTree2D<T>(configuration);
+  // RTree2D<T>* p_data_structure = new RTree2D<T>(configuration);
 
   BasicCamera<T>* p_camera = new BasicCamera<T>(
     std::make_pair(
@@ -106,6 +108,16 @@ void initialize_loop(Configuration configuration) {
   p_input->subscribe_to_pointer_move(p_fractal_data_structure);
   p_input->subscribe_to_confirm(p_fractal_data_structure);
   p_input->subscribe_to_clear(p_recursive_renderer);
+
+  p_fractal_data_structure->process_primary_click({0, 0});
+  p_fractal_data_structure->process_primary_click({1, 0});
+  p_fractal_data_structure->process_secondary_click({0, 0});
+  p_fractal_data_structure->process_secondary_click({0.5, 0});
+  p_fractal_data_structure->process_secondary_click({1, 0});
+  p_fractal_data_structure->process_secondary_click({0.75, 0.433});
+  p_fractal_data_structure->process_secondary_click({0.5, 0.866});
+  p_fractal_data_structure->process_secondary_click({0.25, 0.433});
+  p_fractal_data_structure->process_confirm();
 
   std::pair<int, int> size = p_viewport->get_size();
   std::cout << size.first << " " << size.second << " - size\n";

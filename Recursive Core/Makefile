@@ -17,6 +17,9 @@ else ifeq ($(config),release)
 else ifeq ($(config),emscriptenrelease)
   RecursiveCore_config = emscriptenrelease
 
+else ifeq ($(config),singlethreadedrelease)
+  RecursiveCore_config = singlethreadedrelease
+
 else
   $(error "invalid configuration $(config)")
 endif
@@ -43,6 +46,7 @@ help:
 	@echo "  debug"
 	@echo "  release"
 	@echo "  emscriptenrelease"
+	@echo "  singlethreadedrelease"
 	@echo ""
 	@echo "TARGETS:"
 	@echo "   all (default)"

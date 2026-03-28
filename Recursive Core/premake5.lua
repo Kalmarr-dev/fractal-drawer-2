@@ -1,5 +1,5 @@
 workspace "RecursiveCore"
-  configurations { "Debug", "Release", "EmscriptenRelease" }
+  configurations { "Debug", "Release", "EmscriptenRelease", "SingleThreadedRelease" }
   toolset "gcc"
   libdirs { "../Core/build/bin" }
 
@@ -39,3 +39,12 @@ project "RecursiveCore"
     toolset "emcc"
     architecture "wasm64"
     system "emscripten"
+
+  filter { "configurations:SingleThreadedRelease" }
+    defines { "NO_OMP", "NO_STD_PARALLEL" }
+    optimize "Speed"
+    links { "release/libcore" }
+    removefiles { "../dependencies/glad_es/**.c" }
+    removelinks { "tbb" }
+    removelinkoptions { "-fopenmp" }
+    removebuildoptions { "-fopenmp" }

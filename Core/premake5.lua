@@ -1,5 +1,5 @@
 workspace "Core"
-  configurations { "Debug", "Release", "EmscriptenRelease" }
+  configurations { "Debug", "Release", "EmscriptenRelease", "SingleThreadedRelease" }
   toolset "gcc"
 
 project "Core"
@@ -33,3 +33,11 @@ project "Core"
     toolset "emcc"
     architecture "wasm64"
     system "emscripten"
+    
+  filter { "configurations:SingleThreadedRelease" }
+    defines { "NO_OMP", "NO_STD_PARALLEL" }
+    optimize "Speed"
+    removefiles { "../dependencies/glad_es/**.c" }
+    removelinks { "tbb" }
+    removelinkoptions { "-fopenmp" }
+    removebuildoptions { "-fopenmp" }
