@@ -12,6 +12,7 @@ private:
   RTreeNode<T>* root;
   Configuration configuration;
   int shapes_amount = 0;
+  int height = 0;
 public:
   RTree2D(Configuration configuration);
   ~RTree2D();

@@ -25,7 +25,6 @@ RTree2D<T>::~RTree2D()
 template<typename T>
 void RTree2D<T>::add_shapes(Shapes<T> shapes) {
   this->shapes_amount += shapes.get_shapes().size();
-  std::cout << this->shapes_amount << '\n';
   // #pragma omp parallel for schedule(dynamic)
   for (auto &&shape : shapes.get_shapes())
   {
@@ -50,9 +49,11 @@ void RTree2D<T>::add_shapes(Shapes<T> shapes) {
           delete root;
         }
         root = new_root;
+        height++;
       }
     }
   }
+  std::cout << this->shapes_amount << " " << this->height << '\n';
 }
 
 template<typename T>

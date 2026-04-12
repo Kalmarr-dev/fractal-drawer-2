@@ -38,7 +38,15 @@ void loop(GLFWInput<T>* p_input, OpenGLRenderer<T>* p_renderer, GLFWViewport* p_
 
   p_input->send_recurring_events();
   
-  p_input->notify_zoom({0.5, 0.866}, 1 / 0.995);
+  auto window = p_viewport->getWindowPointer();
+  double mouseX, mouseY;
+  glfwGetCursorPos(window, &mouseX, &mouseY);
+  int windowW, windowH;
+  glfwGetWindowSize(window, &windowW, &windowH);
+  Position<double> mouse_position = {mouseX / windowW, (- mouseY / windowH + 1.0)};
+  p_input->notify_zoom(mouse_position, 1 / 0.985);
+
+  // p_input->notify_zoom({0.5, 0.5}, 1 / 0.985);
 
   p_renderer->clear_screen();
   p_renderer->render_to_screen();
@@ -112,15 +120,24 @@ void initialize_loop(Configuration configuration) {
   p_input->subscribe_to_confirm(p_fractal_data_structure);
   p_input->subscribe_to_clear(p_recursive_renderer);
 
-  p_fractal_data_structure->process_primary_click({0, 0});
-  p_fractal_data_structure->process_primary_click({1, 0});
-  p_fractal_data_structure->process_secondary_click({0, 0});
-  p_fractal_data_structure->process_secondary_click({0.5, 0});
-  p_fractal_data_structure->process_secondary_click({1, 0});
-  p_fractal_data_structure->process_secondary_click({0.75, 0.433});
-  p_fractal_data_structure->process_secondary_click({0.5, 0.866});
-  p_fractal_data_structure->process_secondary_click({0.25, 0.433});
+  p_fractal_data_structure->process_primary_click({0, 0 - 0.366});
+  p_fractal_data_structure->process_primary_click({1, 0 - 0.366});
+  p_fractal_data_structure->process_secondary_click({0, 0 - 0.366});
+  p_fractal_data_structure->process_secondary_click({0.5, 0 - 0.366});
+  p_fractal_data_structure->process_secondary_click({1, 0 - 0.366}); // remove to simplify
+  p_fractal_data_structure->process_secondary_click({0.75, 0.433 - 0.366}); // remove to simplify
+  p_fractal_data_structure->process_secondary_click({0.5, 0.866 - 0.366});
+  p_fractal_data_structure->process_secondary_click({0.25, 0.433 - 0.366});
   p_fractal_data_structure->process_confirm();
+
+
+  // p_fractal_data_structure->process_primary_click({0.5, 0});
+  // p_fractal_data_structure->process_primary_click({0.5, 0.25});
+  // p_fractal_data_structure->process_secondary_click({0.5, 0.25});
+  // p_fractal_data_structure->process_secondary_click({0.5, 0.25 + 0.125});
+  // p_fractal_data_structure->process_secondary_click({0.5, 0.25});
+  // p_fractal_data_structure->process_secondary_click({0.5 + 0.15, 0.25 + 0.05});
+  // p_fractal_data_structure->process_confirm();
 
   std::pair<int, int> size = p_viewport->get_size();
   std::cout << size.first << " " << size.second << " - size\n";
