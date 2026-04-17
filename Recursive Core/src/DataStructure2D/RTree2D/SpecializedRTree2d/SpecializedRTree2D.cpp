@@ -37,7 +37,7 @@ void SpecializedRTree2D<T>::add_shapes(Shapes<T> shapes) {
 
     if (!inserted)
     {
-      std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> new_nodes = root->insert_shape_recursive(shape);
+      std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> new_nodes = root->insert_recursive(new SpecializedRTreeNode<T>(shape));
       if (new_nodes.second != nullptr)
       {
         SpecializedRTreeNode<T>* new_root = new SpecializedRTreeNode<T>({0, 0}, {0, 0});

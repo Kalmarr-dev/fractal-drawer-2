@@ -2,8 +2,8 @@
 
 #include <DataStructure2D/RTree2D/RTreeNode.h>
 
-const int SPEC_MAX_CAP = 3;
-// const int SPEC_MIN_CAP = 1;
+const int SPEC_MAX_CAP = 16;
+const int SPEC_MIN_CAP = 7;
 
 template<typename T>
 struct SpecializedRTreeNode {
@@ -59,28 +59,28 @@ struct SpecializedRTreeNode {
 #endif
   }
 
-  std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> insert_shape_recursive(IShape<T>* shape) {
+  std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> insert_recursive(SpecializedRTreeNode<T>* node) {
     if (this->shape != nullptr) // leaf or root
     {
-      return {this, new SpecializedRTreeNode<T>(shape)};
+      return {this, node};
     } else { // intermediate node or root
-      T size_difference = this->children[0]->get_size_difference(shape);
-      SpecializedRTreeNode<T>* similar_size_node = this->children[0];
+      T bad_score = this->children[0]->get_size_difference(node) + this->children[0]->get_potential_enlargement(node);
+      SpecializedRTreeNode<T>* best_parent_node = this->children[0];
       for (auto &&child : this->children)
       {
-        T child_size_difference = child->get_size_difference(shape);
-        if (child_size_difference < size_difference)
+        T child_bad_score = child->get_size_difference(node) + child->get_potential_enlargement(node);
+        if (child_bad_score < bad_score)
         {
-          size_difference = child_size_difference;
-          similar_size_node = child;
+          bad_score = child_bad_score;
+          best_parent_node = child;
         }
       }
-      auto new_nodes = similar_size_node->insert_shape_recursive(shape);
-      if (new_nodes.first != similar_size_node)
+      auto new_nodes = best_parent_node->insert_recursive(node);
+      if (new_nodes.first != best_parent_node)
       {
         for (int i = 0; i < (int)this->children.size(); i++)
         {
-          if (this->children[i] == similar_size_node)
+          if (this->children[i] == best_parent_node)
           {
             delete this->children[i];
             this->children[i] = new_nodes.first;
@@ -102,19 +102,10 @@ struct SpecializedRTreeNode {
     }
   }
 
-  T get_size_difference(IShape<T>* shape) {
+  T get_size_difference(SpecializedRTreeNode<T>* node) {
     T linear_size = this->get_linear_size();
-    Position<T> lower = shape->get_points()[0];
-    Position<T> higher = shape->get_points()[0];
-    for (const auto &point : shape->get_points())
-    {
-      lower.x = std::min(lower.x, point.x);
-      lower.y = std::min(lower.y, point.y);
-      higher.x = std::min(higher.x, point.x);
-      higher.y = std::min(higher.y, point.y);
-    }
-    T shape_linear_size = std::max(higher.x - lower.x, higher.y - lower.y);
-    T size_difference = linear_size - shape_linear_size; // TODO do logarithm
+    T node_linear_size = std::max(higher.x - lower.x, higher.y - lower.y);
+    T size_difference = linear_size - node_linear_size; // TODO do logarithm
     if (size_difference < T(0))
     {
       return T(-1.0) * size_difference;
@@ -123,33 +114,73 @@ struct SpecializedRTreeNode {
     }
   }
 
+  T get_potential_enlargement(const SpecializedRTreeNode<T>* node) {
+    Position<T> new_lower = lower;
+    Position<T> new_higher = higher;
+    new_lower.x = std::min(new_lower.x, node->lower.x);
+    new_lower.y = std::min(new_lower.y, node->lower.y);
+    new_higher.x = std::max(new_higher.x, node->higher.x);
+    new_higher.y = std::max(new_higher.y, node->higher.y);
+    T x_enlargement = new_higher.x - higher.x + lower.x - new_lower.x;
+    T y_enlargement = new_higher.y - higher.y + lower.y - new_lower.y;
+    return x_enlargement < y_enlargement ? y_enlargement : x_enlargement;
+  }
+
   std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> split() {
     if (this->children.size() < 2)
     {
       throw "not enough children for split";
     }
 
-    std::sort(
-      this->children.begin(),
-      this->children.end(),
-      [](SpecializedRTreeNode<T>* lhs, SpecializedRTreeNode<T>* rhs) {
-        T linear_size_lhs = lhs->get_linear_size();
-        T linear_size_rhs = rhs->get_linear_size();
-        return linear_size_lhs < linear_size_rhs;
-    });
-
-    int pivot = ((int)this->children.size()) / 2;
-
+    std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> principal_nodes;
+    principal_nodes = {this->children[0], this->children[1]};
+    T principal_nodes_score = 0;
+    for (int i = 0; i < (int)this->children.size(); i++)
+    {
+      SpecializedRTreeNode<T>* child1 = this->children[i];
+      for (int j = i + 1; j < (int)this->children.size(); j++)
+      {
+        SpecializedRTreeNode<T>* child2 = this->children[j];
+        Position<T> lower;
+        lower.x = std::min(child1->lower.x, child2->lower.x);
+        lower.y = std::min(child1->lower.y, child2->lower.y);
+        Position<T> higher;
+        higher.x = std::max(child1->higher.x, child2->higher.x);
+        higher.y = std::max(child1->higher.y, child2->higher.y);
+        T score = (higher.x - lower.x) * (higher.y - lower.y) - (std::max(child1->get_area(), child2->get_area()));
+        if (principal_nodes_score < score)
+        {
+          principal_nodes = {child1, child2};
+        }
+      }
+    }
 
     SpecializedRTreeNode<T>* new_node1 = new SpecializedRTreeNode<T>({0, 0}, {0, 0});
-    for (int i = 0; i < pivot; i++)
-    {
-      new_node1->children.push_back(this->children[i]);
-    }
+    new_node1->children.push_back(principal_nodes.first);
     SpecializedRTreeNode<T>* new_node2 = new SpecializedRTreeNode<T>({0, 0}, {0, 0});
-    for (int i = pivot; i < (int)this->children.size(); i++)
-    {
-      new_node2->children.push_back(this->children[i]);
+    new_node2->children.push_back(principal_nodes.second);
+    for (int i = 0; i < (int)this->children.size(); i++) {
+      SpecializedRTreeNode<T>* child = this->children[i];
+      if (new_node1->children.size() >= SPEC_MIN_CAP && new_node2->children.size() < SPEC_MIN_CAP)
+      {
+        new_node2->children.push_back(child);
+        continue;
+      } else if (new_node1->children.size() < SPEC_MIN_CAP && new_node2->children.size() >= SPEC_MIN_CAP) {
+        new_node1->children.push_back(child);
+        continue;
+      }
+      
+      if (child != principal_nodes.first && child != principal_nodes.second)
+      {
+        T bad_score1 = new_node1->get_potential_enlargement(child) + new_node1->get_size_difference(child);
+        T bad_score2 = new_node2->get_potential_enlargement(child) + new_node2->get_size_difference(child);
+        if (bad_score1 < bad_score2)
+        {
+          new_node1->children.push_back(child);
+        } else {
+          new_node2->children.push_back(child);
+        }
+      }
     }
 
     new_node1->recalculate_boundary();
