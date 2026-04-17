@@ -21,6 +21,7 @@
 #include <LongDouble/LongDoubleBitset/LongDoubleBitset.h>
 #include <DataStructure2D/QuadTree2D/QuadTree2D.h>
 #include <DataStructure2D/RTree2D/RTree2D.h>
+#include <DataStructure2D/RTree2D/SpecializedRTree2d/SpecializedRTree2D.h>
 #include <LongDouble/LongDoubleUInt64/LongDoubleUInt64.h>
 #include <Logger/Logger.h>
 
@@ -78,8 +79,10 @@ void initialize_loop(Configuration configuration) {
   // QuadTree2D<T>* p_data_structure = new QuadTree2D<T>({-2, -2}, {2, 2}, configuration);
   // Logger::initialize("quadtree");
   // QuadTree2D<T>* p_data_structure = new QuadTree2D<T>({__DBL_MIN__, __DBL_MIN__}, {__DBL_MAX__, __DBL_MAX__}, configuration);
-  RTree2D<T>* p_data_structure = new RTree2D<T>(configuration);
-  Logger::initialize("r-tree");
+  // RTree2D<T>* p_data_structure = new RTree2D<T>(configuration);
+  // Logger::initialize("r-tree");
+  SpecializedRTree2D<T>* p_data_structure = new SpecializedRTree2D<T>(configuration);
+  Logger::initialize("spec-r-tree");
 
   BasicCamera<T>* p_camera = new BasicCamera<T>(
     std::make_pair(

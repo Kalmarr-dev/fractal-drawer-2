@@ -4,6 +4,7 @@
 #include <omp.h>
 #endif
 #include <iostream>
+#include <Logger/Logger.h>
 
 template<typename T>
 SpecializedRTree2D<T>::SpecializedRTree2D(Configuration configuration)
@@ -56,12 +57,20 @@ void SpecializedRTree2D<T>::add_shapes(Shapes<T> shapes) {
 
 template<typename T>
 Shapes<T> SpecializedRTree2D<T>::get_visible_shapes_in_area(Position<T> lower, Position<T> higher) {
+  auto start_time = std::chrono::steady_clock::now();
+  
   Shapes<T> result;
 
   if (root != nullptr)
   {
     root->get_visible_shapes_in_area_recursive(lower, higher, configuration.minimum_shape_size, result);
   }
+  
+  auto end_time = std::chrono::steady_clock::now();
+  auto duration = end_time - start_time;
+  int microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+
+  Logger::record_query_performance((int)result.size(), microseconds);
 
   return result;
 }
