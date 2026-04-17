@@ -1,17 +1,12 @@
 #pragma once
 
-#include <unordered_set>
-#include <set>
-#include <Shapes/IShape.h>
-#ifndef NO_OMP
-#include <omp.h>
-#endif
+#include <DataStructure2D/RTree2D/RTreeNode.h>
 
-const int MAX_CAP = 3;
-const int MIN_CAP = 1;
+const int SPEC_MAX_CAP = 16;
+const int SPEC_MIN_CAP = 7;
 
 template<typename T>
-struct RTreeNode {
+struct SpecializedRTreeNode {
 #ifndef NO_OMP
   omp_lock_t shapes_set_lock;
   omp_lock_t create_children_lock;
@@ -19,16 +14,16 @@ struct RTreeNode {
   Position<T> lower;
   Position<T> higher;
   IShape<T>* shape;
-  std::vector<RTreeNode<T>*> children;
+  std::vector<SpecializedRTreeNode<T>*> children;
 
-  RTreeNode(Position<T> lower, Position<T> higher) : lower(lower), higher(higher), shape(nullptr) {
+  SpecializedRTreeNode(Position<T> lower, Position<T> higher) : lower(lower), higher(higher), shape(nullptr) {
 #ifndef NO_OMP
     omp_init_lock(&shapes_set_lock);
     omp_init_lock(&create_children_lock);
 #endif
   }
 
-  RTreeNode(IShape<T>* shape) : shape(shape) {
+  SpecializedRTreeNode(IShape<T>* shape) : shape(shape) {
     auto points = shape->get_points();
     lower.x = points[0].x;
     higher.x = points[0].x;
@@ -57,36 +52,35 @@ struct RTreeNode {
 #endif
   }
 
-  ~RTreeNode() {
+  ~SpecializedRTreeNode() {
 #ifndef NO_OMP
     omp_destroy_lock(&shapes_set_lock);
     omp_destroy_lock(&create_children_lock);
 #endif
   }
 
-  std::pair<RTreeNode<T>*, RTreeNode<T>*> insert_shape_recursive(IShape<T>* shape) {
+  std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> insert_recursive(SpecializedRTreeNode<T>* node) {
     if (this->shape != nullptr) // leaf or root
     {
-      return {this, new RTreeNode<T>(shape)};
+      return {this, node};
     } else { // intermediate node or root
-      T min_enlargement = 99999999;
-      RTreeNode<T>* min_enlargement_node = nullptr;
+      T bad_score = this->children[0]->get_size_difference(node) + this->children[0]->get_potential_enlargement(node);
+      SpecializedRTreeNode<T>* best_parent_node = this->children[0];
       for (auto &&child : this->children)
       {
-        T child_enlargement_after_adding_shape = child->get_potential_enlargement(shape);
-        if (min_enlargement_node == nullptr
-          || child_enlargement_after_adding_shape < min_enlargement)
+        T child_bad_score = child->get_size_difference(node) + child->get_potential_enlargement(node);
+        if (child_bad_score < bad_score)
         {
-          min_enlargement = child_enlargement_after_adding_shape;
-          min_enlargement_node = child;
+          bad_score = child_bad_score;
+          best_parent_node = child;
         }
       }
-      auto new_nodes = min_enlargement_node->insert_shape_recursive(shape);
-      if (new_nodes.first != min_enlargement_node)
+      auto new_nodes = best_parent_node->insert_recursive(node);
+      if (new_nodes.first != best_parent_node)
       {
         for (int i = 0; i < (int)this->children.size(); i++)
         {
-          if (this->children[i] == min_enlargement_node)
+          if (this->children[i] == best_parent_node)
           {
             delete this->children[i];
             this->children[i] = new_nodes.first;
@@ -96,8 +90,8 @@ struct RTreeNode {
       if (new_nodes.second != nullptr) {
         this->children.push_back(new_nodes.second);
       }
-      std::pair<RTreeNode<T>*, RTreeNode<T>*> result = {nullptr, nullptr};
-      if (MAX_CAP < this->children.size())
+      std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> result = {nullptr, nullptr};
+      if (SPEC_MAX_CAP < this->children.size())
       {
         result = this->split();
       } else {
@@ -107,37 +101,46 @@ struct RTreeNode {
       return result;
     }
   }
-  
-  T get_potential_enlargement(const IShape<T>* shape) {
+
+  T get_size_difference(SpecializedRTreeNode<T>* node) {
+    T linear_size = this->get_linear_size();
+    T node_linear_size = std::max(higher.x - lower.x, higher.y - lower.y);
+    T size_difference = linear_size - node_linear_size; // TODO do logarithm
+    if (size_difference < T(0))
+    {
+      return T(-1.0) * size_difference;
+    } else {
+      return size_difference;
+    }
+  }
+
+  T get_potential_enlargement(const SpecializedRTreeNode<T>* node) {
     Position<T> new_lower = lower;
     Position<T> new_higher = higher;
-    for (const auto &point : shape->get_points())
-    {
-      new_lower.x = std::min(new_lower.x, point.x);
-      new_lower.y = std::min(new_lower.y, point.y);
-      new_higher.x = std::max(new_higher.x, point.x);
-      new_higher.y = std::max(new_higher.y, point.y);
-    }
+    new_lower.x = std::min(new_lower.x, node->lower.x);
+    new_lower.y = std::min(new_lower.y, node->lower.y);
+    new_higher.x = std::max(new_higher.x, node->higher.x);
+    new_higher.y = std::max(new_higher.y, node->higher.y);
     T x_enlargement = new_higher.x - higher.x + lower.x - new_lower.x;
     T y_enlargement = new_higher.y - higher.y + lower.y - new_lower.y;
     return x_enlargement < y_enlargement ? y_enlargement : x_enlargement;
   }
 
-  std::pair<RTreeNode<T>*, RTreeNode<T>*> split() {
+  std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> split() {
     if (this->children.size() < 2)
     {
       throw "not enough children for split";
     }
 
-    std::pair<RTreeNode<T>*, RTreeNode<T>*> principal_nodes;
+    std::pair<SpecializedRTreeNode<T>*, SpecializedRTreeNode<T>*> principal_nodes;
     principal_nodes = {this->children[0], this->children[1]};
     T principal_nodes_score = 0;
     for (int i = 0; i < (int)this->children.size(); i++)
     {
-      RTreeNode<T>* child1 = this->children[i];
+      SpecializedRTreeNode<T>* child1 = this->children[i];
       for (int j = i + 1; j < (int)this->children.size(); j++)
       {
-        RTreeNode<T>* child2 = this->children[j];
+        SpecializedRTreeNode<T>* child2 = this->children[j];
         Position<T> lower;
         lower.x = std::min(child1->lower.x, child2->lower.x);
         lower.y = std::min(child1->lower.y, child2->lower.y);
@@ -152,24 +155,26 @@ struct RTreeNode {
       }
     }
 
-    RTreeNode<T>* new_node1 = new RTreeNode<T>({0, 0}, {0, 0});
+    SpecializedRTreeNode<T>* new_node1 = new SpecializedRTreeNode<T>({0, 0}, {0, 0});
     new_node1->children.push_back(principal_nodes.first);
-    RTreeNode<T>* new_node2 = new RTreeNode<T>({0, 0}, {0, 0});
+    SpecializedRTreeNode<T>* new_node2 = new SpecializedRTreeNode<T>({0, 0}, {0, 0});
     new_node2->children.push_back(principal_nodes.second);
     for (int i = 0; i < (int)this->children.size(); i++) {
-      RTreeNode<T>* child = this->children[i];
-      if (new_node1->children.size() >= MIN_CAP && new_node2->children.size() < MIN_CAP)
+      SpecializedRTreeNode<T>* child = this->children[i];
+      if (new_node1->children.size() >= SPEC_MIN_CAP && new_node2->children.size() < SPEC_MIN_CAP)
       {
         new_node2->children.push_back(child);
         continue;
-      } else if (new_node1->children.size() < MIN_CAP && new_node2->children.size() >= MIN_CAP) {
+      } else if (new_node1->children.size() < SPEC_MIN_CAP && new_node2->children.size() >= SPEC_MIN_CAP) {
         new_node1->children.push_back(child);
         continue;
       }
       
       if (child != principal_nodes.first && child != principal_nodes.second)
       {
-        if (rand() % 2)
+        T bad_score1 = new_node1->get_potential_enlargement(child) + new_node1->get_size_difference(child);
+        T bad_score2 = new_node2->get_potential_enlargement(child) + new_node2->get_size_difference(child);
+        if (bad_score1 < bad_score2)
         {
           new_node1->children.push_back(child);
         } else {
@@ -181,6 +186,10 @@ struct RTreeNode {
     new_node1->recalculate_boundary();
     new_node2->recalculate_boundary();
     return {new_node1, new_node2};
+  }
+
+  T get_linear_size() const {
+    return std::max(higher.x - lower.x, higher.y - lower.y);
   }
 
   T get_area() {
@@ -202,13 +211,11 @@ struct RTreeNode {
     }
   }
 
-  Shapes<T> get_visible_shapes_in_area_recursive(const Position<T>& lower, const Position<T>& higher, double minimum_shape_size) {
-    Shapes<T> result;
-    
+  void get_visible_shapes_in_area_recursive(const Position<T>& lower, const Position<T>& higher, double minimum_shape_size, Shapes<T>& result) {    
     if (this->higher.x - this->lower.x + this->higher.y - this->lower.y
           < (higher.x - lower.x + higher.y - lower.y) * T(minimum_shape_size))
     {
-      return result;
+      return;
     }
     
     if (intersects_with({this->lower, this->higher}, {lower, higher}))
@@ -219,13 +226,11 @@ struct RTreeNode {
       }
       for (auto &&child : this->children)
       {
-        for (auto &&shape : child->get_visible_shapes_in_area_recursive(lower, higher, minimum_shape_size).get_shapes()) {
-          result.add_shape(shape);
-        }
+        child->get_visible_shapes_in_area_recursive(lower, higher, minimum_shape_size, result);
       }
     }
 
-    return result;
+    return;
   }
 
   static bool intersects_with(std::pair<Position<T>, Position<T>> sorted_corners, std::pair<Position<T>, Position<T>> corners) {
