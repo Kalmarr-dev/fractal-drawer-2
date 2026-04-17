@@ -2,7 +2,7 @@
 
 #include <DataStructure2D/RTree2D/RTreeNode.h>
 
-const int SPEC_MAX_CAP = 16;
+const int SPEC_MAX_CAP = 15;
 const int SPEC_MIN_CAP = 7;
 
 template<typename T>
@@ -161,6 +161,12 @@ struct SpecializedRTreeNode {
     new_node2->children.push_back(principal_nodes.second);
     for (int i = 0; i < (int)this->children.size(); i++) {
       SpecializedRTreeNode<T>* child = this->children[i];
+
+      if (child == principal_nodes.first || child == principal_nodes.second)
+      {
+        continue;
+      }
+
       if (new_node1->children.size() >= SPEC_MIN_CAP && new_node2->children.size() < SPEC_MIN_CAP)
       {
         new_node2->children.push_back(child);
@@ -170,16 +176,13 @@ struct SpecializedRTreeNode {
         continue;
       }
       
-      if (child != principal_nodes.first && child != principal_nodes.second)
+      T bad_score1 = new_node1->get_potential_enlargement(child) + new_node1->get_size_difference(child);
+      T bad_score2 = new_node2->get_potential_enlargement(child) + new_node2->get_size_difference(child);
+      if (bad_score1 < bad_score2)
       {
-        T bad_score1 = new_node1->get_potential_enlargement(child) + new_node1->get_size_difference(child);
-        T bad_score2 = new_node2->get_potential_enlargement(child) + new_node2->get_size_difference(child);
-        if (bad_score1 < bad_score2)
-        {
-          new_node1->children.push_back(child);
-        } else {
-          new_node2->children.push_back(child);
-        }
+        new_node1->children.push_back(child);
+      } else {
+        new_node2->children.push_back(child);
       }
     }
 
