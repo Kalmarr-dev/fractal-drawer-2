@@ -115,8 +115,8 @@ struct RTreeNode {
     {
       new_lower.x = std::min(new_lower.x, point.x);
       new_lower.y = std::min(new_lower.y, point.y);
-      new_higher.x = std::min(new_higher.x, point.x);
-      new_higher.y = std::min(new_higher.y, point.y);
+      new_higher.x = std::max(new_higher.x, point.x);
+      new_higher.y = std::max(new_higher.y, point.y);
     }
     T x_enlargement = new_higher.x - higher.x + lower.x - new_lower.x;
     T y_enlargement = new_higher.y - higher.y + lower.y - new_lower.y;
