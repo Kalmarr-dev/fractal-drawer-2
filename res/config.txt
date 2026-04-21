@@ -10,4 +10,4 @@
 # camera size change for "zooming in fractal" (calculating smaller parts). Smaller means more updates
 4.0
 # underlying model type: 0 is a fast model, 1 is a model supporting deeper zoom levels
-0
+1
