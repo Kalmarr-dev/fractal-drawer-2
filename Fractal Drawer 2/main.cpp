@@ -21,6 +21,7 @@
 #include <LongDouble/LongDoubleBitset/LongDoubleBitset.h>
 #include <DataStructure2D/QuadTree2D/QuadTree2D.h>
 #include <DataStructure2D/RTree2D/RTree2D.h>
+#include <DataStructure2D/RTree2D/SpecializedRTree2d/SpecializedRTree2D.h>
 #include <LongDouble/LongDoubleUInt64/LongDoubleUInt64.h>
 
 #ifdef __EMSCRIPTEN__
@@ -66,7 +67,8 @@ void initialize_loop(Configuration configuration) {
   // BasicDataStructure2D<T>* p_data_structure = new BasicDataStructure2D<T>;
   // QuadTree2D<T>* p_data_structure = new QuadTree2D<T>({-2, -2}, {2, 2}, configuration);
   // QuadTree2D<T>* p_data_structure = new QuadTree2D<T>({__DBL_MIN__, __DBL_MIN__}, {__DBL_MAX__, __DBL_MAX__}, configuration);
-  RTree2D<T>* p_data_structure = new RTree2D<T>(configuration);
+  // RTree2D<T>* p_data_structure = new RTree2D<T>(configuration);
+  SpecializedRTree2D<T>* p_data_structure = new SpecializedRTree2D<T>(configuration);
 
   BasicCamera<T>* p_camera = new BasicCamera<T>(
     std::make_pair(
